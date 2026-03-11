@@ -50,3 +50,23 @@ app.*.map.json
 
 # Firestore exports
 backend/exports/
+
+
+# --- إضافات خاصة بمشروع fatripy_app ---
+
+# تجاهل البيئة الوهمية لبايثون
+.venv/
+venv/
+__pycache__/
+
+# تجاهل ملفات المشروع الشخصية والصور التي تظهر في الـ status
+Gp.pdf
+Gp_extracted.txt
+*.png
+*.jpg
+*.jpeg
+erd_page43_600_psm6.txt
+erd_page43_ocr.txt
+
+# تجاهل ملفات الإعدادات الخاصة بـ VS Code (اختياري لكن يفضل)
+.vscode/
