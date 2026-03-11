@@ -1,0 +1,30 @@
+32
+
+6.6 Entity Relationship Diagram
+
+Diagram Description:
+
+This Entity Relationship Diagram (ERD) represents the complete database struc-
+ture of the Fatripy application. It shows the main entities (tables), their attributes
+(fields), and the relationships between them. The diagram includes eight primary
+entities: User, FamilyGroup, GroupMember, TripPlan, Accommodation, Activity,
+TripPlan_Activity, and Booking. Each entity contains specific attributes with pri-
+mary keys for identification and foreign keys to establish connections between related
+entities. The relationships are defined with cardinality indicators (1:1, 1:M, M:M)
+showing how entities interact with each other. This structure supports the core
+functionality of generating personalized trip plans, managing family information, or-
+ganizing activities and accommodations, and handling booking processes. The design
+ensures data integrity and enables efficient retrieval of information needed to create
+
+comprehensive travel plans tailored to family needs and preferences.
+
+V4 Number_of
+
+La members
+
+<< Destination
+_~ <city
+
+Budget
+
+Figure 6.8. Entity Relationship Diagram

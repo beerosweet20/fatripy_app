@@ -56,7 +56,7 @@ class _LogoCircle extends StatelessWidget {
         border: Border.all(color: _navy.withValues(alpha: 0.55), width: 1.8),
       ),
       padding: const EdgeInsets.all(24),
-      child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+      child: Image.asset('assets/images/logo_pink.png', fit: BoxFit.contain),
     );
   }
 }

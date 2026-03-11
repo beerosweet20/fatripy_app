@@ -1,503 +1,467 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-
-import '../../../data/repositories/trip_repository.dart';
-import '../../../data/repositories/booking_repository.dart';
-import '../../../domain/entities/trip_plan.dart';
-import '../../../domain/entities/booking.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../localization/app_localizations_ext.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-  final TripRepository _tripRepo = TripRepository();
-  final BookingRepository _bookingRepo = BookingRepository();
-
-  String? _fullName;
-  int _familyCount = 1;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadDashboardData();
-  }
-
-  Future<void> _loadDashboardData() async {
-    if (currentUser == null) return;
-
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser!.uid)
-          .get();
-      if (doc.exists && mounted) {
-        setState(() {
-          _fullName = doc.data()?['fullName'];
-          _familyCount = 1;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading profile: $e');
-    }
-  }
+  static const Color _cream = Color(0xFFFFF7E5);
+  static const Color _navy = Color(0xFF31487A);
+  static const Color _pink = Color(0xFFE18299);
+  static const Color _pinkLine = Color(0xFFF5C9D4);
+  static const Color _blueLine = Color(0xFF7FA2DA);
 
   @override
   Widget build(BuildContext context) {
-    if (currentUser == null) {
-      return Center(child: Text(context.l10n.errorPleaseLogin));
-    }
-
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.appName),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => context.go('/profile'),
+      backgroundColor: _cream,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(4, 30, 4, 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.homeWelcomeTitle,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inriaSerif(
+                  color: Colors.black,
+                  fontSize: 40,
+                  height: 1.22,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(height: 33),
+              _HeroCard(subtitle: l10n.homeHeroSubtitle),
+              const SizedBox(height: 50),
+              _SectionHeader(
+                label: l10n.homeMainDestination,
+                fillColor: _pink,
+                borderColor: _pinkLine,
+                lineColor: _pinkLine,
+                textColor: Colors.black,
+                width: 200,
+              ),
+              const SizedBox(height: 12),
+              _DestinationPanel(
+                card1Title: l10n.homeDestination1Title,
+                card1Description: l10n.homeDestination1Description,
+                card2Title: l10n.homeDestination2Title,
+                card2Description: l10n.homeDestination2Description,
+                card3Title: l10n.homeDestination3Title,
+                card3Description: l10n.homeDestination3Description,
+              ),
+              const SizedBox(height: 48),
+              _SectionHeader(
+                label: l10n.homeSeasonalAttractions,
+                fillColor: _navy,
+                borderColor: _blueLine,
+                lineColor: _blueLine,
+                textColor: Colors.white,
+                width: 225,
+              ),
+              const SizedBox(height: 12),
+              _SeasonPanel(
+                card1Title: l10n.homeSeason1Title,
+                card1Description: l10n.homeSeason1Description,
+                card2Title: l10n.homeSeason2Title,
+                card2Description: l10n.homeSeason2Description,
+                card3Title: l10n.homeSeason3Title,
+                card3Description: l10n.homeSeason3Description,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroCard extends StatelessWidget {
+  final String subtitle;
+
+  const _HeroCard({required this.subtitle});
+
+  static const Color _cream = Color(0xFFFFF7E5);
+  static const Color _navy = Color(0xFF31487A);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 159,
+      decoration: BoxDecoration(
+        color: _cream,
+        borderRadius: BorderRadius.circular(40),
+        border: Border.all(color: _navy, width: 4),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 8, 14, 8),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Image.asset(
+                'assets/images/home/hero_riyadh.jpg',
+                width: 118,
+                height: 143,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 24),
+            Expanded(
+              child: Text(
+                subtitle,
+                style: GoogleFonts.inriaSerif(
+                  color: _navy,
+                  fontSize: 40 / 1.67,
+                  height: 1.2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String label;
+  final Color fillColor;
+  final Color borderColor;
+  final Color lineColor;
+  final Color textColor;
+  final double width;
+
+  const _SectionHeader({
+    required this.label,
+    required this.fillColor,
+    required this.borderColor,
+    required this.lineColor,
+    required this.textColor,
+    required this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 85,
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 43,
+            child: Container(height: 3, color: lineColor),
+          ),
+          Container(
+            width: width,
+            height: 85,
+            padding: const EdgeInsets.only(left: 20, right: 14),
+            alignment: Alignment.centerLeft,
+            decoration: BoxDecoration(
+              color: fillColor,
+              border: Border.all(color: borderColor, width: 4),
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(50),
+                bottomRight: Radius.circular(50),
+              ),
+            ),
+            child: Text(
+              label,
+              style: GoogleFonts.inriaSerif(
+                color: textColor,
+                fontSize: 33 / 1.65,
+                height: 1.0,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth > 600;
-          final padding = isWide ? constraints.maxWidth * 0.1 : 16.0;
+    );
+  }
+}
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              setState(() {});
-              await _loadDashboardData();
-            },
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: padding, vertical: 24),
-              children: [
-                _buildGreetingSection(),
-                const SizedBox(height: 24),
-                if (isWide)
-                  Row(
-                    children: [
-                      Expanded(child: _buildFamilyCard()),
-                      const SizedBox(width: 16),
-                      Expanded(child: _buildCTACard()),
-                    ],
-                  )
-                else ...[
-                  _buildFamilyCard(),
-                  const SizedBox(height: 16),
-                  _buildCTACard(),
-                ],
-                const SizedBox(height: 32),
-                _buildSectionTitle(
-                  context.l10n.latestPlans,
-                  () => context.go('/plans'),
-                ),
-                const SizedBox(height: 16),
-                _buildLatestPlans(),
-                const SizedBox(height: 32),
-                _buildSectionTitle(
-                  context.l10n.recentBookings,
-                  () => context.go('/bookings'),
-                ),
-                const SizedBox(height: 16),
-                _buildRecentBookings(),
-                const SizedBox(height: 48),
-              ],
-            ),
-          );
-        },
+class _DestinationPanel extends StatelessWidget {
+  final String card1Title;
+  final String card1Description;
+  final String card2Title;
+  final String card2Description;
+  final String card3Title;
+  final String card3Description;
+
+  const _DestinationPanel({
+    required this.card1Title,
+    required this.card1Description,
+    required this.card2Title,
+    required this.card2Description,
+    required this.card3Title,
+    required this.card3Description,
+  });
+
+  static const Color _cream = Color(0xFFFFF7E5);
+  static const Color _pinkLine = Color(0xFFF5C9D4);
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = [
+      _DestinationCard(
+        title: card1Title,
+        imagePath: 'assets/images/home/destination_diriyah.jpg',
+        description: card1Description,
       ),
-    );
-  }
+      _DestinationCard(
+        title: card2Title,
+        imagePath: 'assets/images/home/destination_al_olaya.jpg',
+        description: card2Description,
+      ),
+      _DestinationCard(
+        title: card3Title,
+        imagePath: 'assets/images/home/destination_jabal_tuwaiq.jpg',
+        description: card3Description,
+      ),
+    ];
 
-  Widget _buildGreetingSection() {
-    final firstName = _fullName?.split(' ').first;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.homeGreetingName(
-            firstName ?? context.l10n.homeFriendName,
-          ),
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          context.l10n.homeSubtitle,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.6),
-              ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFamilyCard() {
-    return Card(
-      color: Theme.of(context).colorScheme.surface,
-      child: InkWell(
+    return Container(
+      height: 355,
+      decoration: BoxDecoration(
+        color: _cream,
         borderRadius: BorderRadius.circular(20),
-        onTap: () => context.go('/profile'),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+        border: Border.all(color: _pinkLine, width: 3),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(17),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(15, 66, 16, 22),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+              for (int i = 0; i < cards.length; i++)
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: i == cards.length - 1 ? 0 : 30,
+                  ),
+                  child: cards[i],
                 ),
-                child: Icon(
-                  Icons.family_restroom,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.familyCountLabel(_familyCount),
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    Text(
-                      context.l10n.familyManagement,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.4),
-              ),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildCTACard() {
-    return Card(
-      color: Theme.of(context).colorScheme.primary,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          // TODO: Open Trip Preferences Flow
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.startPlanning,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      context.l10n.homeAiTeaser,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimary
-                                .withValues(alpha: 0.8),
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.flight_takeoff,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class _DestinationCard extends StatelessWidget {
+  final String title;
+  final String imagePath;
+  final String description;
 
-  Widget _buildSectionTitle(String title, VoidCallback onSeeAll) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        TextButton(
-          onPressed: onSeeAll,
-          child: Text(context.l10n.seeAll),
-        ),
-      ],
-    );
-  }
+  const _DestinationCard({
+    required this.title,
+    required this.imagePath,
+    required this.description,
+  });
 
-  Widget _buildLatestPlans() {
-    return FutureBuilder<List<TripPlan>>(
-      future: _tripRepo.getLatestPlans(currentUser!.uid),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _PlaceholderList();
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              context.l10n.errorWithDetails(snapshot.error.toString()),
-            ),
-          );
-        }
-
-        final plans = snapshot.data ?? [];
-        if (plans.isEmpty) {
-          return _buildEmptyState(
-            icon: Icons.map_outlined,
-            message: context.l10n.emptyPlans,
-            actionLabel: context.l10n.createPlan,
-            onAction: () {},
-          );
-        }
-
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: plans.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final plan = plans[index];
-            return Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                leading: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary
-                        .withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.location_city,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                title: Text(
-                  plan.city,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  context.l10n.planSummary(
-                    plan.days,
-                    plan.budget.toStringAsFixed(0),
-                  ),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  // TODO: Navigate to details
-                },
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildRecentBookings() {
-    return FutureBuilder<List<Booking>>(
-      future: _bookingRepo.getLatestBookings(currentUser!.uid),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _PlaceholderList();
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text(context.l10n.bookingsLoadError));
-        }
-
-        final bookings = snapshot.data ?? [];
-        if (bookings.isEmpty) {
-          return _buildEmptyState(
-            icon: Icons.receipt_long_outlined,
-            message: context.l10n.bookingsEmpty,
-          );
-        }
-
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: bookings.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final booking = bookings[index];
-            final dateLabel = DateFormat.yMMMd(
-              Localizations.localeOf(context).toString(),
-            ).format(booking.createdAt.toLocal());
-
-            return Card(
-              child: ListTile(
-                title: Text(
-                  context.l10n.bookingItemTitle(booking.itemType),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(context.l10n.bookingPlacedOn(dateLabel)),
-                trailing: _buildStatusBadge(booking.status),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildStatusBadge(String status) {
-    Color bgColor;
-    Color textColor;
-    String displayStatus;
-
-    if (status.toLowerCase() == 'confirmed' ||
-        status == context.l10n.statusConfirmed) {
-      bgColor = Colors.green.shade50;
-      textColor = Colors.green.shade700;
-      displayStatus = context.l10n.statusConfirmed;
-    } else if (status.toLowerCase() == 'cancelled' ||
-        status == context.l10n.statusCancelled) {
-      bgColor = Colors.red.shade50;
-      textColor = Colors.red.shade700;
-      displayStatus = context.l10n.statusCancelled;
-    } else {
-      bgColor = Colors.orange.shade50;
-      textColor = Colors.orange.shade800;
-      displayStatus = context.l10n.statusPending;
-    }
-
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      width: 163,
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        displayStatus,
-        style: TextStyle(
-          color: textColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String message,
-    String? actionLabel,
-    VoidCallback? onAction,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
-        ),
+        color: const Color(0xFFFFF7E5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE18299), width: 4),
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            size: 48,
-            color: Theme.of(context)
-                .colorScheme
-                .onSurface
-                .withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 16),
           Text(
-            message,
+            title,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.6),
-                ),
+            style: GoogleFonts.inriaSerif(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              height: 1.0,
+            ),
           ),
-          if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: 16),
-            OutlinedButton(onPressed: onAction, child: Text(actionLabel)),
-          ],
+          const SizedBox(height: 6),
+          Container(
+            width: 131,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE18299), width: 3),
+            ),
+            child: ClipOval(child: Image.asset(imagePath, fit: BoxFit.cover)),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.inriaSerif(
+              color: Colors.black,
+              fontSize: 12,
+              height: 1.25,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _PlaceholderList extends StatelessWidget {
-  const _PlaceholderList();
+class _SeasonPanel extends StatelessWidget {
+  final String card1Title;
+  final String card1Description;
+  final String card2Title;
+  final String card2Description;
+  final String card3Title;
+  final String card3Description;
+
+  const _SeasonPanel({
+    required this.card1Title,
+    required this.card1Description,
+    required this.card2Title,
+    required this.card2Description,
+    required this.card3Title,
+    required this.card3Description,
+  });
+
+  static const Color _cream = Color(0xFFFFF7E5);
+  static const Color _navy = Color(0xFF31487A);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(
-        2,
-        (index) => Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          height: 80,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
-            ),
+    final cards = [
+      _SeasonCard(
+        title: card1Title,
+        imagePath: 'assets/images/home/season_riyadh_season.jpg',
+        description: card1Description,
+      ),
+      _SeasonCard(
+        title: card2Title,
+        imagePath: 'assets/images/home/season_boulevard.jpg',
+        description: card2Description,
+      ),
+      _SeasonCard(
+        title: card3Title,
+        imagePath: 'assets/images/home/season_noor_riyadh.jpg',
+        description: card3Description,
+      ),
+    ];
+
+    return Container(
+      height: 275,
+      decoration: BoxDecoration(
+        color: _cream,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _navy, width: 3),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(17),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(16, 36, 24, 24),
+          child: Row(
+            children: [
+              for (int i = 0; i < cards.length; i++)
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: i == cards.length - 1 ? 0 : 18,
+                  ),
+                  child: cards[i],
+                ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SeasonCard extends StatelessWidget {
+  final String title;
+  final String imagePath;
+  final String description;
+
+  const _SeasonCard({
+    required this.title,
+    required this.imagePath,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 297,
+      height: 187,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 72,
+            top: 0,
+            child: Container(
+              width: 225,
+              height: 187,
+              // Keep text fully outside the overlapped circular image area.
+              padding: const EdgeInsets.fromLTRB(84, 10, 10, 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF7E5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF31487A), width: 4),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inriaSerif(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    description,
+                    textAlign: TextAlign.center,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inriaSerif(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            top: 20,
+            child: Container(
+              width: 152,
+              height: 154,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF31487A), width: 3),
+              ),
+              child: ClipOval(child: Image.asset(imagePath, fit: BoxFit.cover)),
+            ),
+          ),
+        ],
       ),
     );
   }

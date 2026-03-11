@@ -1,0 +1,29 @@
+{
+  "hotels": [
+    {
+      "docId": "bab_samhan_diriyah",
+      "mapsUrl": "https://maps.google.com/?q=Bab+Samhan+Diriyah+Hotel"
+    },
+    {
+      "docId": "crowne_plaza_riyadh_rdc-hotel_convention",
+      "mapsUrl": "https://maps.google.com/?q=Crowne+Plaza+Riyadh+RDC+Hotel+%26+Convention"
+    },
+    {
+      "docId": "hilton_riyadh_olaya",
+      "mapsUrl": "https://maps.google.com/?q=Hilton+Riyadh+Olaya"
+    },
+    {
+      "docId": "hyatt_regency_riyadh",
+      "mapsUrl": "https://maps.google.com/?q=Hyatt+Regency+Riyadh"
+    },
+    {
+      "docId": "novotel_riyadh",
+      "mapsUrl": "https://maps.google.com/?q=Novotel+Riyadh"
+    },
+    {
+      "docId": "radisson_blu_hotel",
+      "mapsUrl": "https://maps.google.com/?q=Radisson+Blu+Hotel+Riyadh"
+    }
+  ],
+  "activities": []
+}

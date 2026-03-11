@@ -1,0 +1,526 @@
+﻿{
+  "@@locale": "en",
+  "appName": "Fatripy",
+  "navBlog": "Blog",
+  "navLogin": "Log in",
+  "navShop": "Shop",
+  "navFavorites": "Favorites",
+  "navHome": "Home",
+  "navPlans": "Plans",
+  "navBookings": "Bookings",
+  "navCart": "Cart",
+  "navProfile": "Profile",
+  "navAccount": "Account",
+  "loading": "Loading...",
+  "accountTitle": "My Account",
+  "accountNotifications": "Notifications",
+  "accountDependents": "Dependents",
+  "accountSettingsPrivacy": "Setting&Privacy",
+  "accountBookedAttraction": "Booked Attraction",
+  "accountDeleteAccount": "Delete Account",
+  "deleteAccountConfirm": "Are you sure you want to delete your account?",
+  "deleteAccountSuccess": "Account deleted.",
+  "actionCancel": "Cancel",
+  "actionEdit": "Edit",
+  "actionDelete": "Delete",
+  "actionRefresh": "Refresh",
+  "actionSave": "Save",
+  "settingsTitle": "Settings",
+  "settingsEditProfile": "Edit Profile",
+  "settingsLanguage": "Language",
+  "settingsTheme": "Theme",
+  "languageArabic": "Arabic",
+  "languageEnglish": "English",
+  "themeDefault": "Default",
+  "themePink": "Pink",
+  "editProfileTitle": "Edit Profile",
+  "editProfileName": "Full name",
+  "editProfileEmail": "Email",
+  "editProfileEmailHint": "Updating email may require recent login",
+  "editProfileSuccess": "Profile updated.",
+  "editProfileReauth": "Please log in again to update your email.",
+  "dependentsTitle": "Write Your Information",
+  "dependentsMyFamily": "My Family",
+  "dependentsTripInfo": "Trip info",
+  "dependentsAdults": "Adults",
+  "dependentsChildren": "Children",
+  "dependentsInfant": "INFANT",
+  "dependentsAdultAges": "Adult ages",
+  "dependentsChildAges": "Child ages",
+  "dependentsInfantAges": "Infant ages",
+  "dependentsAgeField": "Age {index}",
+  "@dependentsAgeField": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "dependentsBudget": "Budget",
+  "dependentsCity": "City",
+  "dependentsDuration": "Duration",
+  "dependentsStart": "Start",
+  "dependentsEnd": "End",
+  "dependentsDefaultBudget": "21000 SAR",
+  "dependentsDefaultDuration": "7 days & 6 nights",
+  "dependentsDefaultStartDate": "1 Dec 2026",
+  "dependentsDefaultEndDate": "7 Dec 2026",
+  "cityRiyadh": "Riyadh",
+  "cityJeddah": "Jeddah",
+  "cityMecca": "Mecca",
+  "cityMedina": "Medina",
+  "cityDammam": "Dammam",
+  "cityKhobar": "Khobar",
+  "cityAbha": "Abha",
+  "cityTaif": "Taif",
+  "dependentsDone": "Done",
+  "dependentsGeneratingPlan": "Generating your trip plan... please wait.",
+  "dependentsGenerationComplete": "Trip generation complete! Check your new plans.",
+  "dependentsAiLatencyWarning": "Warning: AI recommendation took {milliseconds} ms (target is 3000 ms).",
+  "@dependentsAiLatencyWarning": {
+    "placeholders": {
+      "milliseconds": {}
+    }
+  },
+  "loginWelcome": "Welcome!",
+  "labelEmail": "Email",
+  "labelPassword": "Password",
+  "actionLogin": "Login",
+  "forgotPasswordCta": "Forgot password?",
+  "resetPasswordTitle": "Reset password",
+  "resetPasswordSend": "Send",
+  "resetPasswordSuccess": "Password reset email sent.",
+  "resetPasswordFailure": "Failed to send reset email.",
+  "loginNoAccount": "Don't have an account? ",
+  "actionRegister": "Register",
+  "registerTitle": "Please fill out the form to register",
+  "labelFullName": "Full name",
+  "labelUsername": "Username",
+  "labelConfirmPassword": "Confirm password",
+  "registerHaveAccount": "Already have an account? ",
+  "errorFillAllFields": "Please fill in all fields.",
+  "errorLoginFailed": "Login failed. Please try again.",
+  "errorGeneric": "An error occurred. Please try again.",
+  "errorUsernameNoSpaces": "Username cannot contain spaces.",
+  "errorPasswordTooShort": "Password must be at least 6 characters.",
+  "errorPasswordsDoNotMatch": "Passwords do not match.",
+  "errorUsernameTaken": "Username already taken.",
+  "errorRegistrationFailed": "Registration failed. Please try again.",
+  "homeGreetingName": "Hello, {name}!",
+  "@homeGreetingName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "homeFriendName": "friend",
+  "homeSubtitle": "Let's plan your next family trip",
+  "familyCountLabel": "Family members: {count}",
+  "@familyCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "familyManagement": "Family management",
+  "startPlanning": "Start planning",
+  "homeAiTeaser": "Smart planning builds your family trip",
+  "latestPlans": "Latest plans",
+  "recentBookings": "Recent bookings",
+  "createPlan": "Create plan",
+  "emptyPlans": "No plans yet.",
+  "seeAll": "See all",
+  "errorPleaseLogin": "Please log in to continue.",
+  "errorWithDetails": "Error: {details}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "planSummary": "{days} days • {budget} SAR",
+  "@planSummary": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "budget": {}
+    }
+  },
+  "bookingsLoadError": "Error loading bookings.",
+  "bookingsEmpty": "No bookings yet.",
+  "bookingItemTitle": "Booking: {itemType}",
+  "@bookingItemTitle": {
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "bookingPlacedOn": "Date: {date}",
+  "@bookingPlacedOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "statusPending": "Pending",
+  "statusBooked": "Booked",
+  "statusConfirmed": "Confirmed",
+  "statusCancelled": "Cancelled",
+  "planListSubtitle": "Budget: {budget} • {status}",
+  "@planListSubtitle": {
+    "placeholders": {
+      "budget": {},
+      "status": {}
+    }
+  },
+  "bookingListSubtitle": "Status: {status} • Placed: {date}",
+  "@bookingListSubtitle": {
+    "placeholders": {
+      "status": {},
+      "date": {}
+    }
+  },
+  "settings": "Settings",
+  "logout": "Log out",
+  "debugExplorer": "Data Explorer (Debug)",
+  "hotelsTitle": "Hotels",
+  "hotelsLoadError": "Error loading data.",
+  "hotelsNoData": "No data available.",
+  "hotelsEmpty": "No hotels to show.",
+  "hotelNameUnknown": "Unknown hotel",
+  "hotelLocationUnknown": "Unknown location",
+  "comparePlansCta": "Compare Plans",
+  "comparePlansTitle": "Plan comparison",
+  "compareKindLabel": "Kind",
+  "compareHotelLabel": "Hotel",
+  "compareTotalCostLabel": "Total cost",
+  "compareNearbyLabel": "Nearby attractions",
+  "compareDistantLabel": "Distant attractions",
+  "compareEventsLabel": "Events",
+  "selectPlanCta": "Select plan",
+  "plansFamilyTitle": "Family Relax Plan",
+  "plansCulturalTitle": "Cultural Plan",
+  "plansAdventureTitle": "Adventure Plan",
+  "plansBudgetLowBannerMessage": "Note: Your budget (SAR {userBudget}) is low for this trip. We generated the cheapest plan at approx. SAR {minimumRequired}.",
+  "@plansBudgetLowBannerMessage": {
+    "placeholders": {
+      "userBudget": {},
+      "minimumRequired": {}
+    }
+  },
+  "plansDynamicEventPlaceholder": "Dynamic event suggestions",
+  "plansDynamicEventDescription": "Based on the selected coordinates",
+  "profileAdminDashboard": "Admin Dashboard",
+  "profileAdminUsers": "Users",
+  "profileAdminTripPlans": "Trip plans",
+  "adminDashboardTitle": "Admin Dashboard",
+  "adminNoAccess": "You do not have admin access.",
+  "adminBackToProfile": "Back to profile",
+  "adminStatsTitle": "Dashboard stats",
+  "adminStatHotels": "Hotels",
+  "adminStatActivities": "Activities",
+  "adminStatBookings": "Bookings",
+  "adminContentManagement": "Content Management",
+  "adminManageContent": "Manage Content",
+  "adminManageContentSubtitle": "Create, edit, and delete hotels and activities.",
+  "adminManageHotelsSubtitle": "Create, update, and remove hotel records.",
+  "adminManageActivitiesSubtitle": "Create, update, and remove activity records.",
+  "adminManageEventsSubtitle": "Create, update, and remove event records.",
+  "adminViewBookings": "View User Bookings",
+  "adminViewBookingsSubtitle": "Open bookings list to verify saved reservations.",
+  "adminManageTitle": "Manage Content",
+  "adminManageOnlyAdmins": "Only admins can access content management.",
+  "adminTabHotels": "Hotels",
+  "adminTabActivities": "Activities",
+  "adminAddHotel": "Add hotel",
+  "adminAddActivity": "Add activity",
+  "adminAddContent": "Add content",
+  "adminEditContent": "Edit content",
+  "adminLabelNameRequired": "Name *",
+  "adminNameRequiredError": "Name is required.",
+  "adminLabelLocation": "Location",
+  "adminLabelCity": "City",
+  "adminLabelRating": "Rating (0-5)",
+  "adminLabelPricePerNight": "Price per night",
+  "adminLabelPrice": "Price",
+  "adminLabelPlanType": "Plan type (e.g. family)",
+  "adminLabelOpenHours": "Open hours",
+  "adminLabelCloseHours": "Close hours",
+  "adminLabelBookingUrl": "Booking URL",
+  "adminLabelMapsUrl": "Maps URL",
+  "adminAddLocation": "Add location",
+  "adminLocationPickHint": "Use the button below to pick the location from Google Maps.",
+  "adminLocationRequiredError": "Please pick the location from Google Maps.",
+  "adminSelectCityError": "Please select a city.",
+  "adminSelectRatingError": "Please select a rating.",
+  "adminSelectCategoryError": "Please select a category.",
+  "adminCategoryFamily": "Family",
+  "adminCategoryCultural": "Cultural",
+  "adminCategoryAdventure": "Adventure",
+  "adminCategoryNature": "Nature",
+  "adminCategoryEntertainment": "Entertainment",
+  "adminDatePickerHint": "No date selected yet.",
+  "adminPickDate": "Pick date",
+  "adminDateRequiredError": "Please pick a date.",
+  "adminNavDashboard": "Dashboard",
+  "adminNavHotels": "Hotels",
+  "adminNavActivities": "Activities",
+  "adminNavEvents": "Events",
+  "adminNavBookings": "Bookings",
+  "adminNavSettings": "Settings",
+  "adminSettingsTitle": "Admin Settings",
+  "adminSettingsSubtitle": "Manage your admin account and app preferences.",
+  "adminSettingsGuideSubtitle": "Open user guide instructions.",
+  "adminSettingsPrivacySubtitle": "Review the privacy policy page.",
+  "adminLogoutConfirm": "Are you sure you want to log out from the admin session?",
+  "adminAnalyticsTitle": "Analytics",
+  "adminAnalyticsBookingStatus": "Booking status distribution",
+  "adminAnalyticsTopCities": "Top destination cities",
+  "adminAnalyticsSelectedPlans": "Selected plan insights",
+  "adminAnalyticsSelectedPlansCount": "Selected plans: {count}",
+  "@adminAnalyticsSelectedPlansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminAnalyticsAiPerformance": "AI response performance",
+  "adminAnalyticsAverageLatency": "Average AI latency: {milliseconds} ms",
+  "@adminAnalyticsAverageLatency": {
+    "placeholders": {
+      "milliseconds": {}
+    }
+  },
+  "adminAnalyticsSlowResponses": "Responses above 3000 ms: {count}",
+  "@adminAnalyticsSlowResponses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminAnalyticsHighLatencyNote": "Target response time is 3000 ms or less.",
+  "adminStatusOther": "Other",
+  "adminNoAnalyticsData": "No analytics data yet.",
+  "adminMapPickerTitle": "Pick location from map",
+  "adminMapTapHint": "Tap the map to drop a marker on the location.",
+  "adminMapConfirmLocation": "Use this location",
+  "adminMapPickFirst": "Please pick a point on the map first.",
+  "adminMapFallbackNotice": "Google Maps is unavailable on this device; using the built-in map picker.",
+  "adminDeleteTitle": "Delete item",
+  "adminDeleteConfirm": "Are you sure you want to delete this record?",
+  "adminSaveAdded": "{collection} item added successfully.",
+  "@adminSaveAdded": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminSaveUpdated": "{collection} item updated successfully.",
+  "@adminSaveUpdated": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminSaveFailed": "Failed to save item: {details}",
+  "@adminSaveFailed": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "adminDeleteSuccess": "{collection} item deleted.",
+  "@adminDeleteSuccess": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminDeleteFailed": "Delete failed: {details}",
+  "@adminDeleteFailed": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "adminLoadError": "Error loading {collection}.",
+  "@adminLoadError": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminNoRecords": "No records in {collection} yet.",
+  "@adminNoRecords": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminNoExtraDetails": "No extra details",
+  "adminUnknownName": "Unnamed",
+  "adminLocationValue": "Location: {value}",
+  "@adminLocationValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "adminPriceValue": "Price: {value}",
+  "@adminPriceValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "adminRatingValue": "Rating: {value}",
+  "@adminRatingValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "adminPerNightSuffix": " /night",
+  "adminTooltipEdit": "Edit",
+  "adminTooltipDelete": "Delete",
+  "dependentsAiLatencyExceeded": "AI response took {milliseconds} ms. This exceeds the 3000 ms limit, so the plan was not saved. Please retry.",
+  "@dependentsAiLatencyExceeded": {
+    "placeholders": {
+      "milliseconds": {}
+    }
+  },
+  "settingsUserGuide": "User Guide",
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "helpTitle": "User Guide",
+  "helpSubtitle": "Simple steps to plan a family trip",
+  "helpStep1": "1) Enter family size and ages.",
+  "helpStep2": "2) Set budget, city, and trip duration.",
+  "helpStep3": "3) Generate plans and compare them.",
+  "helpStep4": "4) Open maps or booking links when available.",
+  "helpStep5": "5) Save your plan and view it later.",
+  "privacyTitle": "Privacy Policy",
+  "privacySection1Title": "1. Data We Collect",
+  "privacySection1Body": "We collect account information (name, email), family trip inputs, generated plans, and booking logs needed to provide the service.",
+  "privacySection2Title": "2. Why We Use Data",
+  "privacySection2Body": "Your data is used to generate personalized trip plans, show plan history, and provide booking confirmations.",
+  "privacySection3Title": "3. Storage and Security",
+  "privacySection3Body": "Data is stored in Firebase services with authenticated access controls. Passwords are handled by Firebase Authentication and are not stored in plain text by the app.",
+  "privacySection4Title": "4. Booking and External Links",
+  "privacySection4Body": "Bookings may open external providers or maps links. Payments, if any, are completed outside this application.",
+  "privacySection5Title": "5. Your Controls",
+  "privacySection5Body": "You can edit profile data, update trip preferences, and request account deletion from the account screen.",
+  "privacySection6Title": "6. Contact and Updates",
+  "privacySection6Body": "This policy can be updated with new app releases. Continued use means acceptance of the latest policy.",
+  "bookingsReceiptTitle": "Booking Receipt",
+  "bookingsReceiptId": "ID",
+  "bookingsReceiptReference": "Reference",
+  "bookingsReceiptItem": "Item",
+  "bookingsReceiptType": "Type",
+  "bookingsReceiptStatus": "Status",
+  "bookingsReceiptDate": "Date",
+  "actionClose": "Close",
+  "actionDone": "Done",
+  "bookingViewBookings": "View bookings",
+  "bookingConfirmedTitle": "Booking Confirmed",
+  "bookingConfirmedBody": "Your reservation has been recorded successfully.",
+  "bookingSuccessDefaultItemType": "Attraction",
+  "bookingSuccessTitle": "Success",
+  "bookingSuccessBody": "{itemType} has been successfully booked.",
+  "@bookingSuccessBody": {
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "bookingSuccessViewAllPrompt": "Want to see all your {itemType}? ",
+  "@bookingSuccessViewAllPrompt": {
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "bookingSuccessClickHere": "Click here.",
+  "bookingSuccessBackToPlan": "Back to plan",
+  "bookingPlanUnavailable": "This booking cannot be saved because the selected plan is missing.",
+  "plansGeneratedPlanTitle": "Generated Plan",
+  "plansGeneratedDynamically": "Generated dynamically",
+  "plansDurationValue": "{days} days",
+  "@plansDurationValue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "plansPricePerNight": "{amount} SAR/night",
+  "@plansPricePerNight": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "plansTotalPrice": "Total {amount} SAR",
+  "@plansTotalPrice": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "plansTimeLabel": "Time",
+  "plansDescriptionLabel": "Description",
+  "plansNoGeneratedPlans": "No generated plans found in database.",
+  "plansGenerateNewPlan": "Generate a new plan",
+  "plansSelectFavoriteHeader": "Select your favorite plan:",
+  "plansSaveSelectionError": "Could not save selected plan: {details}",
+  "@plansSaveSelectionError": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "plansLabelSelectedCity": "Selected city",
+  "plansLabelDates": "Dates",
+  "plansLabelTripDuration": "Trip duration",
+  "plansLabelHotel": "Hotel",
+  "plansLabelNearbyAttractions": "Nearby attractions",
+  "plansLabelDistantAttractions": "Distant attractions",
+  "plansLabelEvents": "Events",
+  "plansLabelTotalBudget": "Total budget for this plan",
+  "plansTableDays": "Days",
+  "plansTableMorning": "Morning",
+  "plansTableAfternoon": "Afternoon",
+  "plansTableEvening": "Evening",
+  "actionOpenInMaps": "Open in Maps",
+  "actionBookNow": "Book now",
+  "planDetailTitle": "{title} details",
+  "@planDetailTitle": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "planDetailHotelSection": "Hotel information",
+  "planDetailLocationLabel": "Location",
+  "planDetailPriceLabel": "Price",
+  "planDetailRatingLabel": "Rating",
+  "planDetailAmenities": "Amenities",
+  "planDetailOpenClose": "Open | Close",
+  "planDetailDistance": "Distance",
+  "planDetailNavigateToPlace": "Navigate to Place",
+  "planDetailBookHotelViaMaps": "Book Hotel via Maps",
+  "bookingLoginRequiredSaveFailed": "Please log in. Booking was not saved.",
+  "planDetailNoEvents": "No events available.",
+  "planDetailNoActivities": "No activities available.",
+  "planDetailHotelItemType": "Hotel",
+  "planDetailActivityItemType": "Activity",
+  "homeWelcomeTitle": "Welcome to\nFATRIPY",
+  "homeHeroSubtitle": "The heart of\nRiyadh awaits",
+  "homeMainDestination": "Main Destination",
+  "homeSeasonalAttractions": "Seasonal Attraction",
+  "homeDestination1Title": "Diriyah",
+  "homeDestination1Description": "The birthplace of the First Saudi State, a historical experience with authentic heritage charm.",
+  "homeDestination2Title": "Al Olaya",
+  "homeDestination2Description": "The modern heart of Riyadh, blending upscale shopping, iconic towers, and dynamic city energy.",
+  "homeDestination3Title": "Jabal Tuwaiq",
+  "homeDestination3Description": "Iconic cliffs and breathtaking views for unforgettable adventures.",
+  "homeSeason1Title": "Riyadh Season",
+  "homeSeason1Description": "The Kingdom's largest entertainment festival with world-class experiences.",
+  "homeSeason2Title": "Boulevard Riyadh City",
+  "homeSeason2Description": "A vibrant hub of dining, shows, and nonstop entertainment.",
+  "homeSeason3Title": "Noor Riyadh",
+  "homeSeason3Description": "A spectacular citywide light art festival transforming Riyadh into an open-air gallery."
+  ,
+  "blogTitle": "BLOG",
+  "blogSubtitle": "A brief overview of the cities in our app",
+  "blogFutureNotice": "It will be available in the future! Stay tuned.",
+  "blogRiyadhDescription": "Riyadh is located in the heart of the Kingdom on the Najd plateau, and it is the capital and largest city of Saudi Arabia. It is distinguished by a rich Najdi heritage visible in Masmak Palace and the historic Diriyah, which is registered with UNESCO and where the Saudi state began. Today, Riyadh is known for its unique blend of past and modernity, from its famous towers such as the Kingdom Tower and Al Faisaliah Tower to its museums and traditional markets, making it a center for culture, economy, and contemporary life.",
+  "blogJeddahDescription": "Jeddah is located in the west of the Kingdom on the Red Sea coast and is known as the gateway to the Two Holy Mosques. Historic Jeddah (Al-Balad) is one of its most prominent heritage sites, containing over 600 heritage buildings and old houses such as Nassif House, and it is registered as a UNESCO site. Jeddah is famous for its maritime spirit, its long corniche, and its cultural diversity, making it a city that combines tradition, modernity, and coastal life.",
+  "blogCityJazan": "Jazan",
+  "blogJazanDescription": "Jazan is located in the far southwest of the Kingdom on the Red Sea coast and is distinguished by a great natural diversity, from the green Faifa mountains to the enchanting Farasan Islands. It has an ancient history reflected in archaeological sites that span thousands of years and the Dawsari Castle. Jazan is famous for its popular heritage, such as the Jazan dance (Ardah), for growing coffee and bananas, and for its warm climate and the authentic culture of its people.",
+  "blogCityAlKhobar": "Al Khobar",
+  "blogAlKhobarDescription": "Al Khobar is located in the eastern part of the Kingdom on the Arabian Gulf coast, about 17 km south of Dammam. It flourished after the discovery of oil and has become one of the most beautiful cities in the Eastern Province. It is famous for the long Al Khobar Corniche, the modern waterfront, and the King Fahd Bridge that connects Saudi Arabia to Bahrain. Al Khobar is characterized by its modern style, upscale markets, cafes, and parks, making it a distinctive tourist and urban destination."
+}

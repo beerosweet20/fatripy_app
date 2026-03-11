@@ -24,12 +24,22 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.2.1
+  http: ^1.2.1
+  url_launcher: ^6.2.6
+  google_maps_flutter: ^2.12.0
+  google_maps_flutter_android: ^2.19.2
+  google_maps_flutter_platform_interface: ^2.14.0
+  geocoding: ^4.0.0
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+  firebase_core_platform_interface: ^5.4.2
 
 
 flutter:
@@ -38,3 +48,5 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/logo_pink.png
+    - assets/images/top_ribbon.png
+    - assets/images/home/

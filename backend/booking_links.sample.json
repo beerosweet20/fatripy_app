@@ -1,0 +1,16 @@
+{
+  "hotels": [
+    {
+      "hotelId": "HOTEL_001",
+      "bookingUrl": "https://example.com/hotel/booking",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=24.7136,46.6753"
+    }
+  ],
+  "activities": [
+    {
+      "activityId": "ACT_001",
+      "bookingUrl": "https://example.com/activity/booking",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=24.7136,46.6753"
+    }
+  ]
+}

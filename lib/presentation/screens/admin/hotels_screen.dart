@@ -1,7 +1,8 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../localization/app_localizations_ext.dart';
+import 'admin_design.dart';
 
 class HotelsScreen extends StatelessWidget {
   const HotelsScreen({super.key});
@@ -11,9 +12,9 @@ class HotelsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.hotelsTitle)),
+      appBar: adminAppBar(context, title: context.l10n.hotelsTitle),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance.collection('Hotels').snapshots(),
+        stream: FirebaseFirestore.instance.collection('hotels').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text(context.l10n.hotelsLoadError));

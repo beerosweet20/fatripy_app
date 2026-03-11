@@ -1,0 +1,525 @@
+﻿{
+  "@@locale": "ar",
+  "appName": "فطريبي",
+  "navBlog": "المدونة",
+  "navLogin": "تسجيل الدخول",
+  "navShop": "المتجر",
+  "navFavorites": "المفضلة",
+  "navHome": "الرئيسية",
+  "navPlans": "الخطط",
+  "navBookings": "الحجوزات",
+  "navCart": "السلة",
+  "navProfile": "حسابي",
+  "navAccount": "الحساب",
+  "loading": "جارٍ التحميل...",
+  "accountTitle": "حسابي",
+  "accountNotifications": "الإشعارات",
+  "accountDependents": "المعالين",
+  "accountSettingsPrivacy": "الإعدادات والخصوصية",
+  "accountBookedAttraction": "حجوزات المعالم",
+  "accountDeleteAccount": "حذف الحساب",
+  "deleteAccountConfirm": "هل أنت متأكد من حذف الحساب؟",
+  "deleteAccountSuccess": "تم حذف الحساب.",
+  "actionCancel": "إلغاء",
+  "actionEdit": "تعديل",
+  "actionDelete": "حذف",
+  "actionRefresh": "تحديث",
+  "actionSave": "حفظ",
+  "settingsTitle": "الإعدادات",
+  "settingsEditProfile": "تعديل الملف الشخصي",
+  "settingsLanguage": "اللغة",
+  "settingsTheme": "الثيم",
+  "languageArabic": "العربية",
+  "languageEnglish": "الإنجليزية",
+  "themeDefault": "افتراضي",
+  "themePink": "وردي",
+  "editProfileTitle": "تعديل الملف الشخصي",
+  "editProfileName": "الاسم الكامل",
+  "editProfileEmail": "البريد الإلكتروني",
+  "editProfileEmailHint": "تحديث البريد قد يتطلب تسجيل الدخول مرة أخرى",
+  "editProfileSuccess": "تم تحديث البيانات.",
+  "editProfileReauth": "يرجى تسجيل الدخول مرة أخرى لتحديث البريد.",
+  "dependentsTitle": "اكتب معلوماتك",
+  "dependentsMyFamily": "عائلتي",
+  "dependentsTripInfo": "معلومات الرحلة",
+  "dependentsAdults": "بالغين",
+  "dependentsChildren": "أطفال",
+  "dependentsInfant": "رضيع",
+  "dependentsAdultAges": "أعمار البالغين",
+  "dependentsChildAges": "أعمار الأطفال",
+  "dependentsInfantAges": "أعمار الرضع",
+  "dependentsAgeField": "العمر {index}",
+  "@dependentsAgeField": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "dependentsBudget": "الميزانية",
+  "dependentsCity": "المدينة",
+  "dependentsDuration": "المدة",
+  "dependentsStart": "البداية",
+  "dependentsEnd": "النهاية",
+  "dependentsDefaultBudget": "21000 ريال",
+  "dependentsDefaultDuration": "7 أيام و 6 ليالٍ",
+  "dependentsDefaultStartDate": "1 ديسمبر 2026",
+  "dependentsDefaultEndDate": "7 ديسمبر 2026",
+  "cityRiyadh": "الرياض",
+  "cityJeddah": "جدة",
+  "cityMecca": "مكة",
+  "cityMedina": "المدينة",
+  "cityDammam": "الدمام",
+  "cityKhobar": "الخبر",
+  "cityAbha": "أبها",
+  "cityTaif": "الطائف",
+  "dependentsDone": "تم",
+  "dependentsGeneratingPlan": "جارٍ إنشاء خطة الرحلة... يرجى الانتظار.",
+  "dependentsGenerationComplete": "اكتمل إنشاء الرحلة! راجِع خططك الجديدة.",
+  "dependentsAiLatencyWarning": "تنبيه: استغرق التوصية الذكية {milliseconds} مللي ثانية (المستهدف 3000 مللي ثانية).",
+  "@dependentsAiLatencyWarning": {
+    "placeholders": {
+      "milliseconds": {}
+    }
+  },
+  "loginWelcome": "مرحبًا!",
+  "labelEmail": "البريد الإلكتروني",
+  "labelPassword": "كلمة المرور",
+  "actionLogin": "تسجيل الدخول",
+  "forgotPasswordCta": "نسيت كلمة المرور؟",
+  "resetPasswordTitle": "إعادة تعيين كلمة المرور",
+  "resetPasswordSend": "إرسال",
+  "resetPasswordSuccess": "تم إرسال رابط إعادة تعيين كلمة المرور.",
+  "resetPasswordFailure": "فشل إرسال رابط إعادة التعيين.",
+  "loginNoAccount": "ليس لديك حساب؟ ",
+  "actionRegister": "إنشاء حساب",
+  "registerTitle": "يرجى تعبئة النموذج للتسجيل",
+  "labelFullName": "الاسم الكامل",
+  "labelUsername": "اسم المستخدم",
+  "labelConfirmPassword": "تأكيد كلمة المرور",
+  "registerHaveAccount": "لديك حساب بالفعل؟ ",
+  "errorFillAllFields": "يرجى تعبئة جميع الحقول.",
+  "errorLoginFailed": "فشل تسجيل الدخول. حاول مرة أخرى.",
+  "errorGeneric": "حدث خطأ. حاول مرة أخرى.",
+  "errorUsernameNoSpaces": "اسم المستخدم لا يمكن أن يحتوي على مسافات.",
+  "errorPasswordTooShort": "كلمة المرور يجب ألا تقل عن 6 أحرف.",
+  "errorPasswordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
+  "errorUsernameTaken": "اسم المستخدم مستخدم بالفعل.",
+  "errorRegistrationFailed": "فشل التسجيل. حاول مرة أخرى.",
+  "homeGreetingName": "مرحبًا، {name}!",
+  "@homeGreetingName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "homeFriendName": "يا صديق",
+  "homeSubtitle": "لنخطط رحلتكم القادمة",
+  "familyCountLabel": "عدد أفراد العائلة: {count}",
+  "@familyCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "familyManagement": "إدارة العائلة",
+  "startPlanning": "ابدأ التخطيط",
+  "homeAiTeaser": "ذكاء ذكي يجهز رحلتك",
+  "latestPlans": "أحدث الخطط",
+  "recentBookings": "الحجوزات الأخيرة",
+  "createPlan": "إنشاء خطة",
+  "emptyPlans": "لا توجد خطط حتى الآن.",
+  "seeAll": "عرض الكل",
+  "errorPleaseLogin": "يرجى تسجيل الدخول للمتابعة.",
+  "errorWithDetails": "خطأ: {details}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "planSummary": "{days} أيام • {budget} ريال",
+  "@planSummary": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "budget": {}
+    }
+  },
+  "bookingsLoadError": "حدث خطأ أثناء تحميل الحجوزات.",
+  "bookingsEmpty": "لا توجد حجوزات حتى الآن.",
+  "bookingItemTitle": "حجز: {itemType}",
+  "@bookingItemTitle": {
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "bookingPlacedOn": "التاريخ: {date}",
+  "@bookingPlacedOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "statusPending": "قيد المراجعة",
+  "statusBooked": "محجوز",
+  "statusConfirmed": "مؤكد",
+  "statusCancelled": "ملغي",
+  "planListSubtitle": "الميزانية: {budget} • {status}",
+  "@planListSubtitle": {
+    "placeholders": {
+      "budget": {},
+      "status": {}
+    }
+  },
+  "bookingListSubtitle": "الحالة: {status} • تم في: {date}",
+  "@bookingListSubtitle": {
+    "placeholders": {
+      "status": {},
+      "date": {}
+    }
+  },
+  "settings": "الإعدادات",
+  "logout": "تسجيل الخروج",
+  "debugExplorer": "مستكشف البيانات (Debug)",
+  "hotelsTitle": "الفنادق",
+  "hotelsLoadError": "حدث خطأ أثناء تحميل البيانات.",
+  "hotelsNoData": "لا توجد بيانات حالياً.",
+  "hotelsEmpty": "لا توجد فنادق للعرض.",
+  "hotelNameUnknown": "اسم غير متوفر",
+  "hotelLocationUnknown": "موقع غير معروف",
+  "comparePlansCta": "قارن الخطط",
+  "comparePlansTitle": "مقارنة الخطط",
+  "compareKindLabel": "النوع",
+  "compareHotelLabel": "الفندق",
+  "compareTotalCostLabel": "الإجمالي",
+  "compareNearbyLabel": "المعالم القريبة",
+  "compareDistantLabel": "المعالم البعيدة",
+  "compareEventsLabel": "الفعاليات",
+  "selectPlanCta": "اختيار الخطة",
+  "plansFamilyTitle": "الخطة العائلية الهادئة",
+  "plansCulturalTitle": "الخطة الثقافية",
+  "plansAdventureTitle": "خطة المغامرة",
+  "plansBudgetLowBannerMessage": "نلاحظ أن ميزانيتك منخفضة جداً ({userBudget} ريال) لتغطية هذه الرحلة. لقد قمنا بتوليد أقل خطة تكلفة ممكنة لك بسعر تقديري: {minimumRequired} ريال.",
+  "@plansBudgetLowBannerMessage": {
+    "placeholders": {
+      "userBudget": {},
+      "minimumRequired": {}
+    }
+  },
+  "plansDynamicEventPlaceholder": "مقترحات فعاليات ديناميكية",
+  "plansDynamicEventDescription": "مبنية على الإحداثيات المختارة",
+  "profileAdminDashboard": "لوحة التحكم",
+  "profileAdminUsers": "المستخدمون",
+  "profileAdminTripPlans": "خطط الرحلات",
+  "adminDashboardTitle": "لوحة تحكم المشرف",
+  "adminNoAccess": "ليس لديك صلاحية المشرف.",
+  "adminBackToProfile": "العودة للحساب",
+  "adminStatsTitle": "إحصائيات اللوحة",
+  "adminStatHotels": "الفنادق",
+  "adminStatActivities": "الأنشطة",
+  "adminStatBookings": "الحجوزات",
+  "adminContentManagement": "إدارة المحتوى",
+  "adminManageContent": "إدارة المحتوى",
+  "adminManageContentSubtitle": "إضافة وتعديل وحذف الفنادق والأنشطة.",
+  "adminManageHotelsSubtitle": "إضافة وتعديل وحذف بيانات الفنادق.",
+  "adminManageActivitiesSubtitle": "إضافة وتعديل وحذف بيانات الأنشطة.",
+  "adminManageEventsSubtitle": "إضافة وتعديل وحذف بيانات الفعاليات.",
+  "adminViewBookings": "عرض حجوزات المستخدمين",
+  "adminViewBookingsSubtitle": "افتح قائمة الحجوزات للتحقق من الحجوزات المحفوظة.",
+  "adminManageTitle": "إدارة المحتوى",
+  "adminManageOnlyAdmins": "يمكن للمشرفين فقط الوصول لإدارة المحتوى.",
+  "adminTabHotels": "الفنادق",
+  "adminTabActivities": "الأنشطة",
+  "adminAddHotel": "إضافة فندق",
+  "adminAddActivity": "إضافة نشاط",
+  "adminAddContent": "إضافة محتوى",
+  "adminEditContent": "تعديل المحتوى",
+  "adminLabelNameRequired": "الاسم *",
+  "adminNameRequiredError": "الاسم مطلوب.",
+  "adminLabelLocation": "الموقع",
+  "adminLabelCity": "المدينة",
+  "adminLabelRating": "التقييم (0-5)",
+  "adminLabelPricePerNight": "سعر الليلة",
+  "adminLabelPrice": "السعر",
+  "adminLabelPlanType": "نوع الخطة (مثل عائلي)",
+  "adminLabelOpenHours": "ساعات الفتح",
+  "adminLabelCloseHours": "ساعات الإغلاق",
+  "adminLabelBookingUrl": "رابط الحجز",
+  "adminLabelMapsUrl": "رابط الخرائط",
+  "adminAddLocation": "إضافة الموقع",
+  "adminLocationPickHint": "استخدم الزر أدناه لتحديد الموقع من خرائط Google.",
+  "adminLocationRequiredError": "يرجى تحديد الموقع من خرائط Google.",
+  "adminSelectCityError": "يرجى اختيار المدينة.",
+  "adminSelectRatingError": "يرجى اختيار التقييم.",
+  "adminSelectCategoryError": "يرجى اختيار التصنيف.",
+  "adminCategoryFamily": "عائلي",
+  "adminCategoryCultural": "ثقافي",
+  "adminCategoryAdventure": "مغامرة",
+  "adminCategoryNature": "طبيعة",
+  "adminCategoryEntertainment": "ترفيهي",
+  "adminDatePickerHint": "لم يتم اختيار تاريخ بعد.",
+  "adminPickDate": "اختيار التاريخ",
+  "adminDateRequiredError": "يرجى اختيار التاريخ.",
+  "adminNavDashboard": "اللوحة",
+  "adminNavHotels": "فنادق",
+  "adminNavActivities": "أنشطة",
+  "adminNavEvents": "فعاليات",
+  "adminNavBookings": "حجوزات",
+  "adminNavSettings": "الإعدادات",
+  "adminSettingsTitle": "إعدادات المشرف",
+  "adminSettingsSubtitle": "إدارة حساب المشرف وتفضيلات التطبيق.",
+  "adminSettingsGuideSubtitle": "فتح إرشادات الاستخدام.",
+  "adminSettingsPrivacySubtitle": "مراجعة صفحة سياسة الخصوصية.",
+  "adminLogoutConfirm": "هل أنت متأكد أنك تريد تسجيل الخروج من جلسة المشرف؟",
+  "adminAnalyticsTitle": "التحليلات",
+  "adminAnalyticsBookingStatus": "توزيع حالات الحجوزات",
+  "adminAnalyticsTopCities": "المدن الأكثر اختيارًا",
+  "adminAnalyticsSelectedPlans": "تحليل الخطط المختارة",
+  "adminAnalyticsSelectedPlansCount": "عدد الخطط المختارة: {count}",
+  "@adminAnalyticsSelectedPlansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminAnalyticsAiPerformance": "أداء استجابة الذكاء",
+  "adminAnalyticsAverageLatency": "متوسط زمن استجابة الذكاء: {milliseconds} مللي ثانية",
+  "@adminAnalyticsAverageLatency": {
+    "placeholders": {
+      "milliseconds": {}
+    }
+  },
+  "adminAnalyticsSlowResponses": "الاستجابات التي تجاوزت 3000 مللي ثانية: {count}",
+  "@adminAnalyticsSlowResponses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminAnalyticsHighLatencyNote": "الزمن المستهدف للاستجابة هو 3000 مللي ثانية أو أقل.",
+  "adminStatusOther": "أخرى",
+  "adminNoAnalyticsData": "لا توجد بيانات تحليلية حتى الآن.",
+  "adminMapPickerTitle": "تحديد الموقع من الخريطة",
+  "adminMapTapHint": "اضغط على الخريطة لوضع العلامة على الموقع.",
+  "adminMapConfirmLocation": "اعتماد هذا الموقع",
+  "adminMapPickFirst": "يرجى اختيار نقطة على الخريطة أولاً.",
+  "adminMapFallbackNotice": "خرائط Google غير متاحة على هذا الجهاز؛ سيتم استخدام خريطة بديلة داخل التطبيق.",
+  "adminDeleteTitle": "حذف العنصر",
+  "adminDeleteConfirm": "هل أنت متأكد من حذف هذا السجل؟",
+  "adminSaveAdded": "تمت إضافة عنصر {collection} بنجاح.",
+  "@adminSaveAdded": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminSaveUpdated": "تم تحديث عنصر {collection} بنجاح.",
+  "@adminSaveUpdated": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminSaveFailed": "فشل حفظ العنصر: {details}",
+  "@adminSaveFailed": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "adminDeleteSuccess": "تم حذف عنصر {collection}.",
+  "@adminDeleteSuccess": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminDeleteFailed": "فشل الحذف: {details}",
+  "@adminDeleteFailed": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "adminLoadError": "حدث خطأ أثناء تحميل {collection}.",
+  "@adminLoadError": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminNoRecords": "لا توجد سجلات في {collection} حتى الآن.",
+  "@adminNoRecords": {
+    "placeholders": {
+      "collection": {}
+    }
+  },
+  "adminNoExtraDetails": "لا توجد تفاصيل إضافية",
+  "adminUnknownName": "بدون اسم",
+  "adminLocationValue": "الموقع: {value}",
+  "@adminLocationValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "adminPriceValue": "السعر: {value}",
+  "@adminPriceValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "adminRatingValue": "التقييم: {value}",
+  "@adminRatingValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "adminPerNightSuffix": " /لليلة",
+  "adminTooltipEdit": "تعديل",
+  "adminTooltipDelete": "حذف",
+  "dependentsAiLatencyExceeded": "استغرقت استجابة الذكاء الاصطناعي {milliseconds} مللي ثانية. تم تجاوز حد 3000 مللي ثانية لذلك لم يتم حفظ الخطة. يرجى المحاولة مرة أخرى.",
+  "@dependentsAiLatencyExceeded": {
+    "placeholders": {
+      "milliseconds": {}
+    }
+  },
+  "settingsUserGuide": "دليل المستخدم",
+  "settingsPrivacyPolicy": "سياسة الخصوصية",
+  "helpTitle": "دليل المستخدم",
+  "helpSubtitle": "خطوات بسيطة لتخطيط رحلة عائلية",
+  "helpStep1": "1) أدخل عدد أفراد العائلة وأعمارهم.",
+  "helpStep2": "2) حدّد الميزانية والمدينة ومدة الرحلة.",
+  "helpStep3": "3) أنشئ الخطط وقارن بينها.",
+  "helpStep4": "4) افتح الخرائط أو روابط الحجز عند توفرها.",
+  "helpStep5": "5) احفظ خطتك وراجعها لاحقًا.",
+  "privacyTitle": "سياسة الخصوصية",
+  "privacySection1Title": "1. البيانات التي نجمعها",
+  "privacySection1Body": "نجمع معلومات الحساب (الاسم، البريد الإلكتروني)، ومدخلات الرحلة العائلية، والخطط المولدة، وسجلات الحجز اللازمة لتقديم الخدمة.",
+  "privacySection2Title": "2. لماذا نستخدم البيانات",
+  "privacySection2Body": "تُستخدم بياناتك لإنشاء خطط رحلات مخصصة، وعرض سجل الخطط، وتقديم تأكيدات الحجز.",
+  "privacySection3Title": "3. التخزين والأمان",
+  "privacySection3Body": "يتم تخزين البيانات في خدمات Firebase مع ضوابط وصول للمستخدمين المصرح لهم. تتم إدارة كلمات المرور عبر Firebase Authentication ولا يتم تخزينها كنص صريح داخل التطبيق.",
+  "privacySection4Title": "4. الحجز والروابط الخارجية",
+  "privacySection4Body": "قد تفتح الحجوزات مزودي خدمات خارجيين أو روابط خرائط. تتم عمليات الدفع - إن وجدت - خارج هذا التطبيق.",
+  "privacySection5Title": "5. تحكمك ببياناتك",
+  "privacySection5Body": "يمكنك تعديل بيانات الملف الشخصي، وتحديث تفضيلات الرحلة، وطلب حذف الحساب من شاشة الحساب.",
+  "privacySection6Title": "6. التواصل والتحديثات",
+  "privacySection6Body": "قد يتم تحديث هذه السياسة مع إصدارات التطبيق الجديدة. استمرارك في الاستخدام يعني قبول أحدث نسخة من السياسة.",
+  "bookingsReceiptTitle": "إيصال الحجز",
+  "bookingsReceiptId": "المعرف",
+  "bookingsReceiptReference": "المرجع",
+  "bookingsReceiptItem": "العنصر",
+  "bookingsReceiptType": "النوع",
+  "bookingsReceiptStatus": "الحالة",
+  "bookingsReceiptDate": "التاريخ",
+  "actionClose": "إغلاق",
+  "actionDone": "تم",
+  "bookingViewBookings": "عرض الحجوزات",
+  "bookingConfirmedTitle": "تم تأكيد الحجز",
+  "bookingConfirmedBody": "تم تسجيل الحجز بنجاح.",
+  "bookingSuccessDefaultItemType": "معلم",
+  "bookingSuccessTitle": "نجاح",
+  "bookingSuccessBody": "تم حجز {itemType} بنجاح.",
+  "@bookingSuccessBody": {
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "bookingSuccessViewAllPrompt": "هل تريد رؤية جميع {itemType} الخاصة بك؟ ",
+  "@bookingSuccessViewAllPrompt": {
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "bookingSuccessClickHere": "اضغط هنا.",
+  "bookingSuccessBackToPlan": "العودة إلى الخطة",
+  "plansGeneratedPlanTitle": "خطة مولدة",
+  "plansGeneratedDynamically": "مولدة ديناميكيًا",
+  "plansDurationValue": "{days} أيام",
+  "@plansDurationValue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "plansPricePerNight": "{amount} ريال/ليلة",
+  "@plansPricePerNight": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "plansTotalPrice": "الإجمالي {amount} ريال",
+  "@plansTotalPrice": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "plansTimeLabel": "الوقت",
+  "plansDescriptionLabel": "الوصف",
+  "plansNoGeneratedPlans": "لا توجد خطط مولدة في قاعدة البيانات.",
+  "plansGenerateNewPlan": "إنشاء خطة جديدة",
+  "plansSelectFavoriteHeader": "اختر خطتك المفضلة:",
+  "plansSaveSelectionError": "تعذر حفظ الخطة المختارة: {details}",
+  "@plansSaveSelectionError": {
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "plansLabelSelectedCity": "المدينة المختارة",
+  "plansLabelDates": "التواريخ",
+  "plansLabelTripDuration": "مدة الرحلة",
+  "plansLabelHotel": "الفندق",
+  "plansLabelNearbyAttractions": "المعالم القريبة",
+  "plansLabelDistantAttractions": "المعالم البعيدة",
+  "plansLabelEvents": "الفعاليات",
+  "plansLabelTotalBudget": "إجمالي ميزانية هذه الخطة",
+  "plansTableDays": "الأيام",
+  "plansTableMorning": "الصباح",
+  "plansTableAfternoon": "الظهيرة",
+  "plansTableEvening": "المساء",
+  "actionOpenInMaps": "فتح في الخرائط",
+  "actionBookNow": "احجز الآن",
+  "planDetailTitle": "تفاصيل {title}",
+  "@planDetailTitle": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "planDetailHotelSection": "معلومات الفندق",
+  "planDetailLocationLabel": "الموقع",
+  "planDetailPriceLabel": "السعر",
+  "planDetailRatingLabel": "التقييم",
+  "planDetailAmenities": "المرافق",
+  "planDetailOpenClose": "الفتح | الإغلاق",
+  "planDetailDistance": "المسافة",
+  "planDetailNavigateToPlace": "الانتقال إلى المكان",
+  "planDetailBookHotelViaMaps": "احجز الفندق عبر الخرائط",
+  "bookingLoginRequiredSaveFailed": "يرجى تسجيل الدخول. لم يتم حفظ الحجز.",
+  "bookingPlanUnavailable": "لا يمكن حفظ هذا الحجز لأن الخطة المختارة غير متوفرة.",
+  "planDetailNoEvents": "لا توجد فعاليات متاحة.",
+  "planDetailNoActivities": "لا توجد أنشطة متاحة.",
+  "planDetailHotelItemType": "فندق",
+  "planDetailActivityItemType": "نشاط",
+  "homeWelcomeTitle": "مرحبًا بك في\nFATRIPY",
+  "homeHeroSubtitle": "قلب الرياض\nينتظرك",
+  "homeMainDestination": "الوجهات الرئيسية",
+  "homeSeasonalAttractions": "الفعاليات الموسمية",
+  "homeDestination1Title": "الدرعية",
+  "homeDestination1Description": "مهد الدولة السعودية الأولى وتجربة تاريخية بطابع تراثي أصيل.",
+  "homeDestination2Title": "العليا",
+  "homeDestination2Description": "قلب الرياض العصري الذي يجمع التسوق الراقي والأبراج المميزة وحيوية المدينة.",
+  "homeDestination3Title": "جبل طويق",
+  "homeDestination3Description": "منحدرات أيقونية وإطلالات خلابة لمغامرات لا تُنسى.",
+  "homeSeason1Title": "موسم الرياض",
+  "homeSeason1Description": "أكبر موسم ترفيهي في المملكة بتجارب عالمية المستوى.",
+  "homeSeason2Title": "بوليفارد رياض سيتي",
+  "homeSeason2Description": "وجهة نابضة بالمطاعم والعروض والترفيه المتواصل.",
+  "homeSeason3Title": "نور الرياض",
+  "homeSeason3Description": "مهرجان فني ضوئي يحول الرياض إلى معرض مفتوح في جميع أنحاء المدينة.",
+  "blogTitle": "المدونة",
+  "blogSubtitle": "نبذة مختصرة عن المدن داخل تطبيقنا",
+  "blogFutureNotice": "ستتوفر قريبًا! ترقبوا.",
+  "blogRiyadhDescription": "تقع الرياض في قلب المملكة على هضبة نجد، وهي عاصمة المملكة العربية السعودية وأكبر مدنها. تتميز بإرث نجدي عريق يظهر في قصر المصمك والدرعية التاريخية المسجلة في اليونسكو، ومنها بدأت الدولة السعودية. اليوم تُعرف الرياض بمزيجها الفريد بين الأصالة والحداثة، من أبراجها الشهيرة مثل برج المملكة وبرج الفيصلية إلى متاحفها وأسواقها التقليدية، مما يجعلها مركزًا للثقافة والاقتصاد والحياة المعاصرة.",
+  "blogJeddahDescription": "تقع جدة غرب المملكة على ساحل البحر الأحمر وتُعرف ببوابة الحرمين الشريفين. جدة التاريخية (البلد) من أبرز معالمها التراثية، وتضم أكثر من 600 مبنى تراثي وبيوتًا قديمة مثل بيت نصيف، وهي مسجلة ضمن مواقع اليونسكو. تشتهر جدة بطابعها البحري وكورنيشها الطويل وتنوعها الثقافي، ما يجعلها مدينة تجمع بين التراث والحداثة والحياة الساحلية.",
+  "blogCityJazan": "جازان",
+  "blogJazanDescription": "تقع جازان في أقصى جنوب غرب المملكة على ساحل البحر الأحمر، وتتميز بتنوع طبيعي كبير من جبال فيفا الخضراء إلى جزر فرسان الساحرة. ولها تاريخ عريق يظهر في المواقع الأثرية الممتدة لآلاف السنين وقلعة الدوسرية. تشتهر جازان بتراثها الشعبي مثل الرقصة الجازانية (العرضة)، وبزراعة البن والموز، ومناخها الدافئ وثقافة أهلها الأصيلة.",
+  "blogCityAlKhobar": "الخبر",
+  "blogAlKhobarDescription": "تقع الخبر في شرق المملكة على ساحل الخليج العربي، على بُعد نحو 17 كم جنوب الدمام. ازدهرت بعد اكتشاف النفط وأصبحت من أجمل مدن المنطقة الشرقية. تشتهر بكورنيش الخبر الطويل والواجهة البحرية الحديثة وجسر الملك فهد الذي يربط السعودية بالبحرين. وتمتاز بطابعها العصري وأسواقها الراقية ومقاهيها وحدائقها، مما يجعلها وجهة سياحية وحضرية مميزة."
+}

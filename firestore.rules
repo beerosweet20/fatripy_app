@@ -1,0 +1,363 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isNonEmptyString(value) {
+      return value is string && value.size() > 0;
+    }
+
+    function isOptionalString(data, key) {
+      return !(key in data) || data[key] is string;
+    }
+
+    function isOptionalNumber(data, key) {
+      return !(key in data) || data[key] is int || data[key] is float;
+    }
+
+    function isOptionalNumberOrString(data, key) {
+      return !(key in data) || data[key] is int || data[key] is float || data[key] is string;
+    }
+
+    function isOptionalTimestamp(data, key) {
+      return !(key in data) || data[key] is timestamp;
+    }
+
+    function isValidUserCreate() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['email']) &&
+        d.email is string &&
+        isOptionalString(d, 'fullName') &&
+        isOptionalString(d, 'username') &&
+        isOptionalString(d, 'email') &&
+        isOptionalString(d, 'role') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt') &&
+        (!( 'family' in d) || d.family is map) &&
+        (!('role' in d) || d.role == 'user') &&
+        !('admin' in d) &&
+        !('isAdmin' in d);
+    }
+
+    function isValidUserUpdate() {
+      let d = request.resource.data;
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return !changed.hasAny(['role', 'admin', 'isAdmin']) &&
+        (!('role' in d) || d.role == resource.data.role) &&
+        isOptionalString(d, 'fullName') &&
+        isOptionalString(d, 'username') &&
+        isOptionalString(d, 'email') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt') &&
+        (!( 'family' in d) || d.family is map);
+    }
+
+    function isValidTripPlanCreate() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['ownerId', 'city', 'days', 'budget', 'createdAt']) &&
+        d.ownerId == request.auth.uid &&
+        isNonEmptyString(d.city) &&
+        (d.days is int || d.days is float) &&
+        d.days > 0 &&
+        (d.budget is int || d.budget is float) &&
+        isOptionalNumber(d, 'totalCost') &&
+        isOptionalString(d, 'status') &&
+        (!( 'selected' in d) || d.selected is bool) &&
+        (!( 'generatedPlans' in d) || d.generatedPlans is list) &&
+        isOptionalString(d, 'groupId') &&
+        d.createdAt is timestamp;
+    }
+
+    function isValidTripPlanUpdate() {
+      let d = request.resource.data;
+      return d.ownerId == resource.data.ownerId &&
+        d.ownerId == request.auth.uid &&
+        isNonEmptyString(d.city) &&
+        (d.days is int || d.days is float) &&
+        d.days > 0 &&
+        (d.budget is int || d.budget is float) &&
+        isOptionalNumber(d, 'totalCost') &&
+        isOptionalString(d, 'status') &&
+        (!( 'selected' in d) || d.selected is bool) &&
+        (!( 'generatedPlans' in d) || d.generatedPlans is list) &&
+        isOptionalString(d, 'groupId') &&
+        d.createdAt is timestamp;
+    }
+
+    function isValidBookingCreate() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['uid', 'planId', 'itemType', 'itemId', 'itemTitle', 'bookingReference', 'status', 'createdAt']) &&
+        d.uid == request.auth.uid &&
+        isNonEmptyString(d.uid) &&
+        isNonEmptyString(d.planId) &&
+        exists(/databases/$(database)/documents/tripPlans/$(d.planId)) &&
+        get(/databases/$(database)/documents/tripPlans/$(d.planId)).data.ownerId == request.auth.uid &&
+        isNonEmptyString(d.itemType) &&
+        isNonEmptyString(d.itemId) &&
+        isNonEmptyString(d.itemTitle) &&
+        isNonEmptyString(d.bookingReference) &&
+        d.status is string &&
+        d.createdAt is timestamp &&
+        isOptionalString(d, 'planId') &&
+        isOptionalString(d, 'itemTitle') &&
+        isOptionalString(d, 'bookingReference');
+    }
+
+    function isValidBookingUpdate() {
+      let d = request.resource.data;
+      return d.uid == resource.data.uid &&
+        d.uid == request.auth.uid &&
+        isNonEmptyString(d.planId) &&
+        exists(/databases/$(database)/documents/tripPlans/$(d.planId)) &&
+        get(/databases/$(database)/documents/tripPlans/$(d.planId)).data.ownerId == request.auth.uid &&
+        isNonEmptyString(d.itemType) &&
+        isNonEmptyString(d.itemId) &&
+        isNonEmptyString(d.itemTitle) &&
+        isNonEmptyString(d.bookingReference) &&
+        d.status is string &&
+        d.createdAt is timestamp &&
+        isOptionalString(d, 'planId') &&
+        isOptionalString(d, 'itemTitle') &&
+        isOptionalString(d, 'bookingReference');
+    }
+
+    function isValidAccommodationData() {
+      let d = request.resource.data;
+      return ('name' in d) &&
+        isNonEmptyString(d.name) &&
+        isOptionalString(d, 'id') &&
+        isOptionalString(d, 'accommodationId') &&
+        isOptionalString(d, 'location') &&
+        isOptionalString(d, 'city') &&
+        isOptionalString(d, 'planType') &&
+        isOptionalString(d, 'bookingUrl') &&
+        isOptionalString(d, 'mapsUrl') &&
+        isOptionalString(d, 'googleMaps') &&
+        isOptionalString(d, 'amenities') &&
+        isOptionalNumberOrString(d, 'rating') &&
+        isOptionalNumberOrString(d, 'pricePerNight') &&
+        isOptionalNumberOrString(d, 'priceMin') &&
+        isOptionalNumberOrString(d, 'priceMax') &&
+        isOptionalNumber(d, 'lat') &&
+        isOptionalNumber(d, 'lng') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    function isValidFamilyGroupCreate() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['groupId', 'ownerId', 'groupName', 'budget', 'startDate', 'endDate']) &&
+        d.ownerId == request.auth.uid &&
+        isNonEmptyString(d.groupId) &&
+        isNonEmptyString(d.groupName) &&
+        (d.budget is int || d.budget is float) &&
+        d.startDate is timestamp &&
+        d.endDate is timestamp &&
+        isOptionalString(d, 'destinationCity') &&
+        isOptionalNumber(d, 'durationDays') &&
+        isOptionalNumber(d, 'numberOfMembers') &&
+        isOptionalNumber(d, 'adults') &&
+        isOptionalNumber(d, 'children') &&
+        isOptionalNumber(d, 'infants') &&
+        isOptionalString(d, 'budgetLabel') &&
+        isOptionalString(d, 'startLabel') &&
+        isOptionalString(d, 'endLabel') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    function isValidFamilyGroupUpdate() {
+      let d = request.resource.data;
+      return d.ownerId == resource.data.ownerId &&
+        d.ownerId == request.auth.uid &&
+        isNonEmptyString(d.groupId) &&
+        isNonEmptyString(d.groupName) &&
+        (d.budget is int || d.budget is float) &&
+        d.startDate is timestamp &&
+        d.endDate is timestamp &&
+        isOptionalString(d, 'destinationCity') &&
+        isOptionalNumber(d, 'durationDays') &&
+        isOptionalNumber(d, 'numberOfMembers') &&
+        isOptionalNumber(d, 'adults') &&
+        isOptionalNumber(d, 'children') &&
+        isOptionalNumber(d, 'infants') &&
+        isOptionalString(d, 'budgetLabel') &&
+        isOptionalString(d, 'startLabel') &&
+        isOptionalString(d, 'endLabel') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    function isValidGroupMemberCreate() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['memberId', 'groupId', 'ownerId', 'name', 'age', 'ageGroup']) &&
+        d.ownerId == request.auth.uid &&
+        isNonEmptyString(d.memberId) &&
+        isNonEmptyString(d.groupId) &&
+        isNonEmptyString(d.name) &&
+        (d.age is int || d.age is float) &&
+        isNonEmptyString(d.ageGroup) &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    function isValidGroupMemberUpdate() {
+      let d = request.resource.data;
+      return d.ownerId == resource.data.ownerId &&
+        d.ownerId == request.auth.uid &&
+        isNonEmptyString(d.memberId) &&
+        isNonEmptyString(d.groupId) &&
+        isNonEmptyString(d.name) &&
+        (d.age is int || d.age is float) &&
+        isNonEmptyString(d.ageGroup) &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    function isValidActivityData() {
+      let d = request.resource.data;
+      return ('name' in d) &&
+        isNonEmptyString(d.name) &&
+        isOptionalString(d, 'id') &&
+        isOptionalString(d, 'activityId') &&
+        isOptionalString(d, 'location') &&
+        isOptionalString(d, 'city') &&
+        isOptionalString(d, 'open') &&
+        isOptionalString(d, 'close') &&
+        isOptionalString(d, 'openHours') &&
+        isOptionalString(d, 'closeHours') &&
+        isOptionalString(d, 'bookingUrl') &&
+        isOptionalString(d, 'mapsUrl') &&
+        isOptionalString(d, 'googleMaps') &&
+        isOptionalNumberOrString(d, 'rating') &&
+        isOptionalNumberOrString(d, 'price') &&
+        isOptionalNumber(d, 'lat') &&
+        isOptionalNumber(d, 'lng') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    function isValidEventData() {
+      let d = request.resource.data;
+      return (
+          (('title' in d) && isNonEmptyString(d.title)) ||
+          (('name' in d) && isNonEmptyString(d.name))
+        ) &&
+        isOptionalString(d, 'id') &&
+        isOptionalString(d, 'location') &&
+        isOptionalString(d, 'city') &&
+        isOptionalString(d, 'date') &&
+        isOptionalString(d, 'time') &&
+        isOptionalString(d, 'description') &&
+        isOptionalString(d, 'mapsUrl') &&
+        isOptionalString(d, 'bookingUrl') &&
+        isOptionalTimestamp(d, 'createdAt') &&
+        isOptionalTimestamp(d, 'updatedAt');
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUserCreate();
+      allow update: if isOwner(userId) && isValidUserUpdate();
+      allow delete: if isAdmin();
+    }
+
+    match /tripPlans/{planId} {
+      allow read: if isSignedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidTripPlanCreate();
+      allow update: if isSignedIn() && isValidTripPlanUpdate();
+      allow delete: if isSignedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidBookingCreate();
+      allow update: if isSignedIn() && isValidBookingUpdate();
+      allow delete: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    match /familyGroups/{groupId} {
+      allow read: if isSignedIn() &&
+        (
+          groupId == request.auth.uid ||
+          resource.data.ownerId == request.auth.uid ||
+          isAdmin()
+        );
+      allow create: if isSignedIn() && isValidFamilyGroupCreate();
+      allow update: if isSignedIn() && isValidFamilyGroupUpdate();
+      allow delete: if isSignedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    match /groupMembers/{memberId} {
+      allow read: if isSignedIn() &&
+        (
+          resource.data.ownerId == request.auth.uid ||
+          resource.data.groupId == request.auth.uid ||
+          isAdmin()
+        );
+      allow create: if isSignedIn() && isValidGroupMemberCreate();
+      allow update: if isSignedIn() && isValidGroupMemberUpdate();
+      allow delete: if isSignedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    match /accommodations/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidAccommodationData();
+      allow delete: if isAdmin();
+    }
+
+    // Keep lowercase hotels readable/writable for compatibility with data that
+    // still lives in this collection.
+    match /hotels/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidAccommodationData();
+      allow delete: if isAdmin();
+    }
+
+    // Legacy uppercase variant.
+    match /Hotels/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidAccommodationData();
+      allow delete: if isAdmin();
+    }
+
+    match /activities/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidActivityData();
+      allow delete: if isAdmin();
+    }
+
+    match /events/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidEventData();
+      allow delete: if isAdmin();
+    }
+
+    // Legacy collection names kept for backward compatibility/migration.
+    match /Activities/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidActivityData();
+      allow delete: if isAdmin();
+    }
+
+    match /Events/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidEventData();
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

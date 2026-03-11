@@ -1,0 +1,858 @@
+--- Page 1 ---
+Jazan University
+College of Engineering and Computer Sciences
+INFORMATION TECHNOLOGY Department
+Intelligent Mobile Tourism Application for Family Trip
+Management
+by
+Project Team Members
+Student name(s) University ID(s)
+Rana Khaled Osis. 202303490
+Tahani Saleh Sultan. 202304821
+Ibtihal Ahmed Hakami. 202305639
+Wanas Hassan Bashir. 202307133
+Ahlam Hassan Amri. 202305954
+Shaima Ali Alsean. 202307503
+SUPERVISOR
+Dr. Abdulrahman Alameer.
+A project report submitted in partial fulfilment of the
+requirement for the award of the degree for
+BACHELOR IN INFORMATION TECHNOLOGY
+2025-2026 (Semester - 1)
+(Completion Date: )
+--- Page 2 ---
+DEPARTMENT OF INFORMATION TECHNOLOGY
+APPROVAL FOR BINDING OF GRADUATION PROJECT REPORT
+GRADUATION PROJECT (ITEC 427)
+GROUP: 11360
+SESSION 2025-2026 (SEMESTER - 1)
+To be filled in by student
+Student name(s) University ID(s)
+Rana Khaled Osis. 202303490
+Tahani Saleh Sultan. 202304821
+Ibtihal Ahmed Hakami. 202305639
+Wanas Hassan Bashir. 202307133
+Ahlam Hassan Amri. 202305954
+Shaima Ali Alsean. 202307503
+Project title:Intelligent Mobile Tourism Application for Family Trip Management
+To be filled in by supervisor
+This is to certify that the project submitted by the above mentioned student(s) is
+2 COMPLETE & ACCEPTED2INCOMPLETE2NOT ACCEPTED
+and the draft of the graduation project report has been corrected from all content flaws,
+typing errors, and language mistakes.
+Supervisor name : Dr. Abdulrahman Alameer.
+Signatures :
+Date :
+For Departmental Office use only
+Date received :
+Signatures :
+--- Page 3 ---
+Preface
+Smart applications have become an integral part of contemporary life, offering tools
+that save time, reduce effort, and simplify everyday tasks. One of the persistent
+challenges faced by families is trip planning, which involves identifying suitable des-
+tinations, activities, accommodations, and dining options that cater to diverse age
+groups and preferences. This process is often time-consuming and complex.
+Toaddressthischallenge, theFatripyprojectwasdevelopedasanintelligentassistant
+designed specifically for families traveling within the Kingdom of Saudi Arabia. The
+application generates a comprehensive daily plan that includes a variety of activities,
+tourist attractions, restaurants, and lodging options. It also features direct booking
+capabilities and a “Book Now, Pay on Arrival” option. Through these features,
+Fatripy aims to enhance the family travel experience by making it more enjoyable,
+organized, and effortless.
+iii
+--- Page 4 ---
+ABSTRACT
+This project presents an intelligent assistant designed to support the planning of
+family trips within the Kingdom of Saudi Arabia. The proposed mobile application
+gathers essential input from users, including the number of family members, their
+age groups, trip duration, and the allocated budget. Based on these inputs, the
+system performs data analysis to generate a comprehensive travel plan. The plan
+incorporates tailored recommendations for family-oriented tourist attractions, age-
+appropriate activities, dining options, and accommodation choices consistent with
+the specified budget. In addition, the system provides a structured daily plan and
+integrates booking functionalities for selected services and activities. The primary
+objective of the project is to streamline the process of trip planning by minimizing
+the time and effort required for information searching, while simultaneously offering
+a personalized and engaging travel experience for all family members.
+KEYWORDS
+Trip planning, family travel, intelligent system, digital tourism guide, activity recom-
+mendations, budget management, travel plan, booking integration, tourism in Saudi
+Arabia, mobile application, personalized travel experience.
+iv
+--- Page 5 ---
+Contents
+Preface iii
+List of Figures vii
+List of Tables viii
+List of Symbols ix
+Acknowledgments x
+Chapter 1
+Introduction 1
+1.1 Project Overview Statement . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Project Goals and Objectives . . . . . . . . . . . . . . . . . . . . . . 2
+1.3 Project Scope . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+1.4 Limitations and Constraints . . . . . . . . . . . . . . . . . . . . . . . 5
+1.5 Assumptions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+Chapter 2
+Literature Review 8
+2.1 Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+2.2 Landscape of Tourism Applications in Saudi Arabia . . . . . . . . . . 8
+2.3 Comparative Analysis of Existing Solutions . . . . . . . . . . . . . . . 9
+2.4 Research Gap and Fatripy’s Contribution . . . . . . . . . . . . . . . . 10
+2.5 Conclusion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+v
+--- Page 6 ---
+Chapter 3
+Project Plan 12
+3.1 Work Breakdown Structure (WBS) . . . . . . . . . . . . . . . . . . . 12
+3.2 Gantt Chart Tasks List . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+3.3 Gantt Chart Timeline . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+Chapter 4
+System Requirements Specification 16
+4.1 SRS – SYSTEM REQUIREMENTS SPECIFICATION . . . . . . . . 16
+Chapter 5
+Feasibility Study 20
+5.1 Purpose of the Feasibility Study . . . . . . . . . . . . . . . . . . . . . 20
+5.2 Justification for the Proposed System . . . . . . . . . . . . . . . . . . 20
+5.3 Economic Feasibility . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+5.4 Technical Feasibility . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+5.5 Desired System Functionality . . . . . . . . . . . . . . . . . . . . . . 21
+Chapter 6
+System Design 23
+6.1 Data Flow Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+6.2 Class Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+6.3 Use Case Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+6.4 Activity Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+6.5 Sequence Diagrams . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+6.6 Entity Relationship Diagram . . . . . . . . . . . . . . . . . . . . . . . 32
+Chapter 7
+Conclusion 33
+vi
+--- Page 7 ---
+List of Figures
+3.1 Work Breakdown Structure: it has six stages with their sub-tasks. . . 13
+3.2 Gantt Chart Tasks List. . . . . . . . . . . . . . . . . . . . . . . . . . 14
+3.3 Gantt Chart Timeline. . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+6.1 Data Flow Diagram – Level 0 . . . . . . . . . . . . . . . . . . . . . . 23
+6.2 Data Flow Diagram – Level 1 . . . . . . . . . . . . . . . . . . . . . . 24
+6.3 Class Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+6.4 Use Case Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+6.5 Activity Diagram user . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+6.6 Activity Diagram System . . . . . . . . . . . . . . . . . . . . . . . . . 30
+6.7 Sequence Diagrams . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+6.8 Entity Relationship Diagram . . . . . . . . . . . . . . . . . . . . . . 32
+vii
+--- Page 8 ---
+List of Tables
+2.1 Comparative Analysis of Tourism Applications in Saudi Arabia . . . 9
+4.1 Development Methodology Overview. . . . . . . . . . . . . . . . . . . 16
+4.2 Functional and Non-Functional Requirements. . . . . . . . . . . . . . 18
+4.3 Hardware Requirements. . . . . . . . . . . . . . . . . . . . . . . . . . 19
+4.4 Software Requirements. . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+viii
+--- Page 9 ---
+List of Symbols
+AIArtificial Intelligence.
+iOSiPhone Operating System.
+B2CBusiness to Consumer.
+WBSWork Breakdown Structure.
+SRSSystem Requirements Specification.
+Wi-FiWireless Fidelity.
+PCPersonal Computer.
+GBGigabyte.
+RAMRandom Access Memory.
+SSDSolid State Drive.
+IDEIntegrated Development Environment.
+UIUser Interface.
+APIApplication Programming Interface.
+macOSMacintosh Operating System.
+ix
+--- Page 10 ---
+Acknowledgments
+I would like to express my profound gratitude to my supervisor, Dr. Abdulrahman
+Mohammed Al-Amir, for his invaluable guidance, continuous support, and insightful
+feedback throughout the course of my graduation project. His encouragement and
+expertise were fundamental to the successful completion of this work. I am also
+deeply indebted to my team members for their dedication, cooperation, and hard
+work, which significantly contributed to the success of this project. My sincere ap-
+preciation is further extended to the Department of Information Technology, College
+of Engineering and Computer Science, particularly to Dr. Manju, the graduation
+project coordinator, for her constant support and follow-up during this journey.
+Finally, I would like to express my gratitude to Jazan University for providing a
+stimulating and supportive academic environment that enabled me to achieve this
+important milestone in my educational journey.
+x
+--- Page 11 ---
+Dedication
+This work is dedicated to my beloved family, whose continuous support, encourage-
+ment, andprayershavealwaysbeenmygreatestsourceofstrength. Tomyuniversity,
+for providing the environment, knowledge, and opportunities that shaped my aca-
+demic growth. To my friends, whose motivation, positivity, and companionship made
+this journey meaningful and enjoyable. To my project team, for their collaboration,
+dedication, and shared commitment throughout every stage of this work. And to my
+supervisor, whose guidance, feedback, and expertise were invaluable in completing
+this project.
+xi
+--- Page 12 ---
+CHAPTER 1
+Introduction
+Vision 2030 supports the development of tourism and entertainment sectors [5]. The
+Saudi Tourism Authority provides official information about destinations and events
+[6].
+1.1 Project Overview Statement
+The tourism sector in the Kingdom of Saudi Arabia is experiencing rapid growth in
+alignment with Vision 2030, which emphasizes cultural, economic, and recreational
+development. Families represent a key segment of the domestic tourism market;
+however, planning family trips remains a complex process due to several challenges:
+•Diverse family needs Preferences vary significantly between children, teenagers,
+and adults, making it difficult to choose a single plan that satisfies all age
+groups.
+•Budget limitations Families must balance enjoyment with financial constraints,
+requiring careful decisions regarding accommodations, dining, and activities.
+•Time-consuming planning Gathering accurate and up-to-date information
+about tourist destinations, events, and lodging options can be overwhelming.
+•Lack of choice and flexibility Most digital tools offer a single, automated plan,
+leaving families with no alternatives to compare, which can feel restrictive.
+To address these issues, Fatripy functions as a personalized family travel assistant
+that simplifies trip planning by generating multiple, automatically created, ready-
+made plans based on simple user input:
+--- Page 13 ---
+2
+•Number of family members.
+•Age groups (children, adults, seniors).
+•Trip duration.
+•Budget.
+•Desired city or region to visit.
+Based on this input, the app creates three distinct, pre-designed plan options tailored
+to the family’s profile. The user can then fully review and compare these plans before
+making a final choice. Each complete plan includes:
+•A suggested hotel with its total cost for the entire trip duration.
+•Recommendations for nearby activities close to the hotel (restaurants, cafes,
+parks, beaches).
+•Recommendations for distant attractions and key landmarks to visit during
+the day.
+•A pre-structured daily schedule that integrates all elements.
+What sets Fatripy apart from traditional tourism apps is its ability to automatically
+generatemultiplefulltravelschedules,givingtheuserthepowerofchoice,ratherthan
+forcing them to accept a single option or build one manually. This automation and
+flexibility significantly reduce the time and effort families usually invest in planning,
+while encouraging domestic tourism across Saudi Arabia.
+1.2 Project Goals and Objectives
+Primary Goal
+To deliver an intelligent, family-centered tourism platform that transforms minimal
+user input into multiple, complete, and ready-to-use travel plans, providing choice
+and enhancing convenience and trip quality.
+--- Page 14 ---
+3
+Expanded Objectives
+•Streamlined and Flexible Trip Planning:
+–Integrate plan creation, activity suggestions, and accommodation recom-
+mendations into a single app.
+–Eliminate manual trip planning by offering multiple fully automated trip
+schedule options for comparison.
+•Personalized Recommendations with Choice:
+–Provide tailored plans based on the family’s size, age groups, and budget.
+–Ensure safety, relevance, and enjoyment for all family members.
+•Comprehensive Daily plan Options:
+–Deliver several pre-built, day-by-day schedules, each including time slots
+for activities, meals, and rest.
+–The plans are auto-generated based on user input, and the user selects
+their preferred option.
+•Integration with Booking Services:
+–Enable users to make direct reservations (when possible) for activities and
+accommodations within the selected plan.
+–Reduce the need to use multiple external websites or applications.
+•Promotion of Domestic Tourism:
+–Highlight diverse destinations, events, and attractions across Saudi Ara-
+bia, including lesser-known sites, across different plan options.
+–Encourage families to explore the country and support local tourism.
+•Time and Effort Reduction:
+–Minimizehoursspentononlinesearchesanddecision-makingbyproviding
+curated, pre-organized plans.
+–Reduce confusion and planning fatigue by presenting clear alternatives.
+--- Page 15 ---
+4
+Future-Ready and Scalable Platform
+1. Lay the groundwork for future features such as AI-driven suggestions, real-time
+event updates, and more personalized plan generation.
+2. Ensure scalability to accommodate future expansion and user growth.
+3. Potential for increasing the number of plan options in future versions.
+4. Integration of user feedback to improve plan generation algorithms.
+Expected Impact
+1. Families experience less stress and have more control over their travel plans
+through multiple options.
+2. Higher satisfaction through the ability to choose from relevant and organized
+travel alternatives.
+3. Increased domestic tourism aligned with the goals of Vision 2030.
+4. Reduced decision fatigue by presenting curated, pre-organized plan options.
+5. Enhanced travel experience through comprehensive planning that covers both
+nearby and distant attractions.
+1.3 Project Scope
+i - In-Scope Features
+•User input collection (number of members, age groups, trip duration, budget,
+and desired destination).
+•Automated generation of three alternative travel plans (one primary and two
+secondary options).
+•Each plan includes:
+–Recommended hotel with total price for the entire stay.
+--- Page 16 ---
+5
+–Nearby activities close to the hotel (restaurants, beaches, parks, etc.).
+–Distant attractions and landmarks for daytime visits.
+–Complete day-by-day plan.
+•Direct reservation links for selected services (when available).
+•Integration with Firebase for secure data storage.
+•Professionally designed user interface (e.g., using Figma).
+•Smart suggestions tailored specifically to Saudi family tourism.
+•User ability to compare and select from multiple plan options.
+ii - Out-of-Scope Features
+•Planning or booking for international trips.
+•Transportation services (car rentals, taxis, or public transit).
+•Airline ticket reservations.
+•Human tour guide services.
+•In-app payment processing (bookings only, without financial transactions).
+•Full offline functionality (internet is required for most features).
+•Manual plan editing by users.
+1.4 Limitations and Constraints
+1. Geographical Limitation – The app is designed for destinations within Saudi
+Arabia only.
+2. Database Dependency – Performance depends on the accuracy and complete-
+ness of the tourism database. In early stages, the content may be limited.
+--- Page 17 ---
+6
+3. Internet Connectivity Requirement – Most features require an internet connec-
+tion and are not available offline.
+4. No In-App Payments – Users must complete payments outside the app, even
+though reservations are handled internally.
+5. Scalability Challenges – Supporting a growing user base may require cloud
+infrastructure upgrades to maintain speed and accuracy.
+6. User Input Accuracy – The quality of plan recommendations depends on the
+correctness of user-provided data.
+7. Limited to three pre-generated plan options without customization.
+8. Dependence on available hotel and activity data for each destination.
+1.5 Assumptions
+1. Users have access to smartphones (Android/iOS) with reliable internet connec-
+tivity.
+2. Users will enter accurate and complete data (number of travelers, age groups,
+budget, destination).
+3. Local tourism providers (hotels, restaurants, event organizers) will maintain
+and provide updated data.
+4. Families in Saudi Arabia are actively interested in domestic tourism and digital
+planning solutions.
+5. Third-party partners (venues, event hosts, accommodations) will enable reser-
+vation integration.
+6. The app’s database will be regularly updated to reflect new locations, events,
+and price changes.
+7. Users will review and compare all three plan options before making a selection.
+8. Hotels and activities will have sufficient availability to support the generated
+plans.
+--- Page 18 ---
+7
+Future-Ready and Scalable Platform
+1. Lay the groundwork for future features such as AI-driven suggestions, real-time
+event updates, and more personalized plan generation.
+2. Ensure scalability to accommodate future expansion and user growth.
+3. Potential for increasing the number of plan options in future versions.
+4. Integration of user feedback to improve plan generation algorithms.
+Expected Impact
+1. Families experience less stress and have more control over their travel plans
+through multiple options.
+2. Higher satisfaction through the ability to choose from relevant and organized
+travel alternatives.
+3. Increased domestic tourism aligned with the goals of Vision 2030.
+4. Reduced decision fatigue by presenting curated, pre-organized plan options.
+5. Enhanced travel experience through comprehensive planning that covers both
+nearby and distant attractions.
+--- Page 19 ---
+CHAPTER 2
+Literature Review
+2.1 Introduction
+The tourism sector in the Kingdom of Saudi Arabia is undergoing a rapid transfor-
+mation, driven by the ambitious Vision 2030. This has stimulated the development
+of numerous smart applications aimed at enhancing the visitor experience and sup-
+porting the sector’s digitalization. This review examines the landscape of leading
+tourism applications in Saudi Arabia to contextualize the proposed "Fatripy" appli-
+cation, identify existing gaps in the market, and articulate its potential contribution.
+2.2 Landscape of Tourism Applications in Saudi
+Arabia
+Nusuk is the official platform for Hajj and Umrah services [3].
+•Leading Tourism Platforms:Market analyses indicate that the "Nusuk"
+application was the most downloaded tourism app in the Kingdom in 2023.
+Developed by the Ministry of Hajj and Umrah, Nusuk offers comprehensive
+services, including flight and hotel bookings, making it a primary tool for pil-
+grims and travelers. Other notable applications include the Saudi Tourism
+Authority’s "Visit Saudi," "WeBook," and "Event Maps," which focus on pro-
+viding information, event listings, and bookings to improve service quality and
+visitor satisfaction.
+--- Page 20 ---
+9
+•Role of Digital Transformation in Tourism:Academic research un-
+derscores the importance of smart tourism technologies. Studies show that
+Business-to-Consumer(B2C)modelsareeffectiveinattractingtouriststoSaudi
+Arabia, highlighting technology’s pivotal role in sector growth and confirming
+a clear trend towards personalization and automation within the industry.
+2.3 Comparative Analysis of Existing Solutions
+Table 2.1.Comparative Analysis of Tourism Applications in Saudi Arabia
+The Ministry of Communications and IT published a report on digital
+transformation [1].
+Feature Nusuk Visit Saudi Smart
+Guidance
+Custom Trip Plan-
+ningLimited Not Available Customized
+Budget Setting Not Available Not Available Not Available
+Activity Booking Not Available Not Available Not Available
+Personalized Rec-
+ommendationsLimited Limited Available
+User Interface Complex Easy Interactive
+Comparative Analysis of Applications
+1.Nusuk Application:
+•Developer:Ministry of Hajj and Umrah.
+•Key Features:Flight and hotel bookings, management of Hajj and Um-
+rah rituals, multilingual support.
+•Strengths:Comprehensive coverage of pilgrim needs, seamless integra-
+tion with government services.
+•Weaknesses:The interface can be complex for casual tourists; its pri-
+maryfocusonreligioustourismlimitsitsutilityforgeneralfamilyvacation
+planning.
+--- Page 21 ---
+10
+2.Visit Saudi Application:
+•Developer:Saudi Tourism Authority.
+•KeyFeatures:Interactivemaps,anannualeventcalendar,andextensive
+information on destinations, activities, and dining.
+•Strengths:Authoritative and comprehensive coverage of tourist desti-
+nations across Saudi Arabia, with continuous content updates.
+•Weaknesses:Lacksdirectbookingfunctionalityforactivitiesandevents,
+which hinders seamless end-to-end trip planning and requires users to
+switch between platforms.
+3.Smart Guidance System:
+•Developer:Research project in Jeddah.
+•Key Features:A system for providing customized suggestions for activ-
+ities and destinations.
+•Strengths:Interactive user experience and personalized suggestions.
+•Weaknesses:Does not support direct booking or budget management
+features, making it more of an informational tool than a planning plat-
+form.
+2.4 Research Gap and Fatripy’s Contribution
+The analysis demonstrates that while several powerful applications serve the Saudi
+tourism market, a specific gap exists for a dedicated, all-in-one family trip planning
+tool that empowers the user with choice.Existing apps are either focused on religious
+tourism, act as informational hubs without integrated booking, or lack practical
+planning features like budget management and comparative plan building.
+Fatripy is positioned to fill this gap through its innovative mechanism that generates
+multiple, ready-to-use travel itineraries from which the user can choose. This core
+feature, combined with budget management and direct booking capabilities within a
+single, user-friendly application, effectively addresses a clear and underserved market
+segment.
+--- Page 22 ---
+11
+2.5 Conclusion
+This chapter has reviewed the current landscape of smart tourism applications in
+Saudi Arabia, highlighting both the advancements made and the existing gaps in the
+market. The following chapters will detail how the Fatripy application is designed
+to address these gaps through its unique approach to family trip planning.
+--- Page 23 ---
+CHAPTER 3
+Project Plan
+ProjectLibre Desktop was used for project management and workflow organization
+[4].
+This chapter presents the comprehensive project plan used to organize and man-
+age the development of the Fatripy application. The plan defines all tasks, their
+sequence, duration, and dependencies to ensure timely completion within the aca-
+demic semester.
+3.1 Work Breakdown Structure (WBS)
+The Work Breakdown Structure divides the project into six main phases as illus-
+trated in Figure 3.1. The first phase covers Requirements Specification, including
+hardware and software specifications needed for development and deployment. The
+second phase addresses Feasibility Study, evaluating both economic and technical
+viability of the proposed system. The third phase involves System Analysis, which
+includes application analysis, database design, and interface planning. The fourth
+phase focuses on System Implementation, covering Flutter mobile app development
+using Dart and Firebase integration for authentication, database operations, and
+cloud storage. The fifth phase encompasses System Testing, including unit test-
+ing, integration testing, and acceptance testing to ensure quality and functionality.
+The final phase involves Documentation and Presentation, including project report
+preparation and final presentation to the supervisor and evaluation committee.
+--- Page 24 ---
+13
+Figure 3.1.Work Breakdown Structure: it has six stages with their sub-tasks.
+3.2 Gantt Chart Tasks List
+The detailed task list presented in the accompanying Gantt chart covers the com-
+plete project timeline from August 25, 2025, to December 5, 2025. Major tasks
+are organized chronologically and include project title selection, preface and ac-
+knowledgments writing, abstract and keywords preparation, introduction chapter
+development covering project overview and objectives, literature review examining
+existing tourism applications in Saudi Arabia, feasibility study documentation, sys-
+tem requirements specification defining functional and non-functional requirements,
+system design activities including creation of Data Flow Diagrams, Class Diagrams,
+Use Case Diagrams, Activity Diagrams, Sequence Diagrams, and Entity Relationship
+Diagrams, application implementation and testing phases, and final documentation
+and report submission. Each task has been assigned specific start and end dates with
+durations ranging from one day for smaller documentation tasks to several weeks for
+major development activities.
+--- Page 25 ---
+14
+Figure 3.2.Gantt Chart Tasks List.
+3.3 Gantt Chart Timeline
+TheGanttchartprovidesavisualtimelineofallprojectactivitiesacrossthesemester.
+Itdisplaystaskdependenciesandshowswhichactivitiescanbeperformedinparallel.
+For example, the system design phase runs concurrently with requirements specifica-
+tion, allowing efficient use of time and resources. The chart clearly indicates that the
+project spans approximately 103 days from initial planning to final submission. Crit-
+ical milestones include completion of the literature review by September 28, finishing
+all system design diagrams by December 4, and final report submission by Decem-
+--- Page 26 ---
+15
+ber 5, 2025. The visual representation helps the team monitor progress, identify
+potential delays, and ensure all deliverables are completed according to schedule.
+Figure 3.3.Gantt Chart Timeline.
+Project Management Approach
+Theteamusesanorganizedworkflowwithcleartaskdistributionandregularprogress
+reviews. Project management tools help track task completion and ensure timely
+delivery. The supervisor provides continuous guidance and feedback throughout all
+project phases to maintain quality standards and academic requirements.
+--- Page 27 ---
+CHAPTER 4
+System Requirements Specification
+4.1 SRS – SYSTEM REQUIREMENTS SPECIFI-
+CATION
+1.Development Methodology:
+The project follows the Agile – Scrum methodology, focusing on flexibility,
+collaboration, and iterative delivery. The work is divided into Sprints, each
+lasting two weeks, allowing for continuous improvement and feedback.
+Table 4.1.Development Methodology Overview.
+Activity Description
+Methodology Agile – Scrum
+Sprint Duration 2 weeks
+Tracking Tools Trello / Jira / Excel (optional)
+Meetings 15-minute daily stand-up or weekly re-
+view
+Deliverables New version at the end of each sprint
+Review Process Continuous user requirement review
+and update
+This approach ensures adaptability, regular feedback, and incremental progress
+toward a high quality software product.
+2.System Requirements Analysis:
+This section outlines the functional and non-functional requirements of the
+system. The main goal is to develop a mobile application that allows families
+--- Page 28 ---
+17
+to generate and compare multiple travel plans for domestic trips within Saudi
+Arabia.
+3.Hardware Requirements Specification.
+This section describes the minimum hardware setup for both users and devel-
+opers to ensure smooth operation and development of the system.
+These specifications guarantee optimal performance and compatibility during
+both development and user operation.
+4.Software Requirements Specification:This section defines the software
+tools, programming languages, and development environments necessary for
+the system implementation.
+This software stack supports agile development, cross-platform deployment,
+and intelligent personalized recommendations.
+5.Other Requirements Specification:
+This section outlines the legal, documentation, and maintenance requirements
+necessary for compliance and sustainability.
+•Legal Requirements:
+–Compliance with data protection laws in Saudi Arabia.
+–Privacy Policy: A clear in-app privacy statement outlining data han-
+dling practices.
+•Documentation:
+–User Guide integrated within the app.
+–Technical documentation for developers.
+•Maintenance:
+–Regular application updates.
+–Database updates for new destinations and activities.
+–Continuous improvement of Machine Learning and Deep Learning
+models.
+–Technical support for troubleshooting and issue resolution.
+--- Page 29 ---
+18
+Table 4.2.Functional and Non-Functional Requirements.
+Requirement Type Description
+Functional Re-
+quirements •User Management (Login/Logout, Pass-
+word Recovery).
+•FamilyProfileManagement(Addfamily
+members with ages).
+•Trip Preferences Input (Budget, Dura-
+tion, Destination).
+•Multiple Plan Generation (3 alternative
+itineraries).
+•Plan Comparison Feature.
+•Hotel Recommendations with Pricing.
+•Activity Categorization (Nearby & Dis-
+tant attractions).
+•Daily Schedule Creation (Activity
+timetable).
+•Booking System (Hotel and activity
+booking without payment).
+•Confirmation Messages (Booking confir-
+mation display).
+•AI-Based Recommendation Sys-
+tem:Uses Machine Learning to gener-
+ate personalized travel plans based on
+user input.
+•Deep Learning Personalization:
+Applies neural networks to improve rec-
+ommendations using historical user be-
+havior.
+Non-Functional
+Requirements •Performance: Screen load time 2 sec-
+onds.
+•Security: Password encryption and se-
+cure data storage.
+•Usability: Simple English interface for
+all age groups.
+•Scalability: Support multiple users and
+plan generation simultaneously.
+•Reliability: Accurate distance-based ac-
+tivity categorization.
+•AI Performance:Machine Learning
+and Deep Learning models must gener-
+ate recommendations within 3 seconds.
+•Model Reliability:AI models must
+consistently provide relevant and accu-
+rate travel suggestions.
+--- Page 30 ---
+19
+Table 4.3.Hardware Requirements.
+Device Description
+User Device Smartphone with Android 10 or iOS 14
+and later.
+Connectivity Wi-Fi or Mobile Data.
+Developer System PC with Intel i5 or higher, 8 GB RAM,
+256 GB SSD or more.
+Internet Access Stable connection for Firebase and de-
+velopment environment.
+Table 4.4.Software Requirements.
+Software / Tool Purpose
+Programming Language:
+Dart (Flutter Framework)Front-end and cross-platform de-
+velopment.
+IDE: Visual Studio Code Development environment.
+Database: Firebase Cloud storage and real-time data
+synchronization.
+UI Design Tool: Figma Interface design and prototyping.
+Map Navigation: Google
+Maps Deep LinksOpen Location services in Google
+Maps app / website.
+Algorithm Development:
+PythonImplementation of Machine
+Learning and Deep Learning
+models.
+Machine Learning Model:
+Recommendation SystemGenerates personalized travel
+plans based on user preferences
+and budget.
+Deep Learning Model: Neu-
+ral NetworkImproves recommendation accu-
+racy by learning user behavior
+patterns.
+Operating System (Devel-
+opers): Windows 10+ / ma-
+cOS Catalina+Development platform.
+--- Page 31 ---
+CHAPTER 5
+Feasibility Study
+5.1 Purpose of the Feasibility Study
+The purpose of this feasibility study is to assess whether the proposed smart appli-
+cation for planning family trips within the Kingdom of Saudi Arabia is viable for
+implementation. It evaluates the technical, economic, and operational aspects of the
+project to determine its potential for success and sustainability.
+5.2 Justification for the Proposed System
+The proposed system addresses a growing need among families in Saudi Arabia for a
+simplified and personalized way to plan domestic vacations. The app offers a digital
+solution that generates multiple travel plan options based on the number of family
+members, their ages, trip duration, destination, and available budget. It reduces
+the time and effort required to search for suitable destinations and activities, while
+enhancing the overall travel experience through comprehensive and comparable plan
+options.
+5.3 Economic Feasibility
+The project demonstrates strong economic potential due to the following factors:
+•It utilizes open-source technologies such as Flutter and Firebase, which reduce
+development and maintenance costs.
+--- Page 32 ---
+21
+•Itcanbemonetizedinthefuturethroughpartnershipswithrestaurants, hotels,
+and tourist attractions to offer promotions or advertisements.
+•It has the potential to expand geographically to cover more regions within the
+Kingdom or beyond.
+•Theappdoesnotrequireexpensiveinfrastructure, makingitsuitableforlaunch
+with a modest budget.
+•Multiple plan options increase user engagement and potential con-
+version rates.
+5.4 Technical Feasibility
+The application is technically feasible and relies on widely available and supported
+tools, including:
+•Dart programming language and Flutter framework for cross-platform devel-
+opment.
+•Visual Studio Code as the development environment.
+•Firebase for cloud-based data storage and integration.
+•Excel for initial data structuring and Figma for professional interface design.
+•Advanced algorithms for generating and comparing multiple travel
+plans.
+These tools provide a flexible and scalable development environment that supports
+the required system functionalities efficiently.
+5.5 Desired System Functionality
+The app is designed to offer the following core functionalities:
+•Collect user input regarding family size, ages, trip duration, destination, and
+budget.
+--- Page 33 ---
+22
+•Generate three alternative travel plans (one primary and two secondary op-
+tions).
+•Each plan includes: recommended hotel with pricing, nearby activities, and
+distant attractions.
+•Suggest family-friendly tourist destinations within Saudi Arabia.
+•Recommend age-appropriate activities for all family members.
+•Provide restaurant and accommodation options that match the user’s budget.
+•Allow users to compare and select their preferred plan.
+•Enable reservation of activities and services directly through the app.
+--- Page 34 ---
+CHAPTER 6
+System Design
+As shown in [2], the diagrams were created using standard notation.
+6.1 Data Flow Diagram
+Diagram Description – Level 0
+This Level 0 Data Flow Diagram illustrates the overall context of the Fatripy trip
+planning system. The User interacts directly with the Fatripy System by providing
+inputs such as family details, budget, and destination. The system processes these
+inputs and communicates with the Database to store and retrieve necessary infor-
+mation. The outputs include generated travel plans and booking confirmations, all
+managed through a seamless data flow between the user, system, and database.
+Figure 6.1.Data Flow Diagram – Level 0
+--- Page 35 ---
+24
+Diagram Description – Level 1
+This Level 1 Data Flow Diagram breaks down the Fatripy system into key processes.
+The User provides family data, budget, and city information, which is collected and
+stored as requirements. The system then generates multiple travel plans using data
+from the database, displays them to the user for selection, and processes the booking
+for the chosen plan. The database supports all processes by storing user inputs,
+travel plans, and booking details.
+Figure 6.2.Data Flow Diagram – Level 1
+--- Page 36 ---
+25
+6.2 Class Diagram
+Diagram Description:
+This diagram shows the internal structure of the Fatripy system and how its main
+components interact. At the core is the FamilyGroup class, which holds trip de-
+tails, members, and associated activities. Each family member is represented by
+the GroupMember class, while trip suggestions are managed through the Tip class.
+The system includes various Activity types linked to places such as Accommodation,
+Restaurant, and Attraction, all of which inherit from the Place class. The User class
+handles authentication and bookings, while the Booking class manages reservation
+details. These relationships ensure that users can build, customize, and manage
+travel plans efficiently within a structured and scalable system.
+Figure 6.3.Class Diagram
+--- Page 37 ---
+26
+6.3 Use Case Diagram
+Diagram Description:
+This diagram shows how the Fatripy app works from the user’s perspective. The
+user starts by entering family details, trip duration, budget, and destination. Based
+on this input, the system automatically generates multiple travel plans. The user
+can then view these plans and select the one they prefer. Each plan includes sug-
+gested attractions, restaurants, activities for children, accommodation, and a full
+daily schedule. Finally, the user can book services directly through the app. A
+system administrator can also manage the app’s content.
+Figure 6.4.Use Case Diagram
+--- Page 38 ---
+27
+6.4 Activity Diagram
+Diagram Description:
+This diagram illustrates the complete workflow of trip planning in Fatripy, showing
+the interaction between the user and the system from start to finish.
+User Actions
+The user starts by registering (if not already registered) and logging into the applica-
+tion. The user then enters family details including the number of members and their
+ages, sets the trip budget, and selects the desired destination city. After the system
+generates the plans, the user views and compares the three available options (main
+plan, second plan, third plan). The user selects their preferred plan and reviews its
+complete details. If not satisfied, the user can return to choose a different plan. Once
+satisfied, the user confirms their final choice.
+--- Page 39 ---
+28
+Figure 6.5.Activity Diagram user
+--- Page 40 ---
+29
+System Operations
+The system receives user data and validates the selected budget to ensure feasibility.
+It then searches the database for suitable options, including hotels, nearby activities
+(such as restaurants, cafes, and parks), and distant activities (such as major tourist
+attractions and landmarks). The system assigns an appropriate hotel based on trip
+duration and calculates the total accommodation cost. Using this information, the
+system automatically generates three distinct travel plans tailored to the user’s spec-
+ifications through machine learning algorithms. The plans are displayed to the user
+for selection. Once a plan is chosen, the system shows detailed information including
+hotel accommodations, recommended activities, and a structured daily itinerary.
+--- Page 41 ---
+30
+Figure 6.6.Activity Diagram System
+--- Page 42 ---
+31
+6.5 Sequence Diagrams
+Diagram Description:
+This sequence diagram shows the main interaction flow of the Fatripy system. The
+user begins by logging in, then creates a family group that is saved in the database
+and used to generate the main trip plan. The TripPlan service generates one main
+plans and two sub-plans, while the DayPlan service automatically creates daily
+itinerariesbasedontripduration, location, andbudget. Theusercanthenreviewthe plan,
+and the system retrieves details about hotels, nearby activities, and activities further
+afield. Finally, the user selects their preferred plan and makes reservations through
+the booking service, ensuring a smooth and organized planning process.
+Figure 6.7.Sequence Diagrams
+--- Page 43 ---
+32
+6.6 Entity Relationship Diagram
+Diagram Description:
+This Entity Relationship Diagram (ERD) represents the complete database struc-
+ture of the Fatripy application. It shows the main entities (tables), their attributes
+(fields), and the relationships between them. The diagram includes eight primary
+entities:User,FamilyGroup,GroupMember,TripPlan,Accommodation,Activity,
+TripPlan_Activity, andBooking. Each entity contains specific attributes with pri-
+mary keys for identification and foreign keys to establish connections between related
+entities. The relationships are defined with cardinality indicators (1:1, 1:M, M:M)
+showing how entities interact with each other. This structure supports the core
+functionality of generating personalized trip plans, managing family information, or-
+ganizingactivitiesandaccommodations, andhandlingbookingprocesses. Thedesign
+ensures data integrity and enables efficient retrieval of information needed to create
+comprehensive travel plans tailored to family needs and preferences.
+Figure 6.8.Entity Relationship Diagram
+--- Page 44 ---
+CHAPTER 7
+Conclusion
+The Fatripy project presents a practical and innovative solution to the challenges of
+family trip planning in Saudi Arabia. By offering multiple automated travel plans
+based on simple user input, the application reduces the time and effort typically
+required to organize a trip. It provides personalized recommendations for accom-
+modations, attractions, and activities tailored to different age groups and budgets,
+ensuring a smooth and enjoyable experience for all family members.
+Technically, the system demonstrates solid design and development practices, using
+modern tools like Flutter and Firebase to ensure scalability, usability, and perfor-
+mance. The integration of booking features and structured daily schedules adds real
+value to the user experience.
+Fatripy aligns with the goals of Vision 2030 by promoting domestic tourism and dig-
+ital transformation. It lays a strong foundation for future enhancements such as AI-
+driven suggestions, real-time updates, and expanded destination coverage. Overall,
+the project reflects the team’s commitment to solving real-world problems through
+intelligent, user-centered design.
+--- Page 45 ---
+Bibliography
+[1] Digital transformation in saudi tourism.https://www.mcit.gov.sa/ar/
+publications. Report published by the Ministry of Communications and In-
+formation Technology.
+[2] Draw.io.https://www.draw.io. Online diagramming tool used for ERD and
+UML diagrams.
+[3] Nusuk official platform.https://nusuk.sa/. Official source for Hajj and Umrah
+services.
+[4] Projectlibre desktop.https://www.projectlibre.com/projectlibre-
+desktop/. Open-source project management software used for scheduling,
+tracking, and workflow organization.
+[5] Quality of life program (vision 2030).https://www.vision2030.gov.sa/ar/
+v2030/vrp/quality-of-life/. Explains how Vision 2030 supports the devel-
+opment of the tourism and entertainment sectors.
+[6] Saudi tourism authority.https://www.visit-saudi.com/. Official source of
+information about destinations and events in Saudi Arabia.
+34
