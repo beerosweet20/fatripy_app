@@ -1,37 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../../core/constants/supported_cities.dart';
 import '../../localization/app_localizations_ext.dart';
 
 class BlogScreen extends StatelessWidget {
   const BlogScreen({super.key});
 
   static const double _designWidth = 412;
-  static const double _designHeight = 1603;
 
   static const Color _bg = Color(0xFFFFF7E5);
   static const Color _header = Color(0xFFFFDC91);
   static const Color _blue = Color(0xFF7FA2DA);
   static const Color _pinkLight = Color(0xFFF5C9D4);
 
+  String _descriptionForCity(BuildContext context, String city) {
+    final l10n = context.l10n;
+    switch (city) {
+      case 'Riyadh':
+        return l10n.blogRiyadhDescription;
+      case 'Jeddah':
+        return l10n.blogJeddahDescription;
+      case 'Mecca':
+        return l10n.blogMeccaDescription;
+      case 'Medina':
+        return l10n.blogMadinahDescription;
+      case 'Dammam':
+        return l10n.blogDammamDescription;
+      case 'Abha':
+        return l10n.blogAbhaDescription;
+      case 'Taif':
+        return l10n.blogTaifDescription;
+      case 'Jazan':
+        return l10n.blogJazanDescription;
+      case 'Khobar':
+        return l10n.blogAlKhobarDescription;
+      default:
+        return l10n.blogCityGenericDescription(localizeCityLabel(l10n, city));
+    }
+  }
+
+  String _badgeTitleForCity(BuildContext context, String city) {
+    final l10n = context.l10n;
+    switch (city) {
+      case 'Medina':
+        return l10n.blogMadinahTitle;
+      default:
+        return localizeCityLabel(l10n, city);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final showBack = context.canPop();
+
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
         top: false,
-        bottom: false,
+        bottom: true,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final scale = constraints.maxWidth / _designWidth;
             double s(double value) => value * scale;
 
+            final cities = <String>[
+              ...AppCities.values.where(
+                (city) =>
+                    city != 'Mecca' &&
+                    city != 'Medina' &&
+                    city != 'Dammam' &&
+                    city != 'Abha' &&
+                    city != 'Taif',
+              ),
+              'Mecca',
+              'Medina',
+              'Dammam',
+              'Abha',
+              'Taif',
+            ];
+            const double cardTopBase = 190;
+            const double cardStep = 372;
+            const double badgeOffset = -20;
+            const double circleOffset = 205;
+            final designHeight = cardTopBase + (cities.length * cardStep) + 220;
+
             return SingleChildScrollView(
               child: SizedBox(
                 width: constraints.maxWidth,
-                height: s(_designHeight),
+                height: s(designHeight.toDouble()),
                 child: Stack(
                   children: [
                     Positioned.fill(child: Container(color: _bg)),
@@ -43,8 +102,8 @@ class BlogScreen extends StatelessWidget {
                       child: Container(color: _header),
                     ),
                     if (showBack)
-                      Positioned(
-                        left: s(12),
+                      PositionedDirectional(
+                        start: s(12),
                         top: s(78),
                         width: s(24),
                         height: s(24),
@@ -54,7 +113,7 @@ class BlogScreen extends StatelessWidget {
                           onPressed: () {
                             if (context.canPop()) context.pop();
                           },
-                          icon: const Icon(Icons.arrow_back),
+                          icon: const BackButtonIcon(),
                         ),
                       ),
                     Positioned(
@@ -71,148 +130,66 @@ class BlogScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
-                      left: s(96),
+                    PositionedDirectional(
+                      start: s(42),
+                      end: s(42),
                       top: s(93),
-                      width: s(235),
-                      height: s(17),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          l10n.blogSubtitle,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          softWrap: false,
-                          textScaler: TextScaler.noScaling,
-                          style: GoogleFonts.inriaSerif(
-                            fontSize: s(12),
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                            height: 1.0,
-                          ),
+                      child: Text(
+                        l10n.blogSubtitle,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inriaSerif(
+                          fontSize: s(12).clamp(11.0, 14.0),
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                          height: 1.15,
                         ),
                       ),
                     ),
-                    _BlogCityCard(
-                      x: s(1),
-                      y: s(190),
-                      width: s(338),
-                      height: s(230),
-                      badgeX: s(-2),
-                      badgeY: s(169),
-                      badgeWidth: s(120),
-                      badgeHeight: s(43),
-                      badgeText: l10n.cityRiyadh,
-                      badgeColor: _blue,
-                      borderColor: _pinkLight,
-                      circleX: s(281),
-                      circleY: s(384),
-                      circleSize: s(100),
-                      imagePath: 'assets/images/home/hero_riyadh.jpg',
-                      contentPadding: EdgeInsets.fromLTRB(
-                        s(9),
-                        s(28),
-                        s(12),
-                        s(8),
+                    for (int i = 0; i < cities.length; i++)
+                      Builder(
+                        builder: (context) {
+                          final city = cities[i];
+                          final isMecca = city == 'Mecca';
+                          return _BlogCityCard(
+                            start: i.isOdd ? s(74) : s(1),
+                            y: s(cardTopBase + (i * cardStep)),
+                            width: s(338),
+                            height: s(248),
+                            badgeStart: i.isOdd ? s(293) : s(1),
+                            badgeY: s(
+                              cardTopBase + (i * cardStep) + badgeOffset,
+                            ),
+                            badgeWidth: s(120),
+                            badgeHeight: s(40),
+                            badgeText: _badgeTitleForCity(context, city),
+                            badgeColor: _blue,
+                            borderColor: isMecca
+                                ? const Color(0xFFE6A9B3)
+                                : _pinkLight,
+                            backgroundColor: isMecca
+                                ? const Color(0xFFF3E8D7)
+                                : const Color(0xFFFFF7E5),
+                            borderRadius: isMecca ? s(20) : s(10),
+                            circleStart: i.isOdd ? s(24) : s(289),
+                            circleY: s(
+                              cardTopBase + (i * cardStep) + circleOffset,
+                            ),
+                            circleSize: s(100),
+                            imagePath: cityImageAsset(city),
+                            contentPadding: isMecca
+                                ? EdgeInsetsDirectional.all(s(20))
+                                : EdgeInsetsDirectional.fromSTEB(
+                                    i.isOdd ? s(56) : s(13),
+                                    s(24),
+                                    i.isOdd ? s(14) : s(56),
+                                    s(12),
+                                  ),
+                            description: _descriptionForCity(context, city),
+                          );
+                        },
                       ),
-                      description: l10n.blogRiyadhDescription,
-                    ),
-                    Positioned(
-                      left: s(36),
-                      top: s(508),
-                      width: s(376),
-                      height: s(70),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: _blue,
-                          borderRadius: BorderRadius.circular(s(8)),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          l10n.blogFutureNotice,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inriaSerif(
-                            fontSize: s(18),
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            height: 1.1,
-                          ),
-                        ),
-                      ),
-                    ),
-                    _BlogCityCard(
-                      x: s(1),
-                      y: s(685),
-                      width: s(338),
-                      height: s(230),
-                      badgeX: s(1),
-                      badgeY: s(665),
-                      badgeWidth: s(120),
-                      badgeHeight: s(40),
-                      badgeText: l10n.cityJeddah,
-                      badgeColor: _blue,
-                      borderColor: _pinkLight,
-                      circleX: s(287),
-                      circleY: s(846),
-                      circleSize: s(100),
-                      imagePath: 'assets/images/home/season_boulevard.jpg',
-                      contentPadding: EdgeInsets.fromLTRB(
-                        s(16),
-                        s(23),
-                        s(42),
-                        s(12),
-                      ),
-                      description: l10n.blogJeddahDescription,
-                    ),
-                    _BlogCityCard(
-                      x: s(74),
-                      y: s(975),
-                      width: s(338),
-                      height: s(230),
-                      badgeX: s(293),
-                      badgeY: s(955),
-                      badgeWidth: s(120),
-                      badgeHeight: s(40),
-                      badgeText: l10n.blogCityJazan,
-                      badgeColor: _blue,
-                      borderColor: _pinkLight,
-                      circleX: s(24),
-                      circleY: s(1135),
-                      circleSize: s(100),
-                      imagePath: 'assets/images/home/season_noor_riyadh.jpg',
-                      contentPadding: EdgeInsets.fromLTRB(
-                        s(43),
-                        s(27),
-                        s(7),
-                        s(20),
-                      ),
-                      description: l10n.blogJazanDescription,
-                    ),
-                    _BlogCityCard(
-                      x: s(1),
-                      y: s(1266),
-                      width: s(338),
-                      height: s(230),
-                      badgeX: s(1),
-                      badgeY: s(1246),
-                      badgeWidth: s(120),
-                      badgeHeight: s(40),
-                      badgeText: l10n.blogCityAlKhobar,
-                      badgeColor: _blue,
-                      borderColor: _pinkLight,
-                      circleX: s(289),
-                      circleY: s(1439),
-                      circleSize: s(100),
-                      imagePath: 'assets/images/home/season_riyadh_season.jpg',
-                      contentPadding: EdgeInsets.fromLTRB(
-                        s(13),
-                        s(24),
-                        s(16),
-                        s(12),
-                      ),
-                      description: l10n.blogAlKhobarDescription,
-                    ),
                   ],
                 ),
               ),
@@ -225,37 +202,41 @@ class BlogScreen extends StatelessWidget {
 }
 
 class _BlogCityCard extends StatelessWidget {
-  final double x;
+  final double start;
   final double y;
   final double width;
   final double height;
-  final double badgeX;
+  final double badgeStart;
   final double badgeY;
   final double badgeWidth;
   final double badgeHeight;
   final String badgeText;
   final Color badgeColor;
   final Color borderColor;
-  final double circleX;
+  final Color backgroundColor;
+  final double borderRadius;
+  final double circleStart;
   final double circleY;
   final double circleSize;
   final String imagePath;
-  final EdgeInsets contentPadding;
+  final EdgeInsetsGeometry contentPadding;
   final String description;
 
   const _BlogCityCard({
-    required this.x,
+    required this.start,
     required this.y,
     required this.width,
     required this.height,
-    required this.badgeX,
+    required this.badgeStart,
     required this.badgeY,
     required this.badgeWidth,
     required this.badgeHeight,
     required this.badgeText,
     required this.badgeColor,
     required this.borderColor,
-    required this.circleX,
+    required this.backgroundColor,
+    required this.borderRadius,
+    required this.circleStart,
     required this.circleY,
     required this.circleSize,
     required this.imagePath,
@@ -265,34 +246,39 @@ class _BlogCityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final descriptionFontSize = (width * 0.036).clamp(11.0, 14.0);
+    final badgeFontSize = (badgeHeight * 0.52).clamp(16.0, 24.0);
+
     return Stack(
       children: [
-        Positioned(
-          left: x,
+        PositionedDirectional(
+          start: start,
           top: y,
           width: width,
           height: height,
           child: Container(
             padding: contentPadding,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF7E5),
-              borderRadius: BorderRadius.circular(width * 0.03),
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(color: borderColor, width: 2),
             ),
             child: Text(
               description,
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.start,
+              maxLines: 10,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inriaSerif(
                 color: Colors.black,
-                fontSize: width * 0.036,
-                height: 1.12,
+                fontSize: descriptionFontSize,
+                height: 1.25,
                 fontWeight: FontWeight.w400,
               ),
             ),
           ),
         ),
-        Positioned(
-          left: badgeX,
+        PositionedDirectional(
+          start: badgeStart,
           top: badgeY,
           width: badgeWidth,
           height: badgeHeight,
@@ -306,15 +292,15 @@ class _BlogCityCard extends StatelessWidget {
               badgeText,
               style: GoogleFonts.inriaSerif(
                 color: Colors.white,
-                fontSize: badgeHeight * 0.52,
+                fontSize: badgeFontSize,
                 fontWeight: FontWeight.w700,
                 height: 1.0,
               ),
             ),
           ),
         ),
-        Positioned(
-          left: circleX,
+        PositionedDirectional(
+          start: circleStart,
           top: circleY,
           width: circleSize,
           height: circleSize,

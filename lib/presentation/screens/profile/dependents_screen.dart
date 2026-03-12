@@ -7,6 +7,7 @@ import 'package:fatripy_app/data/repositories/catalog_repository.dart';
 import 'package:fatripy_app/data/repositories/family_repository.dart';
 import 'package:fatripy_app/data/repositories/trip_repository.dart';
 import 'package:fatripy_app/domain/entities/trip_plan.dart';
+import 'package:fatripy_app/core/constants/supported_cities.dart';
 
 import '../../localization/app_localizations_ext.dart';
 import '../../theme/responsive_scale.dart';
@@ -36,7 +37,7 @@ class _DependentsScreenState extends State<DependentsScreen> {
   List<int> _infantAges = List.filled(0, 0);
 
   String _budget = '21000SAR';
-  String _city = 'Riyadh';
+  String _city = AppCities.values.first;
   String _duration = '7 days & 6 nights';
   String _start = '1 dec 2026';
   String _end = '7 dec 2026';
@@ -45,17 +46,6 @@ class _DependentsScreenState extends State<DependentsScreen> {
 
   bool _generating = false;
   bool _localizedDefaultsApplied = false;
-
-  static const List<String> _supportedCities = <String>[
-    'Riyadh',
-    'Jeddah',
-    'Mecca',
-    'Medina',
-    'Dammam',
-    'Khobar',
-    'Abha',
-    'Taif',
-  ];
 
   @override
   void initState() {
@@ -106,30 +96,6 @@ class _DependentsScreenState extends State<DependentsScreen> {
       parsed.add(_parseInt(v, 0));
     }
     return _normalizeAgeList(parsed, count);
-  }
-
-  String _localizedCityLabel(BuildContext context, String city) {
-    final l10n = context.l10n;
-    switch (city) {
-      case 'Riyadh':
-        return l10n.cityRiyadh;
-      case 'Jeddah':
-        return l10n.cityJeddah;
-      case 'Mecca':
-        return l10n.cityMecca;
-      case 'Medina':
-        return l10n.cityMedina;
-      case 'Dammam':
-        return l10n.cityDammam;
-      case 'Khobar':
-        return l10n.cityKhobar;
-      case 'Abha':
-        return l10n.cityAbha;
-      case 'Taif':
-        return l10n.cityTaif;
-      default:
-        return city;
-    }
   }
 
   int _extractDurationDays(String rawDuration) {
@@ -184,9 +150,9 @@ class _DependentsScreenState extends State<DependentsScreen> {
         .replaceAll(',', '')
         .replaceAll(RegExp(r'\s+'), ' ')
         .toLowerCase();
-    final match = RegExp(r'^(\d{1,2}) ([a-z]{3,9}) (\d{4})$').firstMatch(
-      normalized,
-    );
+    final match = RegExp(
+      r'^(\d{1,2}) ([a-z]{3,9}) (\d{4})$',
+    ).firstMatch(normalized);
     if (match == null) return null;
 
     const monthMap = <String, int>{
@@ -255,8 +221,7 @@ class _DependentsScreenState extends State<DependentsScreen> {
           _adultAges = _normalizeAgeList(adultAges, _adults);
           _childAges = _normalizeAgeList(childAges, _children);
           _infantAges = _normalizeAgeList(infantAges, _infant);
-          _budget =
-              (aggregate.budgetLabel?.trim().isNotEmpty ?? false)
+          _budget = (aggregate.budgetLabel?.trim().isNotEmpty ?? false)
               ? aggregate.budgetLabel!.trim()
               : '${aggregate.familyGroup.budget.toStringAsFixed(0)} SAR';
           if (aggregate.destinationCity.trim().isNotEmpty) {
@@ -270,12 +235,10 @@ class _DependentsScreenState extends State<DependentsScreen> {
           }
           _startDateValue = aggregate.familyGroup.startDate;
           _endDateValue = aggregate.familyGroup.endDate;
-          _start =
-              (aggregate.startLabel?.trim().isNotEmpty ?? false)
+          _start = (aggregate.startLabel?.trim().isNotEmpty ?? false)
               ? aggregate.startLabel!.trim()
               : _formatDateLabel(aggregate.familyGroup.startDate);
-          _end =
-              (aggregate.endLabel?.trim().isNotEmpty ?? false)
+          _end = (aggregate.endLabel?.trim().isNotEmpty ?? false)
               ? aggregate.endLabel!.trim()
               : _formatDateLabel(aggregate.familyGroup.endDate);
         });
@@ -468,12 +431,12 @@ class _DependentsScreenState extends State<DependentsScreen> {
               Expanded(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: _supportedCities.length,
+                  itemCount: AppCities.values.length,
                   itemBuilder: (context, index) {
-                    final c = _supportedCities[index];
+                    final c = AppCities.values[index];
                     return ListTile(
                       title: Text(
-                        _localizedCityLabel(context, c),
+                        localizeCityLabel(context.l10n, c),
                         textAlign: TextAlign.center,
                       ),
                       onTap: () => Navigator.of(context).pop(c),
@@ -670,7 +633,7 @@ class _DependentsScreenState extends State<DependentsScreen> {
                           SizedBox(height: s(12)),
                           _TripInfoRow(
                             label: l10n.dependentsCity,
-                            value: _localizedCityLabel(context, _city),
+                            value: localizeCityLabel(l10n, _city),
                             onTap: _selectCity,
                           ),
                           SizedBox(height: s(12)),

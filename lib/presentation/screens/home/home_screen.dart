@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: _cream,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(4, 30, 4, 32),
+          padding: const EdgeInsetsDirectional.fromSTEB(4, 30, 4, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -96,7 +96,7 @@ class _HeroCard extends StatelessWidget {
         border: Border.all(color: _navy, width: 4),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 8, 14, 8),
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 14, 8),
         child: Row(
           children: [
             ClipRRect(
@@ -112,6 +112,7 @@ class _HeroCard extends StatelessWidget {
             Expanded(
               child: Text(
                 subtitle,
+                textAlign: TextAlign.start,
                 style: GoogleFonts.inriaSerif(
                   color: _navy,
                   fontSize: 40 / 1.67,
@@ -146,37 +147,49 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final availableWidth = MediaQuery.sizeOf(context).width;
+    final effectiveWidth = width.clamp(
+      160.0,
+      (availableWidth - 16).clamp(160.0, width),
+    );
+
     return SizedBox(
       height: 85,
       child: Stack(
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         children: [
-          Positioned(
-            left: 0,
-            right: 0,
+          PositionedDirectional(
+            start: 0,
+            end: 0,
             top: 43,
             child: Container(height: 3, color: lineColor),
           ),
-          Container(
-            width: width,
-            height: 85,
-            padding: const EdgeInsets.only(left: 20, right: 14),
-            alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-              color: fillColor,
-              border: Border.all(color: borderColor, width: 4),
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(50),
-                bottomRight: Radius.circular(50),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Container(
+              width: effectiveWidth,
+              height: 85,
+              padding: const EdgeInsetsDirectional.only(start: 20, end: 14),
+              alignment: AlignmentDirectional.centerStart,
+              decoration: BoxDecoration(
+                color: fillColor,
+                border: Border.all(color: borderColor, width: 4),
+                borderRadius: const BorderRadiusDirectional.only(
+                  topEnd: Radius.circular(50),
+                  bottomEnd: Radius.circular(50),
+                ),
               ),
-            ),
-            child: Text(
-              label,
-              style: GoogleFonts.inriaSerif(
-                color: textColor,
-                fontSize: 33 / 1.65,
-                height: 1.0,
-                fontWeight: FontWeight.w700,
+              child: Text(
+                label,
+                textAlign: TextAlign.start,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inriaSerif(
+                  color: textColor,
+                  fontSize: 33 / 1.65,
+                  height: 1.0,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
@@ -208,6 +221,7 @@ class _DestinationPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final cards = [
       _DestinationCard(
         title: card1Title,
@@ -236,14 +250,17 @@ class _DestinationPanel extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(17),
         child: SingleChildScrollView(
+          key: PageStorageKey<String>(
+            'destination-panel-${isRtl ? 'rtl' : 'ltr'}',
+          ),
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(15, 66, 16, 22),
+          padding: const EdgeInsetsDirectional.fromSTEB(15, 66, 16, 22),
           child: Row(
             children: [
               for (int i = 0; i < cards.length; i++)
                 Padding(
-                  padding: EdgeInsets.only(
-                    right: i == cards.length - 1 ? 0 : 30,
+                  padding: EdgeInsetsDirectional.only(
+                    end: i == cards.length - 1 ? 0 : 30,
                   ),
                   child: cards[i],
                 ),
@@ -281,6 +298,8 @@ class _DestinationCard extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inriaSerif(
               color: Colors.black,
               fontSize: 20,
@@ -302,7 +321,7 @@ class _DestinationCard extends StatelessWidget {
           Text(
             description,
             textAlign: TextAlign.center,
-            maxLines: 4,
+            maxLines: 5,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inriaSerif(
               color: Colors.black,
@@ -339,6 +358,7 @@ class _SeasonPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final cards = [
       _SeasonCard(
         title: card1Title,
@@ -367,14 +387,15 @@ class _SeasonPanel extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(17),
         child: SingleChildScrollView(
+          key: PageStorageKey<String>('season-panel-${isRtl ? 'rtl' : 'ltr'}'),
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 36, 24, 24),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 30, 24, 24),
           child: Row(
             children: [
               for (int i = 0; i < cards.length; i++)
                 Padding(
-                  padding: EdgeInsets.only(
-                    right: i == cards.length - 1 ? 0 : 18,
+                  padding: EdgeInsetsDirectional.only(
+                    end: i == cards.length - 1 ? 0 : 18,
                   ),
                   child: cards[i],
                 ),
@@ -399,19 +420,24 @@ class _SeasonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double cardWidth = 312;
+    const double cardHeight = 205;
+    const double bodyWidth = 228;
+    const double imageSize = 146;
+
     return SizedBox(
-      width: 297,
-      height: 187,
+      width: cardWidth,
+      height: cardHeight,
       child: Stack(
         children: [
-          Positioned(
-            left: 72,
+          PositionedDirectional(
+            start: 84,
             top: 0,
             child: Container(
-              width: 225,
-              height: 187,
+              width: bodyWidth,
+              height: cardHeight,
               // Keep text fully outside the overlapped circular image area.
-              padding: const EdgeInsets.fromLTRB(84, 10, 10, 14),
+              padding: const EdgeInsetsDirectional.fromSTEB(74, 10, 12, 14),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF7E5),
                 borderRadius: BorderRadius.circular(20),
@@ -422,20 +448,20 @@ class _SeasonCard extends StatelessWidget {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inriaSerif(
                       color: Colors.black,
-                      fontSize: 20,
+                      fontSize: 19,
                       fontWeight: FontWeight.w400,
-                      height: 1.0,
+                      height: 1.05,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     description,
                     textAlign: TextAlign.center,
-                    maxLines: 4,
+                    maxLines: 5,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inriaSerif(
                       color: Colors.black,
@@ -448,12 +474,12 @@ class _SeasonCard extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            top: 20,
+          PositionedDirectional(
+            start: 0,
+            top: 28,
             child: Container(
-              width: 152,
-              height: 154,
+              width: imageSize,
+              height: imageSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: const Color(0xFF31487A), width: 3),

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   static const Color _pink = Color(0xFFE18299);
 
   static const double _baseWidth = 412;
+  static const double _baseContentHeight = 930;
 
   final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
@@ -117,221 +120,256 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final l10n = context.l10n;
     return Scaffold(
       backgroundColor: _bg,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         top: false,
-        bottom: false,
+        bottom: true,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final scale = constraints.maxWidth / _baseWidth;
+            final contentWidth = constraints.maxWidth
+                .clamp(280.0, 460.0)
+                .toDouble();
+            final scale = (contentWidth / _baseWidth)
+                .clamp(0.78, 1.2)
+                .toDouble();
             double s(double value) => value * scale;
 
             final yNudge = s(4);
+            final contentHeight = s(_baseContentHeight);
+            final stackHeight = math.max(
+              constraints.maxHeight,
+              contentHeight + yNudge,
+            );
 
-            return SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: Stack(
-                children: [
-                  Positioned.fill(child: Container(color: _bg)),
-                  Positioned.fill(
-                    child: Transform.translate(
-                      offset: Offset(0, yNudge),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: s(-262),
-                            top: s(30),
-                            width: s(786),
-                            height: s(275),
-                            child: CustomPaint(painter: _AuthRibbonPainter()),
-                          ),
-                          Positioned(
-                            left: s(109),
-                            top: s(80),
-                            width: s(194),
-
-                            height: s(194),
-                            child: Image.asset(
-                              'assets/images/logo_pink.png',
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(10),
-                            top: s(322),
-                            width: s(392),
-                            child: Text(
-                              l10n.registerTitle,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inriaSerif(
-                                fontSize: s(24),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                                height: 1.05,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(386),
-                            child: _label('${l10n.labelFullName}:', scale),
-                          ),
-                          Positioned(
-                            left: s(23),
-                            top: s(416),
-                            width: s(367),
-                            height: s(34),
-                            child: _RegisterField(
-                              controller: _fullNameController,
-                              obscureText: false,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(463),
-                            child: _label('${l10n.labelUsername}:', scale),
-                          ),
-                          Positioned(
-                            left: s(23),
-                            top: s(492),
-                            width: s(367),
-                            height: s(34),
-                            child: _RegisterField(
-                              controller: _usernameController,
-                              obscureText: false,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(540),
-                            child: _label('${l10n.labelEmail}:', scale),
-                          ),
-                          Positioned(
-                            left: s(23),
-                            top: s(568),
-                            width: s(367),
-                            height: s(34),
-                            child: _RegisterField(
-                              controller: _emailController,
-                              obscureText: false,
-                              keyboardType: TextInputType.emailAddress,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(617),
-                            child: _label('${l10n.labelPassword}:', scale),
-                          ),
-                          Positioned(
-                            left: s(23),
-                            top: s(644),
-                            width: s(367),
-                            height: s(34),
-                            child: _RegisterField(
-                              controller: _passwordController,
-                              obscureText: true,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(694),
-                            child: _label(
-                              '${l10n.labelConfirmPassword}:',
-                              scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(23),
-                            top: s(720),
-                            width: s(367),
-                            height: s(34),
-                            child: _RegisterField(
-                              controller: _confirmPasswordController,
-                              obscureText: true,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(24),
-                            top: s(796),
-                            width: s(365),
-                            height: s(45),
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _register,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _navy,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(s(50)),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : Text(
-                                      l10n.actionRegister,
-                                      style: GoogleFonts.inriaSerif(
-                                        fontSize: s(20),
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.0,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            top: s(864),
-                            width: constraints.maxWidth,
-                            child: GestureDetector(
-                              onTap: () => context.go(LoginScreen.routeName),
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: GoogleFonts.inriaSerif(
-                                    fontSize: s(18),
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black,
+            return SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.only(bottom: s(20)),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: SizedBox(
+                    width: contentWidth,
+                    height: stackHeight,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: Container(color: _bg)),
+                        Positioned.fill(
+                          child: Transform.translate(
+                            offset: Offset(0, yNudge),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: s(-262),
+                                  top: s(30),
+                                  width: s(786),
+                                  height: s(275),
+                                  child: CustomPaint(
+                                    painter: _AuthRibbonPainter(),
                                   ),
-                                  children: [
-                                    TextSpan(text: l10n.registerHaveAccount),
-                                    TextSpan(
-                                      text: l10n.actionLogin,
-                                      style: TextStyle(
-                                        color: _navy,
-                                        fontWeight: FontWeight.w700,
+                                ),
+                                Positioned(
+                                  left: s(109),
+                                  top: s(80),
+                                  width: s(194),
+                                  height: s(194),
+                                  child: Image.asset(
+                                    'assets/images/logo_pink.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(10),
+                                  top: s(322),
+                                  width: s(392),
+                                  child: Text(
+                                    l10n.registerTitle,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.inriaSerif(
+                                      fontSize: s(24),
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black,
+                                      height: 1.05,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(386),
+                                  child: _label(
+                                    '${l10n.labelFullName}:',
+                                    scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(23),
+                                  top: s(416),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _RegisterField(
+                                    controller: _fullNameController,
+                                    obscureText: false,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(463),
+                                  child: _label(
+                                    '${l10n.labelUsername}:',
+                                    scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(23),
+                                  top: s(492),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _RegisterField(
+                                    controller: _usernameController,
+                                    obscureText: false,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(540),
+                                  child: _label('${l10n.labelEmail}:', scale),
+                                ),
+                                Positioned(
+                                  left: s(23),
+                                  top: s(568),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _RegisterField(
+                                    controller: _emailController,
+                                    obscureText: false,
+                                    keyboardType: TextInputType.emailAddress,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(617),
+                                  child: _label(
+                                    '${l10n.labelPassword}:',
+                                    scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(23),
+                                  top: s(644),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _RegisterField(
+                                    controller: _passwordController,
+                                    obscureText: true,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(694),
+                                  child: _label(
+                                    '${l10n.labelConfirmPassword}:',
+                                    scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(23),
+                                  top: s(720),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _RegisterField(
+                                    controller: _confirmPasswordController,
+                                    obscureText: true,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(24),
+                                  top: s(796),
+                                  width: s(365),
+                                  height: s(45),
+                                  child: ElevatedButton(
+                                    onPressed: _isLoading ? null : _register,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: _navy,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          s(50),
+                                        ),
                                       ),
                                     ),
-                                  ],
+                                    child: _isLoading
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Text(
+                                            l10n.actionRegister,
+                                            style: GoogleFonts.inriaSerif(
+                                              fontSize: s(20),
+                                              fontWeight: FontWeight.w700,
+                                              height: 1.0,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  ),
                                 ),
-                              ),
+                                Positioned(
+                                  left: 0,
+                                  top: s(864),
+                                  width: contentWidth,
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        context.go(LoginScreen.routeName),
+                                    child: RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        style: GoogleFonts.inriaSerif(
+                                          fontSize: s(18),
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: l10n.registerHaveAccount,
+                                          ),
+                                          TextSpan(
+                                            text: l10n.actionLogin,
+                                            style: TextStyle(
+                                              color: _navy,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             );
           },

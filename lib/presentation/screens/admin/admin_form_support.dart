@@ -11,6 +11,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 import 'package:latlong2/latlong.dart' as latlng;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/constants/supported_cities.dart';
 import '../../localization/app_localizations_ext.dart';
 import 'admin_design.dart';
 
@@ -44,16 +45,12 @@ class AdminCategoryOption {
 
 List<AdminCityOption> adminCityOptions(BuildContext context) {
   final l10n = context.l10n;
-  return <AdminCityOption>[
-    AdminCityOption(value: 'Riyadh', label: l10n.cityRiyadh),
-    AdminCityOption(value: 'Jeddah', label: l10n.cityJeddah),
-    AdminCityOption(value: 'Mecca', label: l10n.cityMecca),
-    AdminCityOption(value: 'Medina', label: l10n.cityMedina),
-    AdminCityOption(value: 'Dammam', label: l10n.cityDammam),
-    AdminCityOption(value: 'Khobar', label: l10n.cityKhobar),
-    AdminCityOption(value: 'Abha', label: l10n.cityAbha),
-    AdminCityOption(value: 'Taif', label: l10n.cityTaif),
-  ];
+  return AppCities.values
+      .map(
+        (city) =>
+            AdminCityOption(value: city, label: localizeCityLabel(l10n, city)),
+      )
+      .toList(growable: false);
 }
 
 List<AdminCategoryOption> adminCategoryOptions(BuildContext context) {

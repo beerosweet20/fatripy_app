@@ -210,6 +210,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cityTaif => 'Taif';
 
   @override
+  String get cityJazan => 'Jazan';
+
+  @override
   String get dependentsDone => 'Done';
 
   @override
@@ -946,6 +949,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String plansDayLabel(int day) {
+    return 'Day $day';
+  }
+
+  @override
   String plansPricePerNight(Object amount) {
     return '$amount SAR/night';
   }
@@ -1069,65 +1077,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWelcomeTitle => 'Welcome to\nFATRIPY';
 
   @override
-  String get homeHeroSubtitle => 'The heart of\nRiyadh awaits';
+  String get homeHeroSubtitle => 'Discover Saudi cities,\none trip at a time';
 
   @override
-  String get homeMainDestination => 'Main Destination';
+  String get homeMainDestination => 'Explore Cities';
 
   @override
-  String get homeSeasonalAttractions => 'Seasonal Attraction';
+  String get homeSeasonalAttractions => 'Trip Styles';
 
   @override
-  String get homeDestination1Title => 'Diriyah';
+  String get homeDestination1Title => 'Cultural Discovery';
 
   @override
   String get homeDestination1Description =>
-      'The birthplace of the First Saudi State, a historical experience with authentic heritage charm.';
+      'Historic districts, museums, and heritage landmarks for curious travelers.';
 
   @override
-  String get homeDestination2Title => 'Al Olaya';
+  String get homeDestination2Title => 'Coastal Escapes';
 
   @override
   String get homeDestination2Description =>
-      'The modern heart of Riyadh, blending upscale shopping, iconic towers, and dynamic city energy.';
+      'Seafront walks, island vibes, and family-friendly waterfront experiences.';
 
   @override
-  String get homeDestination3Title => 'Jabal Tuwaiq';
+  String get homeDestination3Title => 'Mountain Nature';
 
   @override
   String get homeDestination3Description =>
-      'Iconic cliffs and breathtaking views for unforgettable adventures.';
+      'Cool weather, scenic heights, and nature-driven moments across the Kingdom.';
 
   @override
-  String get homeSeason1Title => 'Riyadh Season';
+  String get homeSeason1Title => 'Family Friendly';
 
   @override
   String get homeSeason1Description =>
-      'The Kingdom\'s largest entertainment festival with world-class experiences.';
+      'Balanced plans with comfortable pacing for all family members.';
 
   @override
-  String get homeSeason2Title => 'Boulevard Riyadh City';
+  String get homeSeason2Title => 'Adventure & Outdoors';
 
   @override
   String get homeSeason2Description =>
-      'A vibrant hub of dining, shows, and nonstop entertainment.';
+      'Action-filled itineraries with trails, viewpoints, and active attractions.';
 
   @override
-  String get homeSeason3Title => 'Noor Riyadh';
+  String get homeSeason3Title => 'Relax & Leisure';
 
   @override
   String get homeSeason3Description =>
-      'A spectacular citywide light art festival transforming Riyadh into an open-air gallery.';
+      'Calm stays, scenic dining, and smooth city experiences.';
+
+  @override
+  String get homeCityCardHint => 'Hotels, activities, and events available';
 
   @override
   String get blogTitle => 'BLOG';
 
   @override
-  String get blogSubtitle => 'A brief overview of the cities in our app';
+  String get blogSubtitle => 'All supported cities in FATRIPY';
 
   @override
-  String get blogFutureNotice =>
-      'It will be available in the future! Stay tuned.';
+  String get blogFutureNotice => 'More city content is coming soon.';
 
   @override
   String get blogRiyadhDescription =>
@@ -1136,6 +1146,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get blogJeddahDescription =>
       'Jeddah is located in the west of the Kingdom on the Red Sea coast and is known as the gateway to the Two Holy Mosques. Historic Jeddah (Al-Balad) is one of its most prominent heritage sites, containing over 600 heritage buildings and old houses such as Nassif House, and it is registered as a UNESCO site. Jeddah is famous for its maritime spirit, its long corniche, and its cultural diversity, making it a city that combines tradition, modernity, and coastal life.';
+
+  @override
+  String get blogMeccaDescription =>
+      'Mecca is located in the western region of Saudi Arabia and is the holiest city in Islam. It is home to Al-Masjid Al-Haram and the Kaaba, the direction Muslims face during their daily prayers. The city holds immense religious significance and welcomes millions of Muslims every year who come to perform Hajj and Umrah. Mecca combines deep spiritual heritage with modern urban development, making it one of the most important religious and cultural centers in the Islamic world.';
+
+  @override
+  String get blogMadinahTitle => 'Madinah';
+
+  @override
+  String get blogMadinahDescription =>
+      'Madinah is located in the western region of Saudi Arabia and is one of the holiest cities in Islam. It is home to Al-Masjid An-Nabawi, the Prophet’s Mosque, and holds a special place in Islamic history. The city is known for its spiritual atmosphere, rich heritage, and important religious landmarks. Madinah also combines historical significance with modern urban development, making it a unique religious and cultural destination.';
+
+  @override
+  String get blogDammamDescription =>
+      'Dammam is located in the Eastern Province of Saudi Arabia and is one of the Kingdom’s major coastal cities overlooking the Arabian Gulf. It is known for its beautiful waterfront, lively atmosphere, and strong economic importance. As a key center for business, trade, and industry, Dammam combines modern urban living with attractive leisure destinations, making it a notable city for both residents and visitors.';
+
+  @override
+  String get blogAbhaDescription =>
+      'Abha is located in the Asir region in southwestern Saudi Arabia and is famous for its stunning mountain landscapes and mild weather throughout the year. The city is known for its natural beauty, green parks, and cultural heritage, making it one of the Kingdom’s most attractive destinations for nature lovers and tourists. Abha offers a unique experience that blends scenic charm with rich local identity and tradition.';
+
+  @override
+  String get blogTaifDescription =>
+      'Taif is located in the western region of Saudi Arabia and is well known for its pleasant weather, mountain scenery, and fragrant roses. It is considered one of the Kingdom’s top summer destinations thanks to its beautiful highlands, traditional markets, and diverse natural attractions. Taif combines historical charm with modern development, offering visitors a relaxing and memorable experience.';
+
+  @override
+  String blogCityGenericDescription(Object city) {
+    return '$city is available in FATRIPY with city-based planning for hotels, activities, and events.';
+  }
 
   @override
   String get blogCityJazan => 'Jazan';

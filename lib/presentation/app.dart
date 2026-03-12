@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fatripy_app/l10n/app_localizations.dart';
 
@@ -18,17 +18,28 @@ class FatripyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      onGenerateTitle: (context) => AppLocalizations.of(context)?.appName ?? 'Fatripy',
+      onGenerateTitle: (context) =>
+          AppLocalizations.of(context)?.appName ?? 'Fatripy',
       locale: locale,
       theme: AppTheme.themeFor(themeVariant, 1.0),
       builder: (context, child) {
         final scale = AppScale.of(context);
         final media = MediaQuery.of(context);
+        final languageCode =
+            Localizations.maybeLocaleOf(context)?.languageCode ??
+            locale?.languageCode ??
+            'en';
+        final textDirection = languageCode == 'ar'
+            ? TextDirection.rtl
+            : TextDirection.ltr;
         return MediaQuery(
           data: media.copyWith(textScaler: TextScaler.linear(scale)),
-          child: Theme(
-            data: AppTheme.themeFor(themeVariant, scale),
-            child: child ?? const SizedBox.shrink(),
+          child: Directionality(
+            textDirection: textDirection,
+            child: Theme(
+              data: AppTheme.themeFor(themeVariant, scale),
+              child: child ?? const SizedBox.shrink(),
+            ),
           ),
         );
       },

@@ -210,6 +210,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cityTaif => 'الطائف';
 
   @override
+  String get cityJazan => 'جازان';
+
+  @override
   String get dependentsDone => 'تم';
 
   @override
@@ -939,6 +942,11 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String plansDayLabel(int day) {
+    return 'اليوم $day';
+  }
+
+  @override
   String plansPricePerNight(Object amount) {
     return '$amount ريال/ليلة';
   }
@@ -1062,64 +1070,67 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeWelcomeTitle => 'مرحبًا بك في\nFATRIPY';
 
   @override
-  String get homeHeroSubtitle => 'قلب الرياض\nينتظرك';
+  String get homeHeroSubtitle => 'اكتشف مدن السعودية\nرحلة بعد رحلة';
 
   @override
-  String get homeMainDestination => 'الوجهات الرئيسية';
+  String get homeMainDestination => 'استكشف المدن';
 
   @override
-  String get homeSeasonalAttractions => 'الفعاليات الموسمية';
+  String get homeSeasonalAttractions => 'أنماط الرحلات';
 
   @override
-  String get homeDestination1Title => 'الدرعية';
+  String get homeDestination1Title => 'اكتشاف ثقافي';
 
   @override
   String get homeDestination1Description =>
-      'مهد الدولة السعودية الأولى وتجربة تاريخية بطابع تراثي أصيل.';
+      'أحياء تاريخية ومتاحف ومعالم تراثية لمحبي الثقافة.';
 
   @override
-  String get homeDestination2Title => 'العليا';
+  String get homeDestination2Title => 'وجهات ساحلية';
 
   @override
   String get homeDestination2Description =>
-      'قلب الرياض العصري الذي يجمع التسوق الراقي والأبراج المميزة وحيوية المدينة.';
+      'كورنيشات وجزر وأجواء بحرية مناسبة للعائلة.';
 
   @override
-  String get homeDestination3Title => 'جبل طويق';
+  String get homeDestination3Title => 'طبيعة جبلية';
 
   @override
   String get homeDestination3Description =>
-      'منحدرات أيقونية وإطلالات خلابة لمغامرات لا تُنسى.';
+      'أجواء معتدلة ومرتفعات خلابة وتجارب قريبة من الطبيعة.';
 
   @override
-  String get homeSeason1Title => 'موسم الرياض';
+  String get homeSeason1Title => 'عائلي';
 
   @override
   String get homeSeason1Description =>
-      'أكبر موسم ترفيهي في المملكة بتجارب عالمية المستوى.';
+      'خطط متوازنة بإيقاع مريح لجميع أفراد الأسرة.';
 
   @override
-  String get homeSeason2Title => 'بوليفارد رياض سيتي';
+  String get homeSeason2Title => 'مغامرة وأنشطة';
 
   @override
   String get homeSeason2Description =>
-      'وجهة نابضة بالمطاعم والعروض والترفيه المتواصل.';
+      'برامج نشطة تشمل مسارات وإطلالات وتجارب خارجية.';
 
   @override
-  String get homeSeason3Title => 'نور الرياض';
+  String get homeSeason3Title => 'استرخاء ورفاهية';
 
   @override
   String get homeSeason3Description =>
-      'مهرجان فني ضوئي يحول الرياض إلى معرض مفتوح في جميع أنحاء المدينة.';
+      'إقامات هادئة وتجارب مريحة داخل المدينة.';
+
+  @override
+  String get homeCityCardHint => 'فنادق وأنشطة وفعاليات متاحة';
 
   @override
   String get blogTitle => 'المدونة';
 
   @override
-  String get blogSubtitle => 'نبذة مختصرة عن المدن داخل تطبيقنا';
+  String get blogSubtitle => 'جميع المدن المدعومة في FATRIPY';
 
   @override
-  String get blogFutureNotice => 'ستتوفر قريبًا! ترقبوا.';
+  String get blogFutureNotice => 'سيتم إضافة محتوى مدن أكثر قريبًا.';
 
   @override
   String get blogRiyadhDescription =>
@@ -1128,6 +1139,34 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get blogJeddahDescription =>
       'تقع جدة غرب المملكة على ساحل البحر الأحمر وتُعرف ببوابة الحرمين الشريفين. جدة التاريخية (البلد) من أبرز معالمها التراثية، وتضم أكثر من 600 مبنى تراثي وبيوتًا قديمة مثل بيت نصيف، وهي مسجلة ضمن مواقع اليونسكو. تشتهر جدة بطابعها البحري وكورنيشها الطويل وتنوعها الثقافي، ما يجعلها مدينة تجمع بين التراث والحداثة والحياة الساحلية.';
+
+  @override
+  String get blogMeccaDescription =>
+      'تقع مكة المكرمة في غرب المملكة العربية السعودية، وهي أقدس مدينة في الإسلام، حيث تحتضن المسجد الحرام والكعبة المشرفة التي يتجه إليها المسلمون في صلاتهم من جميع أنحاء العالم. تتميز مكة بتاريخها العريق ومكانتها الدينية العظيمة، إذ يقصدها ملايين المسلمين سنويًا لأداء مناسك الحج والعمرة. كما تجمع المدينة بين روحانية المكان والتطور العمراني الحديث، مما يجعلها مركزًا دينيًا وثقافيًا بارزًا في العالم الإسلامي.';
+
+  @override
+  String get blogMadinahTitle => 'المدينة المنورة';
+
+  @override
+  String get blogMadinahDescription =>
+      'تقع المدينة المنورة في غرب المملكة العربية السعودية، وتعد من أقدس المدن في الإسلام، إذ تحتضن المسجد النبوي الشريف الذي هاجر إليه النبي محمد ﷺ. تتميز المدينة بأجوائها الروحانية وتاريخها الإسلامي العريق، كما يقصدها الزوار من مختلف أنحاء العالم للصلاة في المسجد النبوي وزيارة المعالم الإسلامية البارزة فيها. وتجمع المدينة المنورة بين الأصالة والتطور العمراني الحديث، مما يجعلها وجهة دينية وثقافية مميزة.';
+
+  @override
+  String get blogDammamDescription =>
+      'تقع الدمام في المنطقة الشرقية من المملكة العربية السعودية، وتعد من أهم المدن الساحلية المطلة على الخليج العربي. تتميز الدمام بكورنيشها الجميل وأجوائها البحرية ومكانتها الاقتصادية المهمة، كما تشكل مركزًا حيويًا للأعمال والتجارة والصناعة في المنطقة الشرقية. وتجمع المدينة بين الحداثة والحياة العصرية والمرافق السياحية المتنوعة، مما يجعلها وجهة مميزة للزوار والسكان.';
+
+  @override
+  String get blogAbhaDescription =>
+      'تقع أبها في منطقة عسير جنوب غرب المملكة العربية السعودية، وتشتهر بطبيعتها الجبلية الخلابة وأجوائها المعتدلة طوال العام. تتميز المدينة بمناظرها الطبيعية الساحرة وحدائقها الجميلة ومعالمها التراثية، كما تعد من أبرز الوجهات السياحية في المملكة لمحبي الطبيعة والاستجمام. وتمنح أبها زوارها تجربة فريدة تجمع بين الجمال الطبيعي والهوية الثقافية والتراثية الغنية.';
+
+  @override
+  String get blogTaifDescription =>
+      'تقع الطائف في غرب المملكة العربية السعودية، وتشتهر بأجوائها اللطيفة وطبيعتها الجبلية وورودها العطرة. تعد الطائف من أبرز الوجهات السياحية الصيفية في المملكة، حيث تتميز بمرتفعاتها الجميلة وأسواقها التقليدية ومعالمها الطبيعية المتنوعة. كما تجمع المدينة بين التراث العريق والنهضة الحديثة، مما يجعلها مدينة مميزة للزوار الباحثين عن الراحة والجمال الطبيعي.';
+
+  @override
+  String blogCityGenericDescription(Object city) {
+    return 'مدينة $city متاحة في FATRIPY مع تخطيط رحلات حسب المدينة يشمل الفنادق والأنشطة والفعاليات.';
+  }
 
   @override
   String get blogCityJazan => 'جازان';

@@ -348,7 +348,7 @@ class PlanDetailScreen extends StatelessWidget {
                       scale: scale,
                       borderColor: stroke,
                       pillColor: dayCell,
-                      pillAlignment: Alignment.centerLeft,
+                      pillAlignment: AlignmentDirectional.centerStart,
                       pillText: '${context.l10n.planDetailHotelSection}:',
                       child: _HotelInfoContent(
                         scale: scale,
@@ -381,7 +381,7 @@ class PlanDetailScreen extends StatelessWidget {
                       scale: scale,
                       borderColor: stroke,
                       pillColor: dayCell,
-                      pillAlignment: Alignment.centerRight,
+                      pillAlignment: AlignmentDirectional.centerEnd,
                       pillText: '${context.l10n.plansLabelNearbyAttractions}:',
                       child: Column(
                         children: [
@@ -408,7 +408,7 @@ class PlanDetailScreen extends StatelessWidget {
                       scale: scale,
                       borderColor: stroke,
                       pillColor: dayCell,
-                      pillAlignment: Alignment.centerLeft,
+                      pillAlignment: AlignmentDirectional.centerStart,
                       pillText: '${context.l10n.plansLabelDistantAttractions}:',
                       child: Column(
                         children: [
@@ -435,7 +435,7 @@ class PlanDetailScreen extends StatelessWidget {
                       scale: scale,
                       borderColor: stroke,
                       pillColor: dayCell,
-                      pillAlignment: Alignment.centerRight,
+                      pillAlignment: AlignmentDirectional.centerEnd,
                       pillText: '${context.l10n.plansLabelEvents}:',
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,7 +488,7 @@ class _PillOverlayBox extends StatelessWidget {
   final double scale;
   final Color borderColor;
   final Color pillColor;
-  final Alignment pillAlignment;
+  final AlignmentGeometry pillAlignment;
   final String pillText;
   final Widget child;
 
@@ -569,21 +569,22 @@ class _HotelInfoContent extends StatelessWidget {
     final l10n = context.l10n;
     final ink = const Color(0xFF111111);
     final lines = [
-      '${l10n.plansLabelHotel} : ${hotel.name}.',
+      '${l10n.plansLabelHotel}:  ${hotel.name}.',
       if (hotel.location.isNotEmpty)
-        '${l10n.planDetailLocationLabel}: ${hotel.location}.',
+        '${l10n.planDetailLocationLabel}:  ${hotel.location}.',
       if (hotel.price.isNotEmpty)
-        '${l10n.planDetailPriceLabel}: ${hotel.price}.',
+        '${l10n.planDetailPriceLabel}:  ${hotel.price}.',
       if (hotel.rating.isNotEmpty)
-        '${l10n.planDetailRatingLabel}: ${hotel.rating}.',
+        '${l10n.planDetailRatingLabel}:  ${hotel.rating}.',
       if (hotel.amenities.isNotEmpty)
-        '${l10n.planDetailAmenities}: ${hotel.amenities}.',
+        '${l10n.planDetailAmenities}:  ${hotel.amenities}.',
       '${l10n.actionOpenInMaps}.',
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: s(8)),
         for (final line in lines)
           Padding(
             padding: EdgeInsets.only(bottom: s(3)),
@@ -659,9 +660,17 @@ class _DayBlock extends StatelessWidget {
 
   double s(double v) => v * scale;
 
+  String _localizedDayLabel(BuildContext context, String rawLabel) {
+    final match = RegExp(r'(\d+)').firstMatch(rawLabel);
+    final dayNumber = match == null ? null : int.tryParse(match.group(1)!);
+    if (dayNumber == null || dayNumber <= 0) return rawLabel;
+    return '${context.l10n.plansDayLabel(dayNumber)}:';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final resolvedDayLabel = _localizedDayLabel(context, day.label);
     return ClipRRect(
       borderRadius: BorderRadius.circular(s(22)),
       child: Container(
@@ -689,7 +698,7 @@ class _DayBlock extends StatelessWidget {
                       color: dayCell,
                       alignment: Alignment.center,
                       child: Text(
-                        day.label,
+                        resolvedDayLabel,
                         style: TextStyle(
                           fontFamily: 'Georgia',
                           fontSize: s(18),
@@ -742,7 +751,7 @@ class _DayBlock extends StatelessWidget {
                       color: dayCell,
                       alignment: Alignment.center,
                       child: Text(
-                        day.label,
+                        resolvedDayLabel,
                         style: TextStyle(
                           fontFamily: 'Georgia',
                           fontSize: s(18),

@@ -73,6 +73,7 @@
   "cityKhobar": "Khobar",
   "cityAbha": "Abha",
   "cityTaif": "Taif",
+  "cityJazan": "Jazan",
   "dependentsDone": "Done",
   "dependentsGeneratingPlan": "Generating your trip plan... please wait.",
   "dependentsGenerationComplete": "Trip generation complete! Check your new plans.",
@@ -440,6 +441,14 @@
       }
     }
   },
+  "plansDayLabel": "Day {day}",
+  "@plansDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "plansPricePerNight": "{amount} SAR/night",
   "@plansPricePerNight": {
     "placeholders": {
@@ -498,27 +507,39 @@
   "planDetailHotelItemType": "Hotel",
   "planDetailActivityItemType": "Activity",
   "homeWelcomeTitle": "Welcome to\nFATRIPY",
-  "homeHeroSubtitle": "The heart of\nRiyadh awaits",
-  "homeMainDestination": "Main Destination",
-  "homeSeasonalAttractions": "Seasonal Attraction",
-  "homeDestination1Title": "Diriyah",
-  "homeDestination1Description": "The birthplace of the First Saudi State, a historical experience with authentic heritage charm.",
-  "homeDestination2Title": "Al Olaya",
-  "homeDestination2Description": "The modern heart of Riyadh, blending upscale shopping, iconic towers, and dynamic city energy.",
-  "homeDestination3Title": "Jabal Tuwaiq",
-  "homeDestination3Description": "Iconic cliffs and breathtaking views for unforgettable adventures.",
-  "homeSeason1Title": "Riyadh Season",
-  "homeSeason1Description": "The Kingdom's largest entertainment festival with world-class experiences.",
-  "homeSeason2Title": "Boulevard Riyadh City",
-  "homeSeason2Description": "A vibrant hub of dining, shows, and nonstop entertainment.",
-  "homeSeason3Title": "Noor Riyadh",
-  "homeSeason3Description": "A spectacular citywide light art festival transforming Riyadh into an open-air gallery."
-  ,
+  "homeHeroSubtitle": "Discover Saudi cities,\none trip at a time",
+  "homeMainDestination": "Explore Cities",
+  "homeSeasonalAttractions": "Trip Styles",
+  "homeDestination1Title": "Cultural Discovery",
+  "homeDestination1Description": "Historic districts, museums, and heritage landmarks for curious travelers.",
+  "homeDestination2Title": "Coastal Escapes",
+  "homeDestination2Description": "Seafront walks, island vibes, and family-friendly waterfront experiences.",
+  "homeDestination3Title": "Mountain Nature",
+  "homeDestination3Description": "Cool weather, scenic heights, and nature-driven moments across the Kingdom.",
+  "homeSeason1Title": "Family Friendly",
+  "homeSeason1Description": "Balanced plans with comfortable pacing for all family members.",
+  "homeSeason2Title": "Adventure & Outdoors",
+  "homeSeason2Description": "Action-filled itineraries with trails, viewpoints, and active attractions.",
+  "homeSeason3Title": "Relax & Leisure",
+  "homeSeason3Description": "Calm stays, scenic dining, and smooth city experiences.",
+  "homeCityCardHint": "Hotels, activities, and events available",
   "blogTitle": "BLOG",
-  "blogSubtitle": "A brief overview of the cities in our app",
-  "blogFutureNotice": "It will be available in the future! Stay tuned.",
+  "blogSubtitle": "All supported cities in FATRIPY",
+  "blogFutureNotice": "More city content is coming soon.",
   "blogRiyadhDescription": "Riyadh is located in the heart of the Kingdom on the Najd plateau, and it is the capital and largest city of Saudi Arabia. It is distinguished by a rich Najdi heritage visible in Masmak Palace and the historic Diriyah, which is registered with UNESCO and where the Saudi state began. Today, Riyadh is known for its unique blend of past and modernity, from its famous towers such as the Kingdom Tower and Al Faisaliah Tower to its museums and traditional markets, making it a center for culture, economy, and contemporary life.",
   "blogJeddahDescription": "Jeddah is located in the west of the Kingdom on the Red Sea coast and is known as the gateway to the Two Holy Mosques. Historic Jeddah (Al-Balad) is one of its most prominent heritage sites, containing over 600 heritage buildings and old houses such as Nassif House, and it is registered as a UNESCO site. Jeddah is famous for its maritime spirit, its long corniche, and its cultural diversity, making it a city that combines tradition, modernity, and coastal life.",
+  "blogMeccaDescription": "Mecca is located in the western region of Saudi Arabia and is the holiest city in Islam. It is home to Al-Masjid Al-Haram and the Kaaba, the direction Muslims face during their daily prayers. The city holds immense religious significance and welcomes millions of Muslims every year who come to perform Hajj and Umrah. Mecca combines deep spiritual heritage with modern urban development, making it one of the most important religious and cultural centers in the Islamic world.",
+  "blogMadinahTitle": "Madinah",
+  "blogMadinahDescription": "Madinah is located in the western region of Saudi Arabia and is one of the holiest cities in Islam. It is home to Al-Masjid An-Nabawi, the Prophet’s Mosque, and holds a special place in Islamic history. The city is known for its spiritual atmosphere, rich heritage, and important religious landmarks. Madinah also combines historical significance with modern urban development, making it a unique religious and cultural destination.",
+  "blogDammamDescription": "Dammam is located in the Eastern Province of Saudi Arabia and is one of the Kingdom’s major coastal cities overlooking the Arabian Gulf. It is known for its beautiful waterfront, lively atmosphere, and strong economic importance. As a key center for business, trade, and industry, Dammam combines modern urban living with attractive leisure destinations, making it a notable city for both residents and visitors.",
+  "blogAbhaDescription": "Abha is located in the Asir region in southwestern Saudi Arabia and is famous for its stunning mountain landscapes and mild weather throughout the year. The city is known for its natural beauty, green parks, and cultural heritage, making it one of the Kingdom’s most attractive destinations for nature lovers and tourists. Abha offers a unique experience that blends scenic charm with rich local identity and tradition.",
+  "blogTaifDescription": "Taif is located in the western region of Saudi Arabia and is well known for its pleasant weather, mountain scenery, and fragrant roses. It is considered one of the Kingdom’s top summer destinations thanks to its beautiful highlands, traditional markets, and diverse natural attractions. Taif combines historical charm with modern development, offering visitors a relaxing and memorable experience.",
+  "blogCityGenericDescription": "{city} is available in FATRIPY with city-based planning for hotels, activities, and events.",
+  "@blogCityGenericDescription": {
+    "placeholders": {
+      "city": {}
+    }
+  },
   "blogCityJazan": "Jazan",
   "blogJazanDescription": "Jazan is located in the far southwest of the Kingdom on the Red Sea coast and is distinguished by a great natural diversity, from the green Faifa mountains to the enchanting Farasan Islands. It has an ancient history reflected in archaeological sites that span thousands of years and the Dawsari Castle. Jazan is famous for its popular heritage, such as the Jazan dance (Ardah), for growing coffee and bananas, and for its warm climate and the authentic culture of its people.",
   "blogCityAlKhobar": "Al Khobar",

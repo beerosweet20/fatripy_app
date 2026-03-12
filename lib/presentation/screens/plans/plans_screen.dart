@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/supported_cities.dart';
 import '../../../data/repositories/trip_repository.dart';
 import '../../../domain/entities/trip_plan.dart';
 import '../../localization/app_localizations_ext.dart';
@@ -251,6 +252,23 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     return null;
   }
 
+  int _extractDayNumber(dynamic rawLabel, {required int fallbackIndex}) {
+    final text = (rawLabel ?? '').toString();
+    final match = RegExp(r'(\d+)').firstMatch(text);
+    final parsed = match == null ? null : int.tryParse(match.group(1)!);
+    if (parsed != null && parsed > 0) return parsed;
+    return fallbackIndex + 1;
+  }
+
+  String _localizedDayLabel(
+    BuildContext context,
+    dynamic rawLabel, {
+    required int fallbackIndex,
+  }) {
+    final dayNumber = _extractDayNumber(rawLabel, fallbackIndex: fallbackIndex);
+    return '${context.l10n.plansDayLabel(dayNumber)}:';
+  }
+
   TripPlan? _latestTripWithGeneratedPlans(List<TripPlan> plans) {
     if (plans.isEmpty) return null;
     final sorted = List<TripPlan>.from(plans)
@@ -263,15 +281,57 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     return sorted.first;
   }
 
+  List<_PlanVisual> _localizedFallbackVisuals(BuildContext context) {
+    final l10n = context.l10n;
+    return List<_PlanVisual>.generate(_fallbackVisuals.length, (planIndex) {
+      final visual = _fallbackVisuals[planIndex];
+      final normalizedCity = visual.info.city.replaceAll('.', '').trim();
+      return _PlanVisual(
+        kind: visual.kind,
+        title: visual.title,
+        accent: visual.accent,
+        border: visual.border,
+        headerBar: visual.headerBar,
+        tableBg: visual.tableBg,
+        tableText: visual.tableText,
+        info: _PlanInfo(
+          city: localizeCityLabel(l10n, normalizedCity),
+          dates: visual.info.dates,
+          duration: visual.info.duration,
+          hotel: visual.info.hotel,
+        ),
+        schedule: [
+          for (int dayIndex = 0; dayIndex < visual.schedule.length; dayIndex++)
+            _DaySchedule(
+              dayLabel: _localizedDayLabel(
+                context,
+                visual.schedule[dayIndex].dayLabel,
+                fallbackIndex: dayIndex,
+              ),
+              morning: visual.schedule[dayIndex].morning,
+              afternoon: visual.schedule[dayIndex].afternoon,
+              evening: visual.schedule[dayIndex].evening,
+            ),
+        ],
+        nearby: visual.nearby,
+        distant: visual.distant,
+        event: visual.event,
+        totalBudget: visual.totalBudget,
+        buttonColor: visual.buttonColor,
+        note: visual.note,
+      );
+    });
+  }
+
   List<_PlanVisual> _parsePlans(BuildContext context, TripPlan? sourceTrip) {
     final l10n = context.l10n;
     if (sourceTrip == null || sourceTrip.generatedPlans == null) {
-      return _fallbackVisuals;
+      return _localizedFallbackVisuals(context);
     }
 
     final rawPlans = _asMapList(sourceTrip.generatedPlans);
     if (rawPlans.isEmpty) {
-      return _fallbackVisuals;
+      return _localizedFallbackVisuals(context);
     }
 
     final parsed = <_PlanVisual>[];
@@ -312,7 +372,8 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
       final schedules = <_DaySchedule>[];
       final rawSchedule = p['schedule'] ?? p['itinerary'];
       if (rawSchedule is List) {
-        for (var d in rawSchedule) {
+        for (int dayIndex = 0; dayIndex < rawSchedule.length; dayIndex++) {
+          final d = _asMap(rawSchedule[dayIndex]) ?? const {};
           final m =
               (d['morning'] as List?)
                   ?.map(
@@ -339,7 +400,11 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
               '';
           schedules.add(
             _DaySchedule(
-              dayLabel: d['label'] ?? '',
+              dayLabel: _localizedDayLabel(
+                context,
+                d['label'],
+                fallbackIndex: dayIndex,
+              ),
               morning: m,
               afternoon: a,
               evening: e,
@@ -383,7 +448,7 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
           tableBg: tableBg,
           tableText: Colors.white,
           info: _PlanInfo(
-            city: sourceTrip.city,
+            city: localizeCityLabel(l10n, sourceTrip.city),
             dates: 'Generated dynamically',
             duration: '${sourceTrip.days} days',
             hotel: hName,
@@ -467,17 +532,24 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
         );
       }
 
+      final rawDays = _asMapList(rawPlan['schedule'] ?? rawPlan['itinerary']);
       final days = <DayDetail>[
-        for (final day in _asMapList(
-          rawPlan['schedule'] ?? rawPlan['itinerary'],
-        ))
+        for (int dayIndex = 0; dayIndex < rawDays.length; dayIndex++)
           DayDetail(
-            label: '${day['label'] ?? ''}',
-            morning: _asMapList(day['morning']).map(toActivityItem).toList(),
-            afternoon: _asMapList(
-              day['afternoon'],
+            label: _localizedDayLabel(
+              context,
+              rawDays[dayIndex]['label'],
+              fallbackIndex: dayIndex,
+            ),
+            morning: _asMapList(
+              rawDays[dayIndex]['morning'],
             ).map(toActivityItem).toList(),
-            evening: _asMapList(day['evening']).map(toActivityItem).toList(),
+            afternoon: _asMapList(
+              rawDays[dayIndex]['afternoon'],
+            ).map(toActivityItem).toList(),
+            evening: _asMapList(
+              rawDays[dayIndex]['evening'],
+            ).map(toActivityItem).toList(),
           ),
       ];
 
@@ -510,9 +582,7 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
       }
 
       return PlanDetailData(
-        title: '${rawPlan['title'] ?? l10n.plansGeneratedPlanTitle}'
-            .replaceAll('.', '')
-            .trim(),
+        title: _localizedPlanTitle(context, plan),
         sourceTripPlanId: sourceTripPlanId,
         budgetStatus: budgetStatus,
         minimumRequired: minimumRequired,
@@ -555,7 +625,11 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     final fallbackDays = [
       for (int i = 0; i < plan.schedule.length; i++)
         DayDetail(
-          label: plan.schedule[i].dayLabel,
+          label: _localizedDayLabel(
+            context,
+            plan.schedule[i].dayLabel,
+            fallbackIndex: i,
+          ),
           morning: fromCell(plan.schedule[i].morning, 'm$i-'),
           afternoon: fromCell(plan.schedule[i].afternoon, 'a$i-'),
           evening: fromCell(plan.schedule[i].evening, 'e$i-'),
@@ -581,7 +655,7 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     );
 
     return PlanDetailData(
-      title: plan.title.replaceAll('.', '').trim(),
+      title: _localizedPlanTitle(context, plan),
       sourceTripPlanId: sourceTripPlanId,
       headerColor: plan.headerBar,
       borderColor: plan.border,
@@ -990,7 +1064,11 @@ class _PlanTabRowOneSide extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      child: Row(children: isRtl ? [line, pill] : [pill, line]),
+      child: Row(
+        // Keep explicit child ordering stable regardless of ambient Directionality.
+        textDirection: TextDirection.ltr,
+        children: isRtl ? [line, pill] : [pill, line],
+      ),
     );
   }
 }

@@ -494,6 +494,12 @@ abstract class AppLocalizations {
   /// **'Taif'**
   String get cityTaif;
 
+  /// No description provided for @cityJazan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jazan'**
+  String get cityJazan;
+
   /// No description provided for @dependentsDone.
   ///
   /// In en, this message translates to:
@@ -1802,6 +1808,12 @@ abstract class AppLocalizations {
   /// **'{days} days'**
   String plansDurationValue(int days);
 
+  /// No description provided for @plansDayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}'**
+  String plansDayLabel(int day);
+
   /// No description provided for @plansPricePerNight.
   ///
   /// In en, this message translates to:
@@ -2033,92 +2045,98 @@ abstract class AppLocalizations {
   /// No description provided for @homeHeroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'The heart of\nRiyadh awaits'**
+  /// **'Discover Saudi cities,\none trip at a time'**
   String get homeHeroSubtitle;
 
   /// No description provided for @homeMainDestination.
   ///
   /// In en, this message translates to:
-  /// **'Main Destination'**
+  /// **'Explore Cities'**
   String get homeMainDestination;
 
   /// No description provided for @homeSeasonalAttractions.
   ///
   /// In en, this message translates to:
-  /// **'Seasonal Attraction'**
+  /// **'Trip Styles'**
   String get homeSeasonalAttractions;
 
   /// No description provided for @homeDestination1Title.
   ///
   /// In en, this message translates to:
-  /// **'Diriyah'**
+  /// **'Cultural Discovery'**
   String get homeDestination1Title;
 
   /// No description provided for @homeDestination1Description.
   ///
   /// In en, this message translates to:
-  /// **'The birthplace of the First Saudi State, a historical experience with authentic heritage charm.'**
+  /// **'Historic districts, museums, and heritage landmarks for curious travelers.'**
   String get homeDestination1Description;
 
   /// No description provided for @homeDestination2Title.
   ///
   /// In en, this message translates to:
-  /// **'Al Olaya'**
+  /// **'Coastal Escapes'**
   String get homeDestination2Title;
 
   /// No description provided for @homeDestination2Description.
   ///
   /// In en, this message translates to:
-  /// **'The modern heart of Riyadh, blending upscale shopping, iconic towers, and dynamic city energy.'**
+  /// **'Seafront walks, island vibes, and family-friendly waterfront experiences.'**
   String get homeDestination2Description;
 
   /// No description provided for @homeDestination3Title.
   ///
   /// In en, this message translates to:
-  /// **'Jabal Tuwaiq'**
+  /// **'Mountain Nature'**
   String get homeDestination3Title;
 
   /// No description provided for @homeDestination3Description.
   ///
   /// In en, this message translates to:
-  /// **'Iconic cliffs and breathtaking views for unforgettable adventures.'**
+  /// **'Cool weather, scenic heights, and nature-driven moments across the Kingdom.'**
   String get homeDestination3Description;
 
   /// No description provided for @homeSeason1Title.
   ///
   /// In en, this message translates to:
-  /// **'Riyadh Season'**
+  /// **'Family Friendly'**
   String get homeSeason1Title;
 
   /// No description provided for @homeSeason1Description.
   ///
   /// In en, this message translates to:
-  /// **'The Kingdom\'s largest entertainment festival with world-class experiences.'**
+  /// **'Balanced plans with comfortable pacing for all family members.'**
   String get homeSeason1Description;
 
   /// No description provided for @homeSeason2Title.
   ///
   /// In en, this message translates to:
-  /// **'Boulevard Riyadh City'**
+  /// **'Adventure & Outdoors'**
   String get homeSeason2Title;
 
   /// No description provided for @homeSeason2Description.
   ///
   /// In en, this message translates to:
-  /// **'A vibrant hub of dining, shows, and nonstop entertainment.'**
+  /// **'Action-filled itineraries with trails, viewpoints, and active attractions.'**
   String get homeSeason2Description;
 
   /// No description provided for @homeSeason3Title.
   ///
   /// In en, this message translates to:
-  /// **'Noor Riyadh'**
+  /// **'Relax & Leisure'**
   String get homeSeason3Title;
 
   /// No description provided for @homeSeason3Description.
   ///
   /// In en, this message translates to:
-  /// **'A spectacular citywide light art festival transforming Riyadh into an open-air gallery.'**
+  /// **'Calm stays, scenic dining, and smooth city experiences.'**
   String get homeSeason3Description;
+
+  /// No description provided for @homeCityCardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels, activities, and events available'**
+  String get homeCityCardHint;
 
   /// No description provided for @blogTitle.
   ///
@@ -2129,13 +2147,13 @@ abstract class AppLocalizations {
   /// No description provided for @blogSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'A brief overview of the cities in our app'**
+  /// **'All supported cities in FATRIPY'**
   String get blogSubtitle;
 
   /// No description provided for @blogFutureNotice.
   ///
   /// In en, this message translates to:
-  /// **'It will be available in the future! Stay tuned.'**
+  /// **'More city content is coming soon.'**
   String get blogFutureNotice;
 
   /// No description provided for @blogRiyadhDescription.
@@ -2149,6 +2167,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jeddah is located in the west of the Kingdom on the Red Sea coast and is known as the gateway to the Two Holy Mosques. Historic Jeddah (Al-Balad) is one of its most prominent heritage sites, containing over 600 heritage buildings and old houses such as Nassif House, and it is registered as a UNESCO site. Jeddah is famous for its maritime spirit, its long corniche, and its cultural diversity, making it a city that combines tradition, modernity, and coastal life.'**
   String get blogJeddahDescription;
+
+  /// No description provided for @blogMeccaDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Mecca is located in the western region of Saudi Arabia and is the holiest city in Islam. It is home to Al-Masjid Al-Haram and the Kaaba, the direction Muslims face during their daily prayers. The city holds immense religious significance and welcomes millions of Muslims every year who come to perform Hajj and Umrah. Mecca combines deep spiritual heritage with modern urban development, making it one of the most important religious and cultural centers in the Islamic world.'**
+  String get blogMeccaDescription;
+
+  /// No description provided for @blogMadinahTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah'**
+  String get blogMadinahTitle;
+
+  /// No description provided for @blogMadinahDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah is located in the western region of Saudi Arabia and is one of the holiest cities in Islam. It is home to Al-Masjid An-Nabawi, the Prophet’s Mosque, and holds a special place in Islamic history. The city is known for its spiritual atmosphere, rich heritage, and important religious landmarks. Madinah also combines historical significance with modern urban development, making it a unique religious and cultural destination.'**
+  String get blogMadinahDescription;
+
+  /// No description provided for @blogDammamDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Dammam is located in the Eastern Province of Saudi Arabia and is one of the Kingdom’s major coastal cities overlooking the Arabian Gulf. It is known for its beautiful waterfront, lively atmosphere, and strong economic importance. As a key center for business, trade, and industry, Dammam combines modern urban living with attractive leisure destinations, making it a notable city for both residents and visitors.'**
+  String get blogDammamDescription;
+
+  /// No description provided for @blogAbhaDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Abha is located in the Asir region in southwestern Saudi Arabia and is famous for its stunning mountain landscapes and mild weather throughout the year. The city is known for its natural beauty, green parks, and cultural heritage, making it one of the Kingdom’s most attractive destinations for nature lovers and tourists. Abha offers a unique experience that blends scenic charm with rich local identity and tradition.'**
+  String get blogAbhaDescription;
+
+  /// No description provided for @blogTaifDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Taif is located in the western region of Saudi Arabia and is well known for its pleasant weather, mountain scenery, and fragrant roses. It is considered one of the Kingdom’s top summer destinations thanks to its beautiful highlands, traditional markets, and diverse natural attractions. Taif combines historical charm with modern development, offering visitors a relaxing and memorable experience.'**
+  String get blogTaifDescription;
+
+  /// No description provided for @blogCityGenericDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'{city} is available in FATRIPY with city-based planning for hotels, activities, and events.'**
+  String blogCityGenericDescription(Object city);
 
   /// No description provided for @blogCityJazan.
   ///

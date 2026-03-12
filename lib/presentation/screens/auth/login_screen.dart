@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   static const Color _pink = Color(0xFFE18299);
 
   static const double _baseWidth = 412;
+  static const double _baseContentHeight = 740;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -121,194 +124,219 @@ class _LoginScreenState extends State<LoginScreen> {
     final l10n = context.l10n;
     return Scaffold(
       backgroundColor: _bg,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         top: false,
-        bottom: false,
+        bottom: true,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final scale = constraints.maxWidth / _baseWidth;
+            final contentWidth = constraints.maxWidth
+                .clamp(280.0, 460.0)
+                .toDouble();
+            final scale = (contentWidth / _baseWidth)
+                .clamp(0.78, 1.2)
+                .toDouble();
             double s(double value) => value * scale;
             final yNudge = s(16);
+            final contentHeight = s(_baseContentHeight);
+            final stackHeight = math.max(
+              constraints.maxHeight,
+              contentHeight + yNudge,
+            );
 
-            return SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: Stack(
-                children: [
-                  Positioned.fill(child: Container(color: _bg)),
-                  Positioned.fill(
-                    child: Transform.translate(
-                      offset: Offset(0, yNudge),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: s(-254),
-                            top: s(27),
-                            width: s(786),
-                            height: s(289),
-                            child: CustomPaint(painter: _AuthRibbonPainter()),
-                          ),
-                          Positioned(
-                            left: s(100),
-                            top: s(74),
-                            width: s(207),
-                            height: s(207),
-                            child: Image.asset(
-                              'assets/images/logo_pink.png',
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            top: s(349),
-                            width: constraints.maxWidth,
-                            child: Text(
-                              l10n.loginWelcome,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inriaSerif(
-                                fontSize: s(40),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(428),
-                            child: Text(
-                              '${l10n.labelEmail}:',
-                              style: GoogleFonts.inriaSerif(
-                                fontSize: s(18),
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(458),
-                            width: s(367),
-                            height: s(34),
-                            child: _AuthField(
-                              controller: _emailController,
-                              obscureText: false,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(505),
-                            child: Text(
-                              '${l10n.labelPassword}:',
-                              style: GoogleFonts.inriaSerif(
-                                fontSize: s(18),
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: s(22),
-                            top: s(534),
-                            width: s(367),
-                            height: s(34),
-                            child: _AuthField(
-                              controller: _passwordController,
-                              obscureText: true,
-                              borderColor: _pink,
-                              scale: scale,
-                            ),
-                          ),
-                          Positioned(
-                            right: s(24),
-                            top: s(575),
-                            child: GestureDetector(
-                              onTap: _isLoading
-                                  ? null
-                                  : _showResetPasswordDialog,
-                              child: Text(
-                                l10n.forgotPasswordCta,
-                                style: GoogleFonts.inriaSerif(
-                                  fontSize: s(14),
-                                  fontWeight: FontWeight.w600,
-                                  color: _navy,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: s(23),
-                            top: s(610),
-                            width: s(365),
-                            height: s(45),
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _navy,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(s(50)),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : Text(
-                                      l10n.actionLogin,
-                                      style: GoogleFonts.inriaSerif(
-                                        fontSize: s(20),
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.0,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            top: s(678),
-                            width: constraints.maxWidth,
-                            child: GestureDetector(
-                              onTap: () => context.go(RegisterScreen.routeName),
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: GoogleFonts.inriaSerif(
-                                    fontSize: s(18),
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black,
+            return SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.only(bottom: s(20)),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: SizedBox(
+                    width: contentWidth,
+                    height: stackHeight,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: Container(color: _bg)),
+                        Positioned.fill(
+                          child: Transform.translate(
+                            offset: Offset(0, yNudge),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: s(-254),
+                                  top: s(27),
+                                  width: s(786),
+                                  height: s(289),
+                                  child: CustomPaint(
+                                    painter: _AuthRibbonPainter(),
                                   ),
-                                  children: [
-                                    TextSpan(text: l10n.loginNoAccount),
-                                    TextSpan(
-                                      text: l10n.actionRegister,
-                                      style: TextStyle(
+                                ),
+                                Positioned(
+                                  left: s(100),
+                                  top: s(74),
+                                  width: s(207),
+                                  height: s(207),
+                                  child: Image.asset(
+                                    'assets/images/logo_pink.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 0,
+                                  top: s(349),
+                                  width: contentWidth,
+                                  child: Text(
+                                    l10n.loginWelcome,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.inriaSerif(
+                                      fontSize: s(40),
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(428),
+                                  child: Text(
+                                    '${l10n.labelEmail}:',
+                                    style: GoogleFonts.inriaSerif(
+                                      fontSize: s(18),
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(458),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _AuthField(
+                                    controller: _emailController,
+                                    obscureText: false,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(505),
+                                  child: Text(
+                                    '${l10n.labelPassword}:',
+                                    style: GoogleFonts.inriaSerif(
+                                      fontSize: s(18),
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: s(22),
+                                  top: s(534),
+                                  width: s(367),
+                                  height: s(34),
+                                  child: _AuthField(
+                                    controller: _passwordController,
+                                    obscureText: true,
+                                    borderColor: _pink,
+                                    scale: scale,
+                                  ),
+                                ),
+                                Positioned(
+                                  right: s(24),
+                                  top: s(575),
+                                  child: GestureDetector(
+                                    onTap: _isLoading
+                                        ? null
+                                        : _showResetPasswordDialog,
+                                    child: Text(
+                                      l10n.forgotPasswordCta,
+                                      style: GoogleFonts.inriaSerif(
+                                        fontSize: s(14),
+                                        fontWeight: FontWeight.w600,
                                         color: _navy,
-                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                                Positioned(
+                                  left: s(23),
+                                  top: s(610),
+                                  width: s(365),
+                                  height: s(45),
+                                  child: ElevatedButton(
+                                    onPressed: _isLoading ? null : _login,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: _navy,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          s(50),
+                                        ),
+                                      ),
+                                    ),
+                                    child: _isLoading
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Text(
+                                            l10n.actionLogin,
+                                            style: GoogleFonts.inriaSerif(
+                                              fontSize: s(20),
+                                              fontWeight: FontWeight.w700,
+                                              height: 1.0,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 0,
+                                  top: s(678),
+                                  width: contentWidth,
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        context.go(RegisterScreen.routeName),
+                                    child: RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        style: GoogleFonts.inriaSerif(
+                                          fontSize: s(18),
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          TextSpan(text: l10n.loginNoAccount),
+                                          TextSpan(
+                                            text: l10n.actionRegister,
+                                            style: TextStyle(
+                                              color: _navy,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             );
           },
