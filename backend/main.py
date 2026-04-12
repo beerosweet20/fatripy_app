@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from datetime import date, datetime, timezone
 import time
 import re
@@ -217,6 +217,189 @@ def _trip_window(req: GenerateRequest):
         start, end = end, start
     return start, end
 
+
+CITY_GUIDES: Dict[str, Dict[str, str]] = {
+    "Riyadh": {
+        "name": "Mohammed Atef",
+        "experienceYears": "5",
+        "languages": "Arabic - English",
+        "phone": "0511111999",
+        "rating": "4.4",
+        "description": "Certified guide for Riyadh heritage districts, museums, and local cultural experiences.",
+    },
+    "Jeddah": {
+        "name": "Lina Hassan",
+        "experienceYears": "8",
+        "languages": "Arabic - English",
+        "phone": "0522222888",
+        "rating": "4.8",
+        "description": "Specializes in Historic Jeddah tours, art walks, and family-friendly cultural stops by the waterfront.",
+    },
+    "Mecca": {
+        "name": "Abdulrahman Al Harbi",
+        "experienceYears": "9",
+        "languages": "Arabic - English - Urdu",
+        "phone": "0533200441",
+        "rating": "4.9",
+        "description": "Experienced cultural guide for museums, exhibitions, and visitor-friendly landmarks in Makkah.",
+    },
+    "Medina": {
+        "name": "Sara Al Zahrani",
+        "experienceYears": "6",
+        "languages": "Arabic - English",
+        "phone": "0541188332",
+        "rating": "4.7",
+        "description": "Focuses on Madinah history, museums, and calm family cultural experiences.",
+    },
+    "Dammam": {
+        "name": "Yousef Al Qahtani",
+        "experienceYears": "7",
+        "languages": "Arabic - English",
+        "phone": "0551177334",
+        "rating": "4.6",
+        "description": "Guides visitors through Eastern Province heritage spots, corniche culture, and local family attractions.",
+    },
+    "Khobar": {
+        "name": "Norah Al Dosari",
+        "experienceYears": "6",
+        "languages": "Arabic - English",
+        "phone": "0561144221",
+        "rating": "4.7",
+        "description": "Curates relaxed cultural walks across Khobar waterfronts, galleries, and family-friendly districts.",
+    },
+    "Abha": {
+        "name": "Aisha Asiri",
+        "experienceYears": "8",
+        "languages": "Arabic - English",
+        "phone": "0504411882",
+        "rating": "4.9",
+        "description": "Mountain culture expert for heritage villages, art districts, and scenic experiences in Abha.",
+    },
+    "Taif": {
+        "name": "Faisal Al Thaqafi",
+        "experienceYears": "7",
+        "languages": "Arabic - English",
+        "phone": "0509933772",
+        "rating": "4.8",
+        "description": "Known for Taif rose routes, heritage markets, and scenic cultural itineraries for families.",
+    },
+    "Jazan": {
+        "name": "Huda Al Hakami",
+        "experienceYears": "6",
+        "languages": "Arabic - English",
+        "phone": "0537711008",
+        "rating": "4.6",
+        "description": "Designs cultural programs around Jazan heritage, local crafts, coastal life, and family-oriented stops.",
+    },
+}
+
+
+def _safe_id(value: Any, fallback: str) -> str:
+    text = str(value).strip() if value is not None else ""
+    return text or fallback
+
+
+def _dedupe_accommodations(accommodations: List[Accommodation]) -> List[Accommodation]:
+    seen = set()
+    unique = []
+    for accommodation in accommodations:
+        key = _safe_id(
+            getattr(accommodation, "accommodationId", None)
+            or getattr(accommodation, "hotelId", None)
+            or getattr(accommodation, "id", None)
+            or getattr(accommodation, "name", None),
+            "hotel",
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(accommodation)
+    return unique
+
+
+def _plan_reasons(kind: str, req: GenerateRequest, events_count: int) -> List[str]:
+    reasons = []
+    if kind == "cultural":
+        reasons.append("Prioritizes museums, heritage districts, and local culture.")
+    elif kind == "adventure":
+        reasons.append("Prioritizes active attractions and outdoor experiences.")
+    else:
+        reasons.append("Balanced pacing for families with a more relaxed rhythm.")
+
+    if req.budget > 0:
+        reasons.append("Keeps the plan aligned with the selected budget.")
+
+    if req.days >= 5:
+        reasons.append("Spreads activities across multiple days to reduce rush.")
+    else:
+        reasons.append("Concentrates the highest-value stops into a shorter trip.")
+
+    if events_count > 0:
+        reasons.append("Includes events available during the selected travel dates.")
+
+    return reasons
+
+
+def _hotel_reasons(accommodation, budget: float, days: int, kind: str, rank_index: int) -> List[str]:
+    reasons = []
+    price_per_night = _robust_accommodation_price_per_night(accommodation) or 0.0
+    total_cost = price_per_night * max(days, 1)
+    rating = _safe_float(getattr(accommodation, "rating", None), 0.0)
+    plan_type = str(getattr(accommodation, "planType", "") or "").lower()
+
+    if rank_index == 0:
+        reasons.append("Best overall match for this plan.")
+    elif rank_index == 1:
+        reasons.append("Strong alternative with a balanced score.")
+    else:
+        reasons.append("Useful backup option with a different cost and location profile.")
+
+    if total_cost and budget and total_cost <= budget * 0.35:
+        reasons.append("Better fit for the budget.")
+    elif total_cost and budget and total_cost <= budget * 0.55:
+        reasons.append("Balanced price for the available budget.")
+    elif total_cost and budget:
+        reasons.append("Higher-cost option with stronger stay quality.")
+
+    if rating >= 4.6:
+        reasons.append("High guest rating.")
+    elif rating >= 4.3:
+        reasons.append("Solid guest rating.")
+
+    if kind and kind in plan_type:
+        reasons.append("Matches the style of this plan.")
+
+    return reasons
+
+
+def _build_schedule(activities_payload: List[Dict[str, Any]], days: int) -> List[Dict[str, Any]]:
+    schedule = []
+    total = len(activities_payload)
+    for d in range(1, days + 1):
+        if total == 0:
+            morning = []
+            afternoon = []
+            evening = []
+        else:
+            morning = [activities_payload[(d - 1) % total]]
+            afternoon = [activities_payload[d % total]] if total > 1 else []
+            evening = [activities_payload[(d + 1) % total]] if total > 2 else []
+        schedule.append(
+            {
+                "label": f"Day {d}:",
+                "morning": morning,
+                "afternoon": afternoon,
+                "evening": evening,
+            }
+        )
+    return schedule
+
+
+def _city_tour_guide(city: str, kind: str):
+    if kind != "cultural":
+        return None
+    return CITY_GUIDES.get(city.strip()) or CITY_GUIDES["Riyadh"]
+
 @app.post("/generate-plans")
 def generate_plans(req: GenerateRequest):
     """
@@ -234,8 +417,34 @@ def generate_plans(req: GenerateRequest):
             continue
         if price_per_night * req.days <= req.budget:
             valid_accommodations.append(h)
+    if len(valid_accommodations) < 3 and req.accommodations:
+        existing_ids = {
+            _safe_id(
+                getattr(accommodation, "accommodationId", None)
+                or getattr(accommodation, "hotelId", None)
+                or getattr(accommodation, "id", None)
+                or getattr(accommodation, "name", None),
+                "hotel",
+            )
+            for accommodation in valid_accommodations
+        }
+        supplemental = []
+        for accommodation in req.accommodations:
+            accommodation_id = _safe_id(
+                getattr(accommodation, "accommodationId", None)
+                or getattr(accommodation, "hotelId", None)
+                or getattr(accommodation, "id", None)
+                or getattr(accommodation, "name", None),
+                "hotel",
+            )
+            if accommodation_id in existing_ids:
+                continue
+            supplemental.append(accommodation)
+            existing_ids.add(accommodation_id)
+            if len(valid_accommodations) + len(supplemental) >= 3:
+                break
+        valid_accommodations.extend(supplemental)
     if not valid_accommodations:
-        # Fallback if no hotel matches budget: just take the top one
         valid_accommodations = req.accommodations if req.accommodations else []
 
     plan_types = [
@@ -247,99 +456,122 @@ def generate_plans(req: GenerateRequest):
     generated_plans = []
     user_profile = build_user_profile(req.familyAges, req.budget, req.days)
 
-    for idx, p_type in enumerate(plan_types):
-        # Pick an accommodation (cycle through if multiple, or just take first)
-        if valid_accommodations:
+    trip_start, trip_end = _trip_window(req)
+    filtered_events = []
+    if req.events:
+        for event in req.events:
+            event_date = _to_date(getattr(event, "date", None))
+            if trip_start is not None and trip_end is not None:
+                if event_date is None:
+                    continue
+                if not (trip_start <= event_date <= trip_end):
+                    continue
+            filtered_events.append(event)
+    events_payload = [_to_payload(event) for event in filtered_events[:6]]
+
+    ranked_activity_pool = []
+    if req.activities:
+        activity_pool = req.activities
+        if len(activity_pool) > 200:
+            activity_pool = sorted(
+                activity_pool,
+                key=lambda activity: _safe_float(activity.rating),
+                reverse=True,
+            )[:200]
+        ranked_activity_pool = activity_pool
+
+    for p_type in plan_types:
+        unique_accommodations = _dedupe_accommodations(valid_accommodations)
+        ranked_accommodations = []
+        if unique_accommodations:
             ranked_accommodations = rank_accommodations_ml(
-                valid_accommodations, user_profile, req.budget, req.days, p_type["kind"]
+                unique_accommodations,
+                user_profile,
+                req.budget,
+                req.days,
+                p_type["kind"],
             )
-            accommodation = ranked_accommodations[0] if ranked_accommodations else valid_accommodations[0]
-        else:
-            accommodation = None
-
-        price_per_night = _robust_accommodation_price_per_night(accommodation) if accommodation else None
-        total_accommodation_cost = (
-            price_per_night * req.days if price_per_night else 0.0
+        ranked_accommodations = _dedupe_accommodations(
+            ranked_accommodations or unique_accommodations
         )
+        top_accommodations = ranked_accommodations[:3]
+        if not top_accommodations and req.accommodations:
+            top_accommodations = _dedupe_accommodations(req.accommodations)[:3]
 
-        nearby = []
-        distant = []
-
-        if req.activities:
-            # Performance guard: keep activity set manageable
-            activity_pool = req.activities
-            if len(activity_pool) > 200:
-                activity_pool = sorted(
-                    activity_pool,
-                    key=lambda a: _safe_float(a.rating),
-                    reverse=True,
-                )[:200]
-
+        ranked_activities = []
+        if ranked_activity_pool:
             ranked_activities = rank_activities_dl(
-                activity_pool, user_profile, p_type["kind"]
+                ranked_activity_pool,
+                user_profile,
+                p_type["kind"],
             )
-            # If accommodation is missing, split_nearby_distant falls back to
-            # an order-based split (top half nearby, rest distant).
+
+        hotel_options = []
+        for hotel_index, accommodation in enumerate(top_accommodations):
+            price_per_night = _robust_accommodation_price_per_night(accommodation)
+            total_accommodation_cost = price_per_night * req.days if price_per_night else 0.0
+
             nearby, distant = split_nearby_distant(accommodation, ranked_activities)
-        
-        # Build Day By Day Schedule Mocks for testing (Distributing nearby/distant)
-        schedule = []
-        act_pool = nearby + distant
-        for d in range(1, req.days + 1):
-            morning = [act_pool[d % len(act_pool)]] if act_pool else []
-            afternoon = [act_pool[(d+1) % len(act_pool)]] if len(act_pool) > 1 else []
-            evening = [act_pool[(d+2) % len(act_pool)]] if len(act_pool) > 2 else []
-            
-            schedule.append({
-                "label": f"Day {d}:",
-                "morning": morning,
-                "afternoon": afternoon,
-                "evening": evening
-            })
+            nearby_payload = nearby[:5]
+            distant_payload = distant[:5]
+            schedule_pool = (nearby[:6] + distant[:6])[:9]
+            schedule = _build_schedule(schedule_pool, req.days)
 
-        events_payload = []
-        if req.events:
-            trip_start, trip_end = _trip_window(req)
-            filtered_events = []
-            for e in req.events:
-                event_date = _to_date(getattr(e, "date", None))
-                if trip_start is not None and trip_end is not None:
-                    # Include only events that are inside trip date range
-                    # (inclusive): start <= event_date <= end.
-                    if event_date is None:
-                        continue
-                    if not (trip_start <= event_date <= trip_end):
-                        continue
-                filtered_events.append(e)
-
-            # Keep top 3 events after date filtering.
-            events_payload = [_to_payload(e) for e in filtered_events[:3]]
-
-        total_estimated_cost = float(total_accommodation_cost or 0.0)
-
-        generated_plans.append({
-            **(
+            hotel_options.append(
                 {
-                    "budget_status": "low",
-                    "budgetStatus": "low",
-                    "minimum_required": float(total_estimated_cost),
-                    "minimumRequired": float(total_estimated_cost),
+                    "hotelIndex": hotel_index,
+                    "hotelReasons": _hotel_reasons(
+                        accommodation,
+                        req.budget,
+                        req.days,
+                        p_type["kind"],
+                        hotel_index,
+                    ),
+                    "accommodation": _to_payload(accommodation),
+                    "hotel": _to_payload(accommodation),
+                    "totalCost": float(total_accommodation_cost or 0.0),
+                    "nearby": nearby_payload,
+                    "distant": distant_payload,
+                    "schedule": schedule,
+                    "itinerary": schedule,
                 }
-                if req.budget < total_estimated_cost
-                else {}
-            ),
-            "kind": p_type["kind"],
-            "title": p_type["title"],
-            # Keep both keys for backward compatibility with existing parsers.
-            "accommodation": _to_payload(accommodation),
-            "hotel": _to_payload(accommodation),
-            "totalCost": float(total_accommodation_cost or 0.0),
-            "nearby": nearby[:3], # Limit to 3 visual items
-            "distant": distant[:3], 
-            "schedule": schedule,
-            "itinerary": schedule,
-            "events": events_payload,
-        })
+            )
+
+        primary_option = hotel_options[0] if hotel_options else None
+        primary_total_cost = float(primary_option["totalCost"]) if primary_option else 0.0
+
+        generated_plans.append(
+            {
+                **(
+                    {
+                        "budget_status": "low",
+                        "budgetStatus": "low",
+                        "minimum_required": float(primary_total_cost),
+                        "minimumRequired": float(primary_total_cost),
+                    }
+                    if req.budget < primary_total_cost
+                    else {}
+                ),
+                "kind": p_type["kind"],
+                "title": p_type["title"],
+                "selectionReasons": _plan_reasons(
+                    p_type["kind"],
+                    req,
+                    len(events_payload),
+                ),
+                "tourGuide": _city_tour_guide(req.city, p_type["kind"]),
+                "selectedHotelIndex": 0,
+                "hotelOptions": hotel_options,
+                "accommodation": primary_option["accommodation"] if primary_option else None,
+                "hotel": primary_option["hotel"] if primary_option else None,
+                "totalCost": primary_total_cost,
+                "nearby": primary_option["nearby"] if primary_option else [],
+                "distant": primary_option["distant"] if primary_option else [],
+                "schedule": primary_option["schedule"] if primary_option else _build_schedule([], req.days),
+                "itinerary": primary_option["itinerary"] if primary_option else _build_schedule([], req.days),
+                "events": events_payload,
+            }
+        )
 
     elapsed = (time.perf_counter() - start_time) * 1000
     return {

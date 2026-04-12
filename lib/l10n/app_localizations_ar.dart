@@ -1039,10 +1039,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String get planDetailAmenities => 'المرافق';
 
   @override
+  String get planDetailWhyPlan => 'سبب ترشيح الخطة';
+
+  @override
+  String get planDetailWhyHotel => 'سبب ترشيح الفندق';
+
+  @override
+  String get planDetailSelectHotelHint => 'يمكنك التنقل بين الفنادق المقترحة';
+
+  @override
+  String get planDetailPreviousHotel => 'السابق';
+
+  @override
+  String get planDetailNextHotel => 'التالي';
+
+  @override
+  String planDetailHotelPosition(int current, int total) {
+    return 'الفندق $current من $total';
+  }
+
+  @override
   String get planDetailOpenClose => 'الفتح | الإغلاق';
 
   @override
   String get planDetailDistance => 'المسافة';
+
+  @override
+  String get planDetailTourGuideSection => 'المرشد السياحي';
+
+  @override
+  String get planDetailShareSummary => 'مشاركة الملخص';
+
+  @override
+  String get planDetailShareFailed => 'تعذر مشاركة ملخص الخطة.';
+
+  @override
+  String get planDetailPdfPreview => 'معاينة PDF';
+
+  @override
+  String planDetailDayRouteTitle(Object day) {
+    return 'مسار $day';
+  }
+
+  @override
+  String get planDetailRouteStops => 'المحطات';
+
+  @override
+  String get planDetailOpenRoute => 'فتح المسار';
+
+  @override
+  String get planDetailNoRoutePreview => 'لا تتوفر معاينة خريطة لهذا اليوم.';
 
   @override
   String get planDetailNavigateToPlace => 'الانتقال إلى المكان';

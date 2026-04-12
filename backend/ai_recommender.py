@@ -394,6 +394,13 @@ def split_nearby_distant(accommodation, activities) -> Tuple[List[Dict[str, Any]
                 nearby.append(act_dict)
             else:
                 distant.append(act_dict)
+        if not distant and len(nearby) > 4:
+            nearby.sort(key=lambda item: item.get("distance_km", 0.0), reverse=True)
+            promote_count = min(3, max(1, len(nearby) // 3))
+            distant = nearby[:promote_count]
+            nearby = nearby[promote_count:]
+            nearby.sort(key=lambda item: item.get("distance_km", 0.0))
+            distant.sort(key=lambda item: item.get("distance_km", 0.0))
         return nearby, distant
 
     # Fallback: top half nearby, rest distant

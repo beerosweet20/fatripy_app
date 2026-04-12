@@ -7,6 +7,7 @@ import '../../../data/repositories/trip_repository.dart';
 import '../../../domain/entities/trip_plan.dart';
 import '../../localization/app_localizations_ext.dart';
 import 'plan_comparison_screen.dart';
+import 'plan_detail_builder.dart';
 import 'plan_detail_screen.dart';
 
 class PlansScreen extends StatefulWidget {
@@ -31,17 +32,6 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
   static const Color _navy = Color(0xFF2E4474);
   static const Color _yellow = Color(0xFFF6D792);
   static const Color _yellowLine = Color(0xFFF0C57D);
-
-  // Keys for measuring anchors
-  final GlobalKey _stackKey = GlobalKey();
-  final GlobalKey _cardKey = GlobalKey();
-  late final List<GlobalKey> _pillKeys = List.generate(
-    3,
-    (_) => GlobalKey(debugLabel: 'pill'),
-  );
-
-  Rect? _cardRectInStack;
-  final Map<int, Rect> _pillRectsInStack = {};
 
   Future<List<TripPlan>> _loadPlans() {
     final uid = _uid;
@@ -225,13 +215,6 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     ),
   ];
 
-  List<int> _tabOrder(int selectedIndex) {
-    const base = [0, 1, 2]; // cultural, adventure, family
-    final pos = base.indexOf(selectedIndex);
-    if (pos == -1) return base;
-    return [...base.sublist(pos + 1), ...base.sublist(0, pos + 1)];
-  }
-
   Map<String, dynamic>? _asMap(dynamic value) {
     if (value is Map) {
       return Map<String, dynamic>.from(value);
@@ -251,6 +234,16 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     if (value is String) return double.tryParse(value.trim());
     return null;
   }
+
+  static const TourGuideInfo _fallbackTourGuide = TourGuideInfo(
+    name: 'Mohammed Atef',
+    experienceYears: '5',
+    languages: 'Arabic-English',
+    phone: '0511119999',
+    rating: '4.4',
+    description:
+        'A certified tour guide with strong field experience in nature exploration. He designs and leads safe, memorable, and authentic travel experiences for every traveler',
+  );
 
   int _extractDayNumber(dynamic rawLabel, {required int fallbackIndex}) {
     final text = (rawLabel ?? '').toString();
@@ -476,136 +469,13 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     required TripPlan? sourceTrip,
     required Map<String, dynamic>? rawPlan,
   }) {
-    final l10n = context.l10n;
-
     if (sourceTrip != null && rawPlan != null) {
-      final hotelMap =
-          _asMap(rawPlan['accommodation']) ??
-          _asMap(rawPlan['hotel']) ??
-          const <String, dynamic>{};
-      final hotelName = '${hotelMap['name'] ?? l10n.hotelNameUnknown}';
-      final hotelId =
-          '${hotelMap['hotelId'] ?? hotelMap['id'] ?? hotelMap['name'] ?? 'hotel'}';
-      final hotelLocation = '${hotelMap['location'] ?? ''}';
-      final hotelRating = '${hotelMap['rating'] ?? ''}';
-      final hotelAmenities = '${hotelMap['amenities'] ?? ''}';
-      final hotelBookingUrl = hotelMap['bookingUrl']?.toString();
-      final hotelMapsUrl = hotelMap['mapsUrl']?.toString();
-      final hotelPricePerNight = _asDouble(hotelMap['pricePerNight']);
-      final totalCost = _asDouble(rawPlan['totalCost']);
-      final budgetStatus = (rawPlan['budget_status'] ?? rawPlan['budgetStatus'])
-          ?.toString();
-      final minimumRequired = _asDouble(
-        rawPlan['minimum_required'] ?? rawPlan['minimumRequired'],
-      );
-      var hotelPrice = '';
-      if (hotelPricePerNight != null && hotelPricePerNight > 0) {
-        final safeTotal = (totalCost != null && totalCost > 0)
-            ? totalCost
-            : hotelPricePerNight * sourceTrip.days;
-        hotelPrice = l10n.plansPricePerNight(
-          hotelPricePerNight.toStringAsFixed(0),
-        );
-        hotelPrice +=
-            ' | ${l10n.plansTotalPrice(safeTotal.toStringAsFixed(0))}';
-      }
-
-      ActivityItem toActivityItem(Map<String, dynamic> rawActivity) {
-        return ActivityItem(
-          id: '${rawActivity['activityId'] ?? rawActivity['id'] ?? rawActivity['name'] ?? 'activity'}',
-          title: '${rawActivity['name'] ?? ''}',
-          location: '${rawActivity['location'] ?? ''}',
-          open:
-              rawActivity['open']?.toString() ??
-              rawActivity['openHours']?.toString(),
-          close:
-              rawActivity['close']?.toString() ??
-              rawActivity['closeHours']?.toString(),
-          price: rawActivity['price']?.toString(),
-          rating: rawActivity['rating']?.toString(),
-          time: rawActivity['time']?.toString(),
-          distance: rawActivity['distance_km'] != null
-              ? '${rawActivity['distance_km']} km'
-              : null,
-          bookingUrl: rawActivity['bookingUrl']?.toString(),
-          mapsUrl: rawActivity['mapsUrl']?.toString(),
-        );
-      }
-
-      final rawDays = _asMapList(rawPlan['schedule'] ?? rawPlan['itinerary']);
-      final days = <DayDetail>[
-        for (int dayIndex = 0; dayIndex < rawDays.length; dayIndex++)
-          DayDetail(
-            label: _localizedDayLabel(
-              context,
-              rawDays[dayIndex]['label'],
-              fallbackIndex: dayIndex,
-            ),
-            morning: _asMapList(
-              rawDays[dayIndex]['morning'],
-            ).map(toActivityItem).toList(),
-            afternoon: _asMapList(
-              rawDays[dayIndex]['afternoon'],
-            ).map(toActivityItem).toList(),
-            evening: _asMapList(
-              rawDays[dayIndex]['evening'],
-            ).map(toActivityItem).toList(),
-          ),
-      ];
-
-      final nearby = _asMapList(rawPlan['nearby']).map(toActivityItem).toList();
-      final distant = _asMapList(
-        rawPlan['distant'],
-      ).map(toActivityItem).toList();
-
-      final events = _asMapList(rawPlan['events']);
-      final eventLines = <String>[];
-      for (final event in events) {
-        final title = '${event['title'] ?? ''}'.trim();
-        final date = '${event['date'] ?? ''}'.trim();
-        final time = '${event['time'] ?? ''}'.trim();
-        final location = '${event['location'] ?? ''}'.trim();
-        final description = '${event['description'] ?? ''}'.trim();
-        if (title.isNotEmpty) eventLines.add(title);
-        if (date.isNotEmpty) {
-          eventLines.add('${l10n.bookingsReceiptDate}: $date');
-        }
-        if (time.isNotEmpty) {
-          eventLines.add('${l10n.plansTimeLabel}: $time');
-        }
-        if (location.isNotEmpty) {
-          eventLines.add('${l10n.adminLabelLocation}: $location');
-        }
-        if (description.isNotEmpty) {
-          eventLines.add('${l10n.plansDescriptionLabel}: $description');
-        }
-      }
-
-      return PlanDetailData(
-        title: _localizedPlanTitle(context, plan),
+      return PlanDetailBuilder.buildDetailData(
+        context,
+        trip: sourceTrip,
+        rawPlan: rawPlan,
+        resolvedTitle: _localizedPlanTitle(context, plan),
         sourceTripPlanId: sourceTripPlanId,
-        budgetStatus: budgetStatus,
-        minimumRequired: minimumRequired,
-        userBudget: sourceTrip.budget,
-        headerColor: plan.headerBar,
-        borderColor: plan.border,
-        accentColor: plan.accent,
-        backgroundColor: _cream,
-        accommodation: AccommodationInfo(
-          id: hotelId,
-          name: hotelName,
-          location: hotelLocation,
-          price: hotelPrice,
-          rating: hotelRating,
-          amenities: hotelAmenities,
-          mapsNote: l10n.actionOpenInMaps,
-          bookingUrl: hotelBookingUrl,
-          mapsUrl: hotelMapsUrl,
-        ),
-        days: days,
-        nearby: nearby,
-        distant: distant,
-        eventLines: eventLines,
       );
     }
 
@@ -660,8 +530,9 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
       headerColor: plan.headerBar,
       borderColor: plan.border,
       accentColor: plan.accent,
-      backgroundColor: _cream,
+      backgroundColor: Color.lerp(_cream, plan.headerBar, 0.42) ?? _cream,
       accommodation: hotel,
+      tourGuide: _fallbackTourGuide,
       days: fallbackDays,
       nearby: fallbackNearby,
       distant: fallbackDistant,
@@ -676,7 +547,6 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _plansFuture = _loadPlans();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _measureAnchors());
   }
 
   @override
@@ -690,43 +560,6 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       _refreshPlans();
     }
-  }
-
-  void _measureAnchors() {
-    final stackCtx = _stackKey.currentContext;
-    final cardCtx = _cardKey.currentContext;
-    if (stackCtx == null || cardCtx == null) return;
-
-    final stackBox = stackCtx.findRenderObject() as RenderBox?;
-    final cardBox = cardCtx.findRenderObject() as RenderBox?;
-    if (stackBox == null ||
-        cardBox == null ||
-        !stackBox.hasSize ||
-        !cardBox.hasSize) {
-      return;
-    }
-
-    final cardTopLeft = cardBox.localToGlobal(Offset.zero, ancestor: stackBox);
-    final newCardRect = cardTopLeft & cardBox.size;
-
-    final newPillRects = <int, Rect>{};
-    for (int i = 0; i < _pillKeys.length; i++) {
-      final pillCtx = _pillKeys[i].currentContext;
-      final pillBox = pillCtx?.findRenderObject() as RenderBox?;
-      if (pillBox == null || !pillBox.hasSize) continue;
-      final pillTopLeft = pillBox.localToGlobal(
-        Offset.zero,
-        ancestor: stackBox,
-      );
-      newPillRects[i] = pillTopLeft & pillBox.size;
-    }
-
-    setState(() {
-      _cardRectInStack = newCardRect;
-      _pillRectsInStack
-        ..clear()
-        ..addAll(newPillRects);
-    });
   }
 
   @override
@@ -820,114 +653,81 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: s(16)),
-                    child: Stack(
-                      key: _stackKey,
-                      clipBehavior: Clip.none,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // 3 frames always (one per plan) - selected on top
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: CustomPaint(
-                              painter: _FramesPainter(
-                                plans: displayVisuals,
-                                selectedIndex: _selectedIndex,
-                                pillRects: _pillRectsInStack,
-                                cardRect: _cardRectInStack,
-                                isRtl: isRtl,
-                                scale: scale,
-                              ),
-                            ),
-                          ),
+                        _PlanTabsOneSide(
+                          plans: displayVisuals,
+                          selectedIndex: selectedIndex,
+                          isRtl: isRtl,
+                          scale: scale,
+                          onSelected: (i) {
+                            setState(() => _selectedIndex = i);
+                          },
                         ),
+                        SizedBox(height: s(28)),
 
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _PlanTabsOneSide(
-                              plans: displayVisuals,
-                              order: _tabOrder(_selectedIndex),
-                              selectedIndex: _selectedIndex,
-                              isRtl: isRtl,
-                              scale: scale,
-                              pillKeys: _pillKeys,
-                              onSelected: (i) {
-                                setState(() => _selectedIndex = i);
-                                WidgetsBinding.instance.addPostFrameCallback(
-                                  (_) => _measureAnchors(),
+                        // Card content (only selected plan details)
+                        _PlanDetailCard(
+                          plan: selectedPlan,
+                          isRtl: isRtl,
+                          scale: scale,
+                          onSelect: () async {
+                            try {
+                              if (latestTrip != null) {
+                                await _tripRepo.markPlanSelection(
+                                  tripPlanId: latestTrip.id,
+                                  selectedPlanIndex: selectedIndex,
+                                  selectedPlanTitle: selectedPlan.title,
                                 );
-                              },
-                            ),
-                            SizedBox(height: s(50)),
-
-                            // Card content (only selected plan details)
-                            _PlanDetailCard(
-                              cardKey: _cardKey,
-                              plan: selectedPlan,
-                              isRtl: isRtl,
-                              scale: scale,
-                              onSelect: () async {
-                                try {
-                                  if (latestTrip != null) {
-                                    await _tripRepo.markPlanSelection(
-                                      tripPlanId: latestTrip.id,
-                                      selectedPlanIndex: selectedIndex,
-                                      selectedPlanTitle: selectedPlan.title,
-                                    );
-                                  }
-                                  if (!context.mounted) return;
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => PlanDetailScreen(
-                                        data: _toDetailData(
-                                          context,
-                                          selectedPlan,
-                                          sourceTripPlanId: sourceTripPlanId,
-                                          sourceTrip: latestTrip,
-                                          rawPlan: rawSelectedPlan,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                  if (!mounted) return;
-                                  _refreshPlans();
-                                } catch (e) {
-                                  if (!context.mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        context.l10n.errorWithDetails(
-                                          e.toString(),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                            SizedBox(height: s(14)),
-                            Center(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  final payload =
-                                      latestTrip != null &&
-                                          rawGeneratedPlans.isNotEmpty
-                                      ? PlanComparisonPayload(
-                                          trip: latestTrip,
-                                          generatedPlans: rawGeneratedPlans,
-                                        )
-                                      : null;
-                                  await context.push(
-                                    '/plans/compare',
-                                    extra: payload,
-                                  );
-                                  if (!mounted) return;
-                                  _refreshPlans();
-                                },
-                                icon: const Icon(Icons.compare_arrows),
-                                label: Text(context.l10n.comparePlansCta),
-                              ),
-                            ),
-                          ],
+                              }
+                              if (!context.mounted) return;
+                              await context.push(
+                                '/plans/detail',
+                                extra: _toDetailData(
+                                  context,
+                                  selectedPlan,
+                                  sourceTripPlanId: sourceTripPlanId,
+                                  sourceTrip: latestTrip,
+                                  rawPlan: rawSelectedPlan,
+                                ),
+                              );
+                              if (!mounted) return;
+                              _refreshPlans();
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    context.l10n.errorWithDetails(e.toString()),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        SizedBox(height: s(14)),
+                        Center(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              final payload =
+                                  latestTrip != null &&
+                                      rawGeneratedPlans.isNotEmpty
+                                  ? PlanComparisonPayload(
+                                      trip: latestTrip,
+                                      generatedPlans: rawGeneratedPlans,
+                                    )
+                                  : null;
+                              await context.push(
+                                '/plans/compare',
+                                extra: payload,
+                              );
+                              if (!mounted) return;
+                              _refreshPlans();
+                            },
+                            icon: const Icon(Icons.compare_arrows),
+                            label: Text(context.l10n.comparePlansCta),
+                          ),
                         ),
                       ],
                     ),
@@ -960,20 +760,16 @@ String _localizedPlanTitle(BuildContext context, _PlanVisual plan) {
 
 class _PlanTabsOneSide extends StatelessWidget {
   final List<_PlanVisual> plans;
-  final List<int> order;
   final int selectedIndex;
   final bool isRtl;
   final double scale;
-  final List<GlobalKey> pillKeys;
   final ValueChanged<int> onSelected;
 
   const _PlanTabsOneSide({
     required this.plans,
-    required this.order,
     required this.selectedIndex,
     required this.isRtl,
     required this.scale,
-    required this.pillKeys,
     required this.onSelected,
   });
 
@@ -981,44 +777,50 @@ class _PlanTabsOneSide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visible = order.where((i) => i != selectedIndex).toList();
-    return Column(
-      children: [
-        for (int i = 0; i < visible.length; i++) ...[
-          _PlanTabRowOneSide(
-            pillKey: pillKeys[visible[i]], // key per plan index
-            title: _localizedPlanTitle(context, plans[visible[i]]),
-            color: plans[visible[i]].accent,
-            lineColor: plans[visible[i]].border,
-            isSelected: false,
-            isRtl: isRtl,
-            scale: scale,
-            onTap: () => onSelected(visible[i]),
-          ),
-          if (i != visible.length - 1) SizedBox(height: s(14)),
+    final visibleIndexes = <int>[
+      for (int i = 0; i < plans.length; i++)
+        if (i != selectedIndex) i,
+    ];
+
+    if (visibleIndexes.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Align(
+      alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: isRtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          for (int row = 0; row < visibleIndexes.length; row++) ...[
+            _PlanTabRowOneSide(
+              title: _localizedPlanTitle(context, plans[visibleIndexes[row]]),
+              color: plans[visibleIndexes[row]].accent,
+              borderColor: plans[visibleIndexes[row]].border,
+              scale: scale,
+              onTap: () => onSelected(visibleIndexes[row]),
+            ),
+            if (row != visibleIndexes.length - 1) SizedBox(height: s(12)),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
 
 class _PlanTabRowOneSide extends StatelessWidget {
-  final GlobalKey pillKey;
   final String title;
   final Color color;
-  final Color lineColor;
-  final bool isSelected;
-  final bool isRtl;
+  final Color borderColor;
   final double scale;
   final VoidCallback onTap;
 
   const _PlanTabRowOneSide({
-    required this.pillKey,
     required this.title,
     required this.color,
-    required this.lineColor,
-    required this.isSelected,
-    required this.isRtl,
+    required this.borderColor,
     required this.scale,
     required this.onTap,
   });
@@ -1027,47 +829,29 @@ class _PlanTabRowOneSide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // One-side layout: pill at "start" side, line extends to the other side.
-    final pill = Material(
+    return Material(
       color: Colors.transparent,
-      elevation: isSelected ? 2 : 0,
-      shadowColor: Colors.black26,
-      child: Container(
-        key: pillKey,
-        padding: EdgeInsets.symmetric(horizontal: s(18), vertical: s(8)),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(s(26)),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: s(18),
-            fontFamily: 'serif',
-            color: _PlansScreenState._text,
-            height: 1.1,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(s(26)),
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: s(18), vertical: s(10)),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(s(26)),
+            border: Border.all(color: borderColor, width: s(1.8)),
+          ),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: s(17),
+              fontFamily: 'serif',
+              color: _PlansScreenState._text,
+              fontWeight: FontWeight.w600,
+              height: 1.1,
+            ),
           ),
         ),
-      ),
-    );
-
-    final line = Expanded(
-      child: Container(
-        height: s(2),
-        margin: EdgeInsets.only(
-          left: isRtl ? 0 : s(8),
-          right: isRtl ? s(8) : 0,
-        ),
-        color: lineColor,
-      ),
-    );
-
-    return InkWell(
-      onTap: onTap,
-      child: Row(
-        // Keep explicit child ordering stable regardless of ambient Directionality.
-        textDirection: TextDirection.ltr,
-        children: isRtl ? [line, pill] : [pill, line],
       ),
     );
   }
@@ -1076,14 +860,12 @@ class _PlanTabRowOneSide extends StatelessWidget {
 /* ---------------- Detail Card (NO duplicate title) ---------------- */
 
 class _PlanDetailCard extends StatelessWidget {
-  final GlobalKey cardKey;
   final _PlanVisual plan;
   final bool isRtl;
   final double scale;
   final Future<void> Function() onSelect;
 
   const _PlanDetailCard({
-    required this.cardKey,
     required this.plan,
     required this.isRtl,
     required this.scale,
@@ -1112,7 +894,6 @@ class _PlanDetailCard extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Container(
-              key: cardKey,
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(s(16), s(28), s(16), s(16)),
               decoration: BoxDecoration(
@@ -1454,97 +1235,6 @@ class _SectionList extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-/* ---------------- Painter: 3 frames stacked + selected on top ---------------- */
-
-class _FramesPainter extends CustomPainter {
-  final List<_PlanVisual> plans;
-  final int selectedIndex;
-  final Map<int, Rect> pillRects;
-  final Rect? cardRect;
-  final bool isRtl;
-  final double scale;
-
-  _FramesPainter({
-    required this.plans,
-    required this.selectedIndex,
-    required this.pillRects,
-    required this.cardRect,
-    required this.isRtl,
-    required this.scale,
-  });
-
-  double s(double v) => v * scale;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final c = cardRect;
-    if (c == null) return;
-
-    // Layering: selected is depth 0 (front), others behind as depth 1/2
-    final all = List<int>.generate(plans.length, (i) => i);
-    final others = all.where((i) => i != selectedIndex).toList();
-
-    // Draw back -> front
-    final drawOrder = <int>[...others, selectedIndex];
-
-    int depthOf(int i) {
-      if (i == selectedIndex) return 0;
-      return others.indexOf(i) + 1; // 1..2
-    }
-
-    // Shift direction: keep all to one side
-    final sideSign = isRtl ? -1.0 : 1.0;
-
-    for (final i in drawOrder) {
-      final depth = depthOf(i);
-
-      final strokeW = (i == selectedIndex) ? s(3.2) : s(2.4);
-      final paint = Paint()
-        ..color = plans[i].border
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW;
-
-      // Frames stacked "under each other"
-      final dx = sideSign * depth * s(10);
-      final dy = depth * s(10);
-
-      final frameRect = c.shift(Offset(dx, dy));
-      final radius = Radius.circular(s(12));
-      final rr = RRect.fromRectAndRadius(frameRect, radius);
-
-      // Draw full rectangle (square/box)
-      canvas.drawRRect(rr, paint);
-
-      // Connector from pill to its own frame (always)
-      final pill = pillRects[i];
-      if (pill != null) {
-        final start = Offset(isRtl ? pill.left : pill.right, pill.center.dy);
-
-        // connect to the "outer" side of the frame
-        final joinX = isRtl ? (frameRect.left) : (frameRect.right);
-        final joinY = frameRect.top + s(26);
-
-        final path = Path()
-          ..moveTo(start.dx, start.dy)
-          ..lineTo(joinX + (isRtl ? -s(8) : s(8)), start.dy)
-          ..lineTo(joinX + (isRtl ? -s(8) : s(8)), joinY)
-          ..lineTo(joinX, joinY);
-
-        canvas.drawPath(path, paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _FramesPainter oldDelegate) {
-    return oldDelegate.selectedIndex != selectedIndex ||
-        oldDelegate.cardRect != cardRect ||
-        oldDelegate.pillRects != pillRects ||
-        oldDelegate.isRtl != isRtl ||
-        oldDelegate.scale != scale;
   }
 }
 

@@ -1982,6 +1982,42 @@ abstract class AppLocalizations {
   /// **'Amenities'**
   String get planDetailAmenities;
 
+  /// No description provided for @planDetailWhyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this plan'**
+  String get planDetailWhyPlan;
+
+  /// No description provided for @planDetailWhyHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this hotel'**
+  String get planDetailWhyHotel;
+
+  /// No description provided for @planDetailSelectHotelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between the recommended hotels'**
+  String get planDetailSelectHotelHint;
+
+  /// No description provided for @planDetailPreviousHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get planDetailPreviousHotel;
+
+  /// No description provided for @planDetailNextHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get planDetailNextHotel;
+
+  /// No description provided for @planDetailHotelPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel {current} of {total}'**
+  String planDetailHotelPosition(int current, int total);
+
   /// No description provided for @planDetailOpenClose.
   ///
   /// In en, this message translates to:
@@ -1993,6 +2029,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Distance'**
   String get planDetailDistance;
+
+  /// No description provided for @planDetailTourGuideSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour Guide'**
+  String get planDetailTourGuideSection;
+
+  /// No description provided for @planDetailShareSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Share summary'**
+  String get planDetailShareSummary;
+
+  /// No description provided for @planDetailShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the plan summary.'**
+  String get planDetailShareFailed;
+
+  /// No description provided for @planDetailPdfPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF preview'**
+  String get planDetailPdfPreview;
+
+  /// No description provided for @planDetailDayRouteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Route for {day}'**
+  String planDetailDayRouteTitle(Object day);
+
+  /// No description provided for @planDetailRouteStops.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops'**
+  String get planDetailRouteStops;
+
+  /// No description provided for @planDetailOpenRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Open route'**
+  String get planDetailOpenRoute;
+
+  /// No description provided for @planDetailNoRoutePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Map preview is not available for this day.'**
+  String get planDetailNoRoutePreview;
 
   /// No description provided for @planDetailNavigateToPlace.
   ///

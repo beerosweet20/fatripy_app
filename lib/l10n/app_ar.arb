@@ -496,8 +496,37 @@
   "planDetailPriceLabel": "السعر",
   "planDetailRatingLabel": "التقييم",
   "planDetailAmenities": "المرافق",
+  "planDetailWhyPlan": "سبب ترشيح الخطة",
+  "planDetailWhyHotel": "سبب ترشيح الفندق",
+  "planDetailSelectHotelHint": "يمكنك التنقل بين الفنادق المقترحة",
+  "planDetailPreviousHotel": "السابق",
+  "planDetailNextHotel": "التالي",
+  "planDetailHotelPosition": "الفندق {current} من {total}",
+  "@planDetailHotelPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "planDetailOpenClose": "الفتح | الإغلاق",
   "planDetailDistance": "المسافة",
+  "planDetailTourGuideSection": "المرشد السياحي",
+  "planDetailShareSummary": "مشاركة الملخص",
+  "planDetailShareFailed": "تعذر مشاركة ملخص الخطة.",
+  "planDetailPdfPreview": "معاينة PDF",
+  "planDetailDayRouteTitle": "مسار {day}",
+  "@planDetailDayRouteTitle": {
+    "placeholders": {
+      "day": {}
+    }
+  },
+  "planDetailRouteStops": "المحطات",
+  "planDetailOpenRoute": "فتح المسار",
+  "planDetailNoRoutePreview": "لا تتوفر معاينة خريطة لهذا اليوم.",
   "planDetailNavigateToPlace": "الانتقال إلى المكان",
   "planDetailBookHotelViaMaps": "احجز الفندق عبر الخرائط",
   "bookingLoginRequiredSaveFailed": "يرجى تسجيل الدخول. لم يتم حفظ الحجز.",

@@ -1046,10 +1046,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planDetailAmenities => 'Amenities';
 
   @override
+  String get planDetailWhyPlan => 'Why this plan';
+
+  @override
+  String get planDetailWhyHotel => 'Why this hotel';
+
+  @override
+  String get planDetailSelectHotelHint =>
+      'Switch between the recommended hotels';
+
+  @override
+  String get planDetailPreviousHotel => 'Previous';
+
+  @override
+  String get planDetailNextHotel => 'Next';
+
+  @override
+  String planDetailHotelPosition(int current, int total) {
+    return 'Hotel $current of $total';
+  }
+
+  @override
   String get planDetailOpenClose => 'Open | Close';
 
   @override
   String get planDetailDistance => 'Distance';
+
+  @override
+  String get planDetailTourGuideSection => 'Tour Guide';
+
+  @override
+  String get planDetailShareSummary => 'Share summary';
+
+  @override
+  String get planDetailShareFailed => 'Could not share the plan summary.';
+
+  @override
+  String get planDetailPdfPreview => 'PDF preview';
+
+  @override
+  String planDetailDayRouteTitle(Object day) {
+    return 'Route for $day';
+  }
+
+  @override
+  String get planDetailRouteStops => 'Stops';
+
+  @override
+  String get planDetailOpenRoute => 'Open route';
+
+  @override
+  String get planDetailNoRoutePreview =>
+      'Map preview is not available for this day.';
 
   @override
   String get planDetailNavigateToPlace => 'Navigate to Place';

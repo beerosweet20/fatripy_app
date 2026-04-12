@@ -179,6 +179,22 @@ HOTEL_TEMPLATES = [
     "{city} Royal Gardens",
     "{city} Cityline Hotel",
     "{city} Horizon Suites",
+    "{city} Waterfront Residence",
+    "{city} Panorama Stay",
+    "{city} Park View Hotel",
+    "{city} Family Comfort Inn",
+    "{city} Executive Suites",
+    "{city} Corniche Hotel",
+    "{city} Downtown Residence",
+    "{city} Landmark Hotel",
+    "{city} Elite Palace",
+    "{city} Vista Resort",
+    "{city} Rose Boutique Hotel",
+    "{city} Marina Suites",
+    "{city} Palm Residency",
+    "{city} Horizon Palace",
+    "{city} Signature Stay",
+    "{city} Pearl Resort",
 ]
 
 
@@ -195,13 +211,69 @@ ACTIVITY_TEMPLATES = [
     ("{theme} Family Zone", "40-140", "10 AM", "11 PM"),
     ("{theme} Trail", "Free", "6 AM", "8 PM"),
     ("{theme} Gallery", "30-90", "10 AM", "8 PM"),
+    ("{theme} View Deck", "25-60", "8 AM", "10 PM"),
+    ("{theme} Heritage House", "20-50", "9 AM", "8 PM"),
+    ("{theme} Adventure Park", "60-180", "3 PM", "11 PM"),
+    ("{theme} Food Street", "35-120", "4 PM", "12 AM"),
+    ("{theme} Family Garden", "Free", "7 AM", "11 PM"),
+    ("{theme} Art Experience", "45-110", "10 AM", "9 PM"),
+    ("{theme} Eco Trail", "Free", "6 AM", "7 PM"),
+    ("{theme} Scenic Ride", "55-140", "4 PM", "10 PM"),
+    ("{theme} Kids Discovery", "50-120", "10 AM", "10 PM"),
+    ("{theme} Observation Point", "Free", "6 AM", "10 PM"),
+    ("{theme} Marina Walk", "Free", "5 PM", "12 AM"),
+    ("{theme} Storytelling Center", "25-70", "9 AM", "8 PM"),
+    ("{theme} Science Hub", "35-95", "10 AM", "9 PM"),
+    ("{theme} Wellness Escape", "80-220", "9 AM", "11 PM"),
+    ("{theme} Heritage Market", "Free", "5 PM", "11 PM"),
+    ("{theme} Cultural Plaza", "Free", "6 PM", "11 PM"),
+    ("{theme} Sunset Lounge", "60-180", "5 PM", "1 AM"),
+    ("{theme} Experience Center", "45-130", "11 AM", "10 PM"),
+    ("{theme} Interactive Museum", "35-110", "10 AM", "9 PM"),
+    ("{theme} Family Theater", "45-150", "4 PM", "11 PM"),
+    ("{theme} Nature Retreat", "70-190", "8 AM", "8 PM"),
+    ("{theme} Heritage Walk", "Free", "5 PM", "10 PM"),
+    ("{theme} Discovery Tour", "40-120", "9 AM", "7 PM"),
+    ("{theme} Local Taste Stop", "30-95", "1 PM", "11 PM"),
+    ("{theme} Panorama Trail", "Free", "6 AM", "6 PM"),
+    ("{theme} Creative Studio", "35-100", "11 AM", "9 PM"),
+    ("{theme} Weekend Bazaar", "Free", "4 PM", "11 PM"),
+    ("{theme} Leisure Hub", "50-160", "10 AM", "12 AM"),
 ]
 
 EVENT_TEMPLATES = [
-    ("{city} Cultural Nights", "December", "6 PM - 10 PM"),
-    ("{city} Food Festival", "November", "4 PM - 11 PM"),
-    ("{city} Heritage Week", "January", "5 PM - 9 PM"),
+    ("{city} Winter Festival", "2026-01-12", "5 PM - 11 PM"),
+    ("{city} Family Weekend", "2026-02-18", "4 PM - 10 PM"),
+    ("{city} Spring Market", "2026-03-14", "5 PM - 11 PM"),
+    ("{city} Heritage Nights", "2026-04-09", "6 PM - 11 PM"),
+    ("{city} Food Street Festival", "2026-05-21", "6 PM - 12 AM"),
+    ("{city} Summer Nights", "2026-06-25", "5 PM - 11 PM"),
+    ("{city} Waterfront Festival", "2026-07-17", "5 PM - 11 PM"),
+    ("{city} Cultural Week", "2026-08-20", "4 PM - 10 PM"),
+    ("{city} Art & Music Nights", "2026-09-18", "6 PM - 11 PM"),
+    ("{city} Outdoor Adventure Expo", "2026-10-22", "4 PM - 10 PM"),
+    ("{city} Local Crafts Fair", "2026-11-13", "5 PM - 10 PM"),
+    ("{city} Year End Celebration", "2026-12-18", "6 PM - 11 PM"),
+    ("{city} Heritage Weekend", "2026-01-29", "4 PM - 10 PM"),
+    ("{city} Ramadan Nights", "2026-03-27", "8 PM - 1 AM"),
+    ("{city} Eid Festivities", "2026-04-04", "5 PM - 12 AM"),
+    ("{city} Back to Summer Fest", "2026-06-12", "6 PM - 11 PM"),
+    ("{city} National Day Countdown", "2026-09-22", "5 PM - 12 AM"),
+    ("{city} Weekend Waterfront Live", "2026-11-27", "6 PM - 11 PM"),
 ]
+
+
+CITY_GUIDES = {
+    "Riyadh": ("Mohammed Atef", "5", "Arabic-English", "0511111999", 4.4),
+    "Jeddah": ("Lina Hassan", "8", "Arabic-English", "0522222888", 4.8),
+    "Mecca": ("Abdulrahman Al Harbi", "9", "Arabic-English-Urdu", "0533200441", 4.9),
+    "Medina": ("Sara Al Zahrani", "6", "Arabic-English", "0541188332", 4.7),
+    "Dammam": ("Yousef Al Qahtani", "7", "Arabic-English", "0551177334", 4.6),
+    "Khobar": ("Norah Al Dosari", "6", "Arabic-English", "0561144221", 4.7),
+    "Abha": ("Aisha Asiri", "8", "Arabic-English", "0504411882", 4.9),
+    "Taif": ("Faisal Al Thaqafi", "7", "Arabic-English", "0509933772", 4.8),
+    "Jazan": ("Huda Al Hakami", "6", "Arabic-English", "0537711008", 4.6),
+}
 
 
 def _build_hotels(city: str, base_lat: float, base_lng: float):
@@ -256,6 +328,12 @@ def _build_activities(city: str, base_lat: float, base_lng: float):
         name = tpl[0].format(theme=theme)
         doc_id = _slug(f"{name}_{city}")
         lat, lng = _jitter(base_lat, base_lng, 100 + i)
+        if i % 5 == 0:
+            lat += 0.17
+            lng += 0.11
+        elif i % 5 == 3:
+            lat -= 0.14
+            lng += 0.09
         price, open_h, close_h = tpl[1], tpl[2], tpl[3]
         rating = round(4.0 + (i % 6) * 0.12, 1)
         location = f"{theme}, {city}"
@@ -294,12 +372,27 @@ def _build_events(city: str):
                 "date": tpl[1],
                 "time": tpl[2],
                 "location": f"{location}, {city}",
-                "description": f"A seasonal event in {city} featuring culture, food, and family activities.",
+                "description": f"A curated 2026 event in {city} featuring culture, food, family entertainment, and local experiences near {location}.",
                 "city": city,
                 "mapsUrl": f"https://maps.google.com/?q={title.replace(' ', '+')}",
             }
         )
     return events
+
+
+def _build_guide(city: str):
+    name, experience_years, languages, phone, rating = CITY_GUIDES[city]
+    doc_id = _slug(f"{city}_{name}_guide")
+    return {
+        "id": doc_id,
+        "name": name,
+        "experienceYears": experience_years,
+        "languages": languages,
+        "phone": phone,
+        "rating": rating,
+        "city": city,
+        "description": f"Local certified guide for {city} cultural experiences, landmarks, and family-friendly storytelling routes.",
+    }
 
 
 def main():
@@ -315,15 +408,18 @@ def main():
     hotels_ref = db.collection("hotels")
     activities_ref = db.collection("activities")
     events_ref = db.collection("events")
+    guides_ref = db.collection("guides")
 
     hotel_count = 0
     activity_count = 0
     event_count = 0
+    guide_count = 0
 
     for city, meta in CITY_DATA.items():
         hotels = _build_hotels(city, meta["lat"], meta["lng"])
         activities = _build_activities(city, meta["lat"], meta["lng"])
         events = _build_events(city)
+        guide = _build_guide(city)
 
         for h in hotels:
             hotels_ref.document(h["id"]).set(h, merge=True)
@@ -334,10 +430,12 @@ def main():
         for e in events:
             events_ref.document(e["id"]).set(e, merge=True)
             event_count += 1
+        guides_ref.document(guide["id"]).set(guide, merge=True)
+        guide_count += 1
 
     print(
         f"Seed complete. Hotels: {hotel_count}, Activities: {activity_count}, "
-        f"Events: {event_count} "
+        f"Events: {event_count}, Guides: {guide_count} "
         f"across {len(CITY_DATA)} cities."
     )
 

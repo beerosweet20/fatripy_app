@@ -497,8 +497,37 @@
   "planDetailPriceLabel": "Price",
   "planDetailRatingLabel": "Rating",
   "planDetailAmenities": "Amenities",
+  "planDetailWhyPlan": "Why this plan",
+  "planDetailWhyHotel": "Why this hotel",
+  "planDetailSelectHotelHint": "Switch between the recommended hotels",
+  "planDetailPreviousHotel": "Previous",
+  "planDetailNextHotel": "Next",
+  "planDetailHotelPosition": "Hotel {current} of {total}",
+  "@planDetailHotelPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "planDetailOpenClose": "Open | Close",
   "planDetailDistance": "Distance",
+  "planDetailTourGuideSection": "Tour Guide",
+  "planDetailShareSummary": "Share summary",
+  "planDetailShareFailed": "Could not share the plan summary.",
+  "planDetailPdfPreview": "PDF preview",
+  "planDetailDayRouteTitle": "Route for {day}",
+  "@planDetailDayRouteTitle": {
+    "placeholders": {
+      "day": {}
+    }
+  },
+  "planDetailRouteStops": "Stops",
+  "planDetailOpenRoute": "Open route",
+  "planDetailNoRoutePreview": "Map preview is not available for this day.",
   "planDetailNavigateToPlace": "Navigate to Place",
   "planDetailBookHotelViaMaps": "Book Hotel via Maps",
   "bookingLoginRequiredSaveFailed": "Please log in. Booking was not saved.",

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart' as latlng;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../data/repositories/booking_repository.dart';
 import '../../../domain/entities/booking.dart';
 import '../../localization/app_localizations_ext.dart';
+import 'plan_share_preview_screen.dart';
 
 class PlanDetailData {
   final String title;
@@ -17,10 +20,14 @@ class PlanDetailData {
   final Color accentColor;
   final Color backgroundColor;
   final AccommodationInfo accommodation;
+  final TourGuideInfo? tourGuide;
   final List<DayDetail> days;
   final List<ActivityItem> nearby;
   final List<ActivityItem> distant;
   final List<String> eventLines;
+  final List<String> planReasons;
+  final List<HotelPlanOption> hotelOptions;
+  final int initialHotelIndex;
 
   const PlanDetailData({
     required this.title,
@@ -33,11 +40,29 @@ class PlanDetailData {
     required this.accentColor,
     required this.backgroundColor,
     required this.accommodation,
+    this.tourGuide,
     required this.days,
     required this.nearby,
     required this.distant,
     required this.eventLines,
+    this.planReasons = const <String>[],
+    this.hotelOptions = const <HotelPlanOption>[],
+    this.initialHotelIndex = 0,
   });
+
+  List<HotelPlanOption> get resolvedHotelOptions {
+    if (hotelOptions.isNotEmpty) {
+      return hotelOptions;
+    }
+    return <HotelPlanOption>[
+      HotelPlanOption(
+        accommodation: accommodation,
+        days: days,
+        nearby: nearby,
+        distant: distant,
+      ),
+    ];
+  }
 }
 
 class AccommodationInfo {
@@ -50,6 +75,8 @@ class AccommodationInfo {
   final String mapsNote;
   final String? bookingUrl;
   final String? mapsUrl;
+  final double? lat;
+  final double? lng;
 
   const AccommodationInfo({
     required this.id,
@@ -61,6 +88,26 @@ class AccommodationInfo {
     required this.mapsNote,
     this.bookingUrl,
     this.mapsUrl,
+    this.lat,
+    this.lng,
+  });
+}
+
+class TourGuideInfo {
+  final String name;
+  final String experienceYears;
+  final String languages;
+  final String phone;
+  final String rating;
+  final String description;
+
+  const TourGuideInfo({
+    required this.name,
+    required this.experienceYears,
+    required this.languages,
+    required this.phone,
+    required this.rating,
+    required this.description,
   });
 }
 
@@ -90,6 +137,8 @@ class ActivityItem {
   final String? distance;
   final String? bookingUrl;
   final String? mapsUrl;
+  final double? lat;
+  final double? lng;
 
   const ActivityItem({
     required this.id,
@@ -103,6 +152,56 @@ class ActivityItem {
     this.distance,
     this.bookingUrl,
     this.mapsUrl,
+    this.lat,
+    this.lng,
+  });
+}
+
+class HotelPlanOption {
+  final AccommodationInfo accommodation;
+  final List<DayDetail> days;
+  final List<ActivityItem> nearby;
+  final List<ActivityItem> distant;
+  final List<String> hotelReasons;
+  final List<DayRouteInfo> dayRoutes;
+  final double? totalCost;
+
+  const HotelPlanOption({
+    required this.accommodation,
+    required this.days,
+    required this.nearby,
+    required this.distant,
+    this.hotelReasons = const <String>[],
+    this.dayRoutes = const <DayRouteInfo>[],
+    this.totalCost,
+  });
+}
+
+class DayRouteInfo {
+  final String dayLabel;
+  final double centerLat;
+  final double centerLng;
+  final List<RouteStopInfo> stops;
+
+  const DayRouteInfo({
+    required this.dayLabel,
+    required this.centerLat,
+    required this.centerLng,
+    required this.stops,
+  });
+}
+
+class RouteStopInfo {
+  final String title;
+  final double lat;
+  final double lng;
+  final bool isHotel;
+
+  const RouteStopInfo({
+    required this.title,
+    required this.lat,
+    required this.lng,
+    this.isHotel = false,
   });
 }
 
@@ -182,7 +281,7 @@ Future<void> _saveBooking(
   await repo.addBooking(booking);
 
   if (context.mounted) {
-    context.push('/booking-success?type=$type');
+    context.push('/plans/booking-success?type=$type');
   }
 }
 
@@ -207,6 +306,103 @@ Future<void> _bookAndSave(
   } catch (e) {
     debugPrint('Error booking: $e');
   }
+}
+
+Uri? _routeDirectionsUri(List<RouteStopInfo> stops) {
+  if (stops.length < 2) return null;
+
+  String point(RouteStopInfo stop) => '${stop.lat},${stop.lng}';
+
+  final origin = point(stops.first);
+  final destination = point(stops.last);
+  final waypoints = stops.length > 2
+      ? stops
+            .sublist(1, stops.length - 1)
+            .map(point)
+            .join('|')
+      : '';
+
+  final params = <String, String>{
+    'api': '1',
+    'origin': origin,
+    'destination': destination,
+    'travelmode': 'driving',
+  };
+  if (waypoints.isNotEmpty) {
+    params['waypoints'] = waypoints;
+  }
+  return Uri.https('www.google.com', '/maps/dir/', params);
+}
+
+DayRouteInfo? _routeForDay(HotelPlanOption option, DayDetail day) {
+  for (final route in option.dayRoutes) {
+    if (route.dayLabel.trim() == day.label.trim()) {
+      return route;
+    }
+  }
+  if (option.dayRoutes.length == option.days.length) {
+    final index = option.days.indexOf(day);
+    if (index >= 0 && index < option.dayRoutes.length) {
+      return option.dayRoutes[index];
+    }
+  }
+  return null;
+}
+
+class _PlanEventEntry {
+  final String title;
+  final List<String> details;
+
+  const _PlanEventEntry({required this.title, required this.details});
+}
+
+bool _isEventDetailLine(BuildContext context, String line) {
+  final l10n = context.l10n;
+  final prefixes = <String>[
+    '${l10n.bookingsReceiptDate}:',
+    '${l10n.plansTimeLabel}:',
+    '${l10n.adminLabelLocation}:',
+    '${l10n.plansDescriptionLabel}:',
+  ];
+  return prefixes.any((prefix) => line.startsWith(prefix));
+}
+
+List<_PlanEventEntry> _groupEventLines(
+  BuildContext context,
+  List<String> lines,
+) {
+  final entries = <_PlanEventEntry>[];
+  String? currentTitle;
+  final currentDetails = <String>[];
+
+  void flush() {
+    if ((currentTitle ?? '').trim().isEmpty) return;
+    entries.add(
+      _PlanEventEntry(
+        title: currentTitle!.trim(),
+        details: List<String>.from(currentDetails),
+      ),
+    );
+    currentTitle = null;
+    currentDetails.clear();
+  }
+
+  for (final rawLine in lines) {
+    final line = rawLine.trim();
+    if (line.isEmpty) continue;
+    if (_isEventDetailLine(context, line)) {
+      if (currentTitle == null) {
+        currentTitle = line;
+      } else {
+        currentDetails.add(line);
+      }
+      continue;
+    }
+    flush();
+    currentTitle = line;
+  }
+  flush();
+  return entries;
 }
 
 class PlanDetailScreen extends StatelessWidget {
@@ -241,19 +437,33 @@ class PlanDetailScreen extends StatelessWidget {
     return (background: background, border: border, text: text, icon: border);
   }
 
+  Color _mix(Color a, Color b, double t) {
+    return Color.lerp(a, b, t.clamp(0.0, 1.0)) ?? a;
+  }
+
+  Color _onColor(Color color) {
+    return color.computeLuminance() < 0.46
+        ? Colors.white
+        : const Color(0xFF111111);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // ignore: avoid_print
-    print('Budget Status: ${data.budgetStatus}');
     final w = MediaQuery.of(context).size.width;
     final scale = (w / 390.0).clamp(0.85, 1.10);
     double s(double v) => v * scale;
 
-    final paper = const Color(0xFFFFF3E1);
     final ink = const Color(0xFF111111);
+    final paper = _mix(const Color(0xFFFFFBF3), data.backgroundColor, 0.78);
     final stroke = data.borderColor;
-    final lightCell = const Color(0xFFFFF6E8);
-    final dayCell = const Color(0xFFFFDFA1);
+    final sectionPill = data.accentColor;
+    final sectionPillText = _onColor(sectionPill);
+    final titleBand = data.headerColor;
+    final titleText = _onColor(titleBand);
+    final panelFill = _mix(paper, data.headerColor, 0.32);
+    final lightCell = _mix(paper, data.headerColor, 0.46);
+    final dayCell = data.accentColor;
+    final dayCellText = _onColor(dayCell);
     final budgetStatus = (data.budgetStatus ?? '').toLowerCase().trim();
     final isLowBudget =
         budgetStatus == 'low' ||
@@ -263,218 +473,421 @@ class PlanDetailScreen extends StatelessWidget {
     final userBudgetLabel = _formatSarNumber(data.userBudget);
     final minimumRequiredLabel = _formatSarNumber(data.minimumRequired);
     final bannerColors = _budgetBannerPalette(data.accentColor);
+    final showBack = Navigator.of(context).canPop();
+    final hotelOptions = data.resolvedHotelOptions;
+    final eventEntries = _groupEventLines(context, data.eventLines);
+    var selectedHotelIndex = hotelOptions.isEmpty
+        ? 0
+        : data.initialHotelIndex.clamp(0, hotelOptions.length - 1);
 
     return Scaffold(
       backgroundColor: paper,
       body: SafeArea(
-        child: Column(
-          children: [
-            // ─── Header ───────────────────────────────────────────────────
-            Container(
-              color: data.headerColor,
-              padding: EdgeInsets.symmetric(horizontal: s(8), vertical: s(12)),
-              child: Row(
+        child: StatefulBuilder(
+          builder: (context, setPlanState) {
+            final activeOption = hotelOptions[selectedHotelIndex];
+            return Column(
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios_new,
-                      size: s(18),
-                      color: ink,
+                // ─── Header ───────────────────────────────────────────────────
+                Padding(
+                  padding: EdgeInsets.fromLTRB(s(18), s(10), s(18), s(12)),
+                  child: Container(
+                    width: double.infinity,
+                    color: titleBand,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: s(8),
+                      vertical: s(12),
                     ),
-                    onPressed: () => Navigator.of(context).maybePop(),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        context.l10n.planDetailTitle(data.title),
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                          fontSize: s(18),
-                          color: ink,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: s(44)),
-                ],
-              ),
-            ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(s(12), s(14), s(12), s(20)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (isLowBudget) ...[
-                      Container(
-                        padding: EdgeInsets.all(s(12)),
-                        decoration: BoxDecoration(
-                          color: bannerColors.background,
-                          border: Border.all(color: bannerColors.border),
-                          borderRadius: BorderRadius.circular(s(12)),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: bannerColors.icon,
-                              size: s(22),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (showBack)
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios_new,
+                                size: s(18),
+                                color: titleText,
+                              ),
+                              onPressed: () => Navigator.of(context).maybePop(),
                             ),
-                            SizedBox(width: s(10)),
-                            Expanded(
-                              child: Text(
-                                context.l10n.plansBudgetLowBannerMessage(
-                                  userBudgetLabel,
-                                  minimumRequiredLabel,
-                                ),
-                                style: TextStyle(
-                                  fontFamily: 'Georgia',
-                                  fontSize: s(13.5),
-                                  color: bannerColors.text,
-                                  height: 1.35,
+                          ),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: IconButton(
+                            tooltip: context.l10n.planDetailShareSummary,
+                            icon: Icon(
+                              Icons.ios_share_outlined,
+                              size: s(20),
+                              color: titleText,
+                            ),
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => PlanSharePreviewScreen(
+                                  data: data,
+                                  hotelOption: activeOption,
+                                  hotelIndex: selectedHotelIndex,
                                 ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: s(16)),
-                    ],
-                    // ─── Hotel Information ─────────────────────────────
-                    _PillOverlayBox(
-                      scale: scale,
-                      borderColor: stroke,
-                      pillColor: dayCell,
-                      pillAlignment: AlignmentDirectional.centerStart,
-                      pillText: '${context.l10n.planDetailHotelSection}:',
-                      child: _HotelInfoContent(
-                        scale: scale,
-                        hotel: data.accommodation,
-                        planId: data.sourceTripPlanId,
-                      ),
-                    ),
-
-                    SizedBox(height: s(24)),
-
-                    // ─── Days ──────────────────────────────────────────
-                    for (int di = 0; di < data.days.length; di++) ...[
-                      _DayBlock(
-                        scale: scale,
-                        borderColor: stroke,
-                        paper: paper,
-                        lightCell: lightCell,
-                        dayCell: dayCell,
-                        ink: ink,
-                        day: data.days[di],
-                        planId: data.sourceTripPlanId,
-                        // odd index (0-based) → Day label on RIGHT side
-                        dayLabelOnRight: di.isOdd,
-                      ),
-                      SizedBox(height: s(14)),
-                    ],
-
-                    // ─── Nearby Attraction ─────────────────────────────
-                    _PillOverlayBox(
-                      scale: scale,
-                      borderColor: stroke,
-                      pillColor: dayCell,
-                      pillAlignment: AlignmentDirectional.centerEnd,
-                      pillText: '${context.l10n.plansLabelNearbyAttractions}:',
-                      child: Column(
-                        children: [
-                          for (int i = 0; i < data.nearby.length; i++) ...[
-                            _AttractionCard(
-                              scale: scale,
-                              borderColor: stroke,
-                              lightCell: lightCell,
-                              ink: ink,
-                              item: data.nearby[i],
-                              planId: data.sourceTripPlanId,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: s(42)),
+                          child: Text(
+                            context.l10n.planDetailTitle(data.title),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Georgia',
+                              fontSize: s(18),
+                              color: titleText,
+                              fontWeight: FontWeight.w500,
+                              height: 1.15,
                             ),
-                            if (i < data.nearby.length - 1)
-                              SizedBox(height: s(10)),
-                          ],
-                        ],
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                ),
 
-                    SizedBox(height: s(24)),
-
-                    // ─── Distant Attraction ────────────────────────────
-                    _PillOverlayBox(
-                      scale: scale,
-                      borderColor: stroke,
-                      pillColor: dayCell,
-                      pillAlignment: AlignmentDirectional.centerStart,
-                      pillText: '${context.l10n.plansLabelDistantAttractions}:',
-                      child: Column(
-                        children: [
-                          for (int i = 0; i < data.distant.length; i++) ...[
-                            _AttractionCard(
-                              scale: scale,
-                              borderColor: stroke,
-                              lightCell: lightCell,
-                              ink: ink,
-                              item: data.distant[i],
-                              planId: data.sourceTripPlanId,
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(s(18), s(8), s(18), s(24)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (isLowBudget) ...[
+                          Container(
+                            padding: EdgeInsets.all(s(12)),
+                            decoration: BoxDecoration(
+                              color: bannerColors.background,
+                              border: Border.all(color: bannerColors.border),
+                              borderRadius: BorderRadius.circular(s(12)),
                             ),
-                            if (i < data.distant.length - 1)
-                              SizedBox(height: s(10)),
-                          ],
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: s(24)),
-
-                    // ─── Event ─────────────────────────────────────────
-                    _PillOverlayBox(
-                      scale: scale,
-                      borderColor: stroke,
-                      pillColor: dayCell,
-                      pillAlignment: AlignmentDirectional.centerEnd,
-                      pillText: '${context.l10n.plansLabelEvents}:',
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (data.eventLines.isEmpty)
-                            Padding(
-                              padding: EdgeInsets.only(bottom: s(4)),
-                              child: Text(
-                                context.l10n.planDetailNoEvents,
-                                style: TextStyle(
-                                  fontFamily: 'Georgia',
-                                  fontSize: s(13.5),
-                                  color: const Color(0xFF111111),
-                                  height: 1.4,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: bannerColors.icon,
+                                  size: s(22),
                                 ),
-                              ),
-                            )
-                          else
-                            for (final line in data.eventLines)
-                              Padding(
-                                padding: EdgeInsets.only(bottom: s(4)),
-                                child: Text(
-                                  line,
-                                  style: TextStyle(
-                                    fontFamily: 'Georgia',
-                                    fontSize: s(13.5),
-                                    color: const Color(0xFF111111),
-                                    height: 1.4,
+                                SizedBox(width: s(10)),
+                                Expanded(
+                                  child: Text(
+                                    context.l10n.plansBudgetLowBannerMessage(
+                                      userBudgetLabel,
+                                      minimumRequiredLabel,
+                                    ),
+                                    style: TextStyle(
+                                      fontFamily: 'Georgia',
+                                      fontSize: s(13.5),
+                                      color: bannerColors.text,
+                                      height: 1.35,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: s(16)),
                         ],
-                      ),
+                        // ─── Hotel Information ─────────────────────────────
+                        Column(
+                          children: [
+                            _PillOverlayBox(
+                              scale: scale,
+                              borderColor: stroke,
+                              pillColor: sectionPill,
+                              panelColor: panelFill,
+                              pillTextColor: sectionPillText,
+                              pillAlignment: AlignmentDirectional.centerStart,
+                              pillText:
+                                  '${context.l10n.planDetailHotelSection}:',
+                              child: _HotelInfoContent(
+                                scale: scale,
+                                hotel: activeOption.accommodation,
+                                planId: data.sourceTripPlanId,
+                                planReasons: data.planReasons,
+                                hotelReasons: activeOption.hotelReasons,
+                                hotelCount: hotelOptions.length,
+                                onPreviousHotel: () => setPlanState(() {
+                                  selectedHotelIndex =
+                                      (selectedHotelIndex -
+                                          1 +
+                                          hotelOptions.length) %
+                                      hotelOptions.length;
+                                }),
+                                onNextHotel: () => setPlanState(() {
+                                  selectedHotelIndex =
+                                      (selectedHotelIndex + 1) %
+                                      hotelOptions.length;
+                                }),
+                              ),
+                            ),
+                            if (hotelOptions.length > 1) ...[
+                              SizedBox(height: s(8)),
+                              _HotelSelectorControls(
+                                scale: scale,
+                                color: sectionPill,
+                                hotelCount: hotelOptions.length,
+                                hotelIndex: selectedHotelIndex,
+                                hintText: context.l10n.planDetailSelectHotelHint,
+                                onSelectHotel: (index) => setPlanState(() {
+                                  selectedHotelIndex = index;
+                                }),
+                              ),
+                            ],
+                          ],
+                        ),
+
+                        if (data.tourGuide != null) ...[
+                          SizedBox(height: s(24)),
+                          _PillOverlayBox(
+                            scale: scale,
+                            borderColor: stroke,
+                            pillColor: sectionPill,
+                            panelColor: panelFill,
+                            pillTextColor: sectionPillText,
+                            pillAlignment: AlignmentDirectional.centerEnd,
+                            pillText:
+                                '${context.l10n.planDetailTourGuideSection}:',
+                            child: _TourGuideContent(
+                              scale: scale,
+                              guide: data.tourGuide!,
+                            ),
+                          ),
+                        ],
+
+                        SizedBox(height: s(24)),
+
+                        // ─── Days ──────────────────────────────────────────
+                        for (
+                          int di = 0;
+                          di < activeOption.days.length;
+                          di++
+                        ) ...[
+                          Builder(
+                            builder: (context) {
+                              final day = activeOption.days[di];
+                              final dayRoute = _routeForDay(activeOption, day);
+                              return Column(
+                                children: [
+                                  _DayBlock(
+                                    scale: scale,
+                                    borderColor: stroke,
+                                    paper: paper,
+                                    lightCell: lightCell,
+                                    dayCell: dayCell,
+                                    ink: ink,
+                                    dayHeaderTextColor: dayCellText,
+                                    dayLabelOnRight: di.isOdd,
+                                    day: day,
+                                    planId: data.sourceTripPlanId,
+                                    accentColor: sectionPill,
+                                  ),
+                                  if (dayRoute != null) ...[
+                                    SizedBox(height: s(14)),
+                                    _PillOverlayBox(
+                                      scale: scale,
+                                      borderColor: stroke,
+                                      pillColor: sectionPill,
+                                      panelColor: panelFill,
+                                      pillTextColor: sectionPillText,
+                                      pillAlignment: di.isOdd
+                                          ? AlignmentDirectional.centerStart
+                                          : AlignmentDirectional.centerEnd,
+                                      pillText:
+                                          '${context.l10n.planDetailDayRouteTitle(day.label.replaceAll(':', ''))}:',
+                                      child: _DayRouteMapContent(
+                                        scale: scale,
+                                        borderColor: stroke,
+                                        paper: paper,
+                                        lightCell: lightCell,
+                                        accentColor: sectionPill,
+                                        ink: ink,
+                                        route: dayRoute,
+                                      ),
+                                    ),
+                                  ],
+                                  SizedBox(height: s(22)),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+
+                        // ─── Nearby Attraction ─────────────────────────────
+                        _PillOverlayBox(
+                          scale: scale,
+                          borderColor: stroke,
+                          pillColor: sectionPill,
+                          panelColor: panelFill,
+                          pillTextColor: sectionPillText,
+                          pillAlignment: AlignmentDirectional.centerEnd,
+                          pillText:
+                              '${context.l10n.plansLabelNearbyAttractions}:',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (activeOption.nearby.isEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: s(4)),
+                                  child: Text(
+                                    context.l10n.planDetailNoActivities,
+                                    style: TextStyle(
+                                      fontFamily: 'Georgia',
+                                      fontSize: s(13.5),
+                                      color: ink,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                )
+                              else
+                                for (
+                                  int i = 0;
+                                  i < activeOption.nearby.length;
+                                  i++
+                                ) ...[
+                                  _AttractionCard(
+                                    scale: scale,
+                                    borderColor: stroke,
+                                    lightCell: lightCell,
+                                    ink: ink,
+                                    buttonColor: sectionPill,
+                                    item: activeOption.nearby[i],
+                                    planId: data.sourceTripPlanId,
+                                  ),
+                                  if (i < activeOption.nearby.length - 1)
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: s(8),
+                                      ),
+                                      child: Container(
+                                        height: s(1.5),
+                                        color: stroke.withValues(alpha: 0.55),
+                                      ),
+                                    ),
+                                ],
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: s(24)),
+
+                        // ─── Distant Attraction ────────────────────────────
+                        _PillOverlayBox(
+                          scale: scale,
+                          borderColor: stroke,
+                          pillColor: sectionPill,
+                          panelColor: panelFill,
+                          pillTextColor: sectionPillText,
+                          pillAlignment: AlignmentDirectional.centerStart,
+                          pillText:
+                              '${context.l10n.plansLabelDistantAttractions}:',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (activeOption.distant.isEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: s(4)),
+                                  child: Text(
+                                    context.l10n.planDetailNoActivities,
+                                    style: TextStyle(
+                                      fontFamily: 'Georgia',
+                                      fontSize: s(13.5),
+                                      color: ink,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                )
+                              else
+                                for (
+                                  int i = 0;
+                                  i < activeOption.distant.length;
+                                  i++
+                                ) ...[
+                                  _AttractionCard(
+                                    scale: scale,
+                                    borderColor: stroke,
+                                    lightCell: lightCell,
+                                    ink: ink,
+                                    buttonColor: sectionPill,
+                                    item: activeOption.distant[i],
+                                    planId: data.sourceTripPlanId,
+                                  ),
+                                  if (i < activeOption.distant.length - 1)
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: s(8),
+                                      ),
+                                      child: Container(
+                                        height: s(1.5),
+                                        color: stroke.withValues(alpha: 0.55),
+                                      ),
+                                    ),
+                                ],
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: s(24)),
+
+                        // ─── Event ─────────────────────────────────────────
+                        _PillOverlayBox(
+                          scale: scale,
+                          borderColor: stroke,
+                          pillColor: sectionPill,
+                          panelColor: panelFill,
+                          pillTextColor: sectionPillText,
+                          pillAlignment: AlignmentDirectional.centerEnd,
+                          pillText: '${context.l10n.plansLabelEvents}:',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (eventEntries.isEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: s(4)),
+                                  child: Text(
+                                    context.l10n.planDetailNoEvents,
+                                    style: TextStyle(
+                                      fontFamily: 'Georgia',
+                                      fontSize: s(13.5),
+                                      color: ink,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                )
+                              else
+                                for (int i = 0; i < eventEntries.length; i++) ...[
+                                  _EventEntryCard(
+                                    scale: scale,
+                                    ink: ink,
+                                    lightCell: lightCell,
+                                    borderColor: stroke,
+                                    entry: eventEntries[i],
+                                  ),
+                                  if (i < eventEntries.length - 1)
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: s(8),
+                                      ),
+                                      child: Container(
+                                        height: s(1.5),
+                                        color: stroke.withValues(alpha: 0.55),
+                                      ),
+                                    ),
+                                ],
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+                ],
+            );
+          },
         ),
       ),
     );
@@ -488,6 +901,8 @@ class _PillOverlayBox extends StatelessWidget {
   final double scale;
   final Color borderColor;
   final Color pillColor;
+  final Color panelColor;
+  final Color pillTextColor;
   final AlignmentGeometry pillAlignment;
   final String pillText;
   final Widget child;
@@ -496,6 +911,8 @@ class _PillOverlayBox extends StatelessWidget {
     required this.scale,
     required this.borderColor,
     required this.pillColor,
+    required this.panelColor,
+    required this.pillTextColor,
     required this.pillAlignment,
     required this.pillText,
     required this.child,
@@ -505,41 +922,46 @@ class _PillOverlayBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ink = const Color(0xFF111111);
+    final alignEnd = pillAlignment == AlignmentDirectional.centerEnd;
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Container(
+          width: double.infinity,
           margin: EdgeInsets.only(top: s(18)),
-          padding: EdgeInsets.fromLTRB(s(14), s(22), s(14), s(14)),
+          padding: EdgeInsets.fromLTRB(s(10), s(24), s(10), s(12)),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFF6E8),
-            border: Border.all(color: borderColor, width: s(1.8)),
-            borderRadius: BorderRadius.circular(s(12)),
+            color: panelColor,
+            border: Border.all(color: borderColor, width: s(2)),
           ),
           child: child,
         ),
         Positioned(
           top: 0,
-          left: 0,
-          right: 0,
-          child: Align(
-            alignment: pillAlignment,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: s(18), vertical: s(10)),
-              decoration: BoxDecoration(
-                color: pillColor,
-                borderRadius: BorderRadius.circular(s(999)),
-              ),
-              child: Text(
-                pillText,
-                style: TextStyle(
-                  fontFamily: 'Georgia',
-                  fontSize: s(16.5),
-                  color: ink,
-                  fontWeight: FontWeight.w700,
-                ),
+          left: alignEnd ? null : 0,
+          right: alignEnd ? 0 : null,
+          child: Container(
+            padding: EdgeInsets.fromLTRB(s(14), s(7), s(14), s(9)),
+            decoration: BoxDecoration(
+              color: pillColor,
+              borderRadius: alignEnd
+                  ? BorderRadius.only(
+                      topLeft: Radius.circular(s(24)),
+                      bottomLeft: Radius.circular(s(24)),
+                    )
+                  : BorderRadius.only(
+                      topRight: Radius.circular(s(24)),
+                      bottomRight: Radius.circular(s(24)),
+                    ),
+            ),
+            child: Text(
+              pillText,
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                fontSize: s(16.5),
+                color: pillTextColor,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -556,11 +978,21 @@ class _HotelInfoContent extends StatelessWidget {
   final double scale;
   final AccommodationInfo hotel;
   final String planId;
+  final List<String> planReasons;
+  final List<String> hotelReasons;
+  final int hotelCount;
+  final VoidCallback onPreviousHotel;
+  final VoidCallback onNextHotel;
 
   const _HotelInfoContent({
     required this.scale,
     required this.hotel,
     required this.planId,
+    this.planReasons = const <String>[],
+    this.hotelReasons = const <String>[],
+    this.hotelCount = 1,
+    required this.onPreviousHotel,
+    required this.onNextHotel,
   });
   double s(double v) => v * scale;
 
@@ -568,64 +1000,333 @@ class _HotelInfoContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final ink = const Color(0xFF111111);
-    final lines = [
-      '${l10n.plansLabelHotel}:  ${hotel.name}.',
+    final lines = <String>[
+      '${l10n.plansLabelHotel} : ${hotel.name}.',
       if (hotel.location.isNotEmpty)
-        '${l10n.planDetailLocationLabel}:  ${hotel.location}.',
+        '${l10n.planDetailLocationLabel}: ${hotel.location}.',
       if (hotel.price.isNotEmpty)
-        '${l10n.planDetailPriceLabel}:  ${hotel.price}.',
+        '${l10n.planDetailPriceLabel}: ${hotel.price}.',
       if (hotel.rating.isNotEmpty)
-        '${l10n.planDetailRatingLabel}:  ${hotel.rating}.',
+        '${l10n.planDetailRatingLabel}: ${hotel.rating}.',
       if (hotel.amenities.isNotEmpty)
-        '${l10n.planDetailAmenities}:  ${hotel.amenities}.',
-      '${l10n.actionOpenInMaps}.',
+        '${l10n.planDetailAmenities}: ${hotel.amenities}.',
+      if (planReasons.isNotEmpty)
+        '${l10n.planDetailWhyPlan}: ${planReasons.join(' | ')}.',
+      if (hotelReasons.isNotEmpty)
+        '${l10n.planDetailWhyHotel}: ${hotelReasons.join(' | ')}.',
     ];
 
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onHorizontalDragEnd: hotelCount <= 1
+          ? null
+          : (details) {
+              final velocity = details.primaryVelocity ?? 0;
+              if (velocity < -120) {
+                onNextHotel();
+              } else if (velocity > 120) {
+                onPreviousHotel();
+              }
+            },
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(s(4), s(6), s(4), s(4)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final line in lines)
+              Padding(
+                padding: EdgeInsets.only(bottom: s(2)),
+                child: Text(
+                  line,
+                  style: TextStyle(
+                    fontFamily: 'Georgia',
+                    fontSize: s(13.8),
+                    color: ink,
+                    height: 1.28,
+                  ),
+                ),
+              ),
+            GestureDetector(
+              onTap: () => _bookAndSave(
+                context,
+                planId,
+                hotel.id,
+                hotel.name,
+                l10n.planDetailHotelItemType,
+                bookingUrl: hotel.bookingUrl,
+                mapsUrl: hotel.mapsUrl,
+              ),
+              child: Text(
+                '${l10n.actionOpenInMaps}.',
+                style: TextStyle(
+                  fontFamily: 'Georgia',
+                  fontSize: s(13.8),
+                  color: ink,
+                  height: 1.28,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EventEntryCard extends StatelessWidget {
+  final double scale;
+  final Color ink;
+  final Color lightCell;
+  final Color borderColor;
+  final _PlanEventEntry entry;
+
+  const _EventEntryCard({
+    required this.scale,
+    required this.ink,
+    required this.lightCell,
+    required this.borderColor,
+    required this.entry,
+  });
+
+  double s(double v) => v * scale;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(s(10), s(10), s(10), s(10)),
+      decoration: BoxDecoration(
+        color: lightCell,
+        border: Border.all(color: borderColor.withValues(alpha: 0.30)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            entry.title,
+            style: TextStyle(
+              fontFamily: 'Georgia',
+              fontSize: s(14.4),
+              color: ink,
+              fontWeight: FontWeight.w600,
+              height: 1.3,
+            ),
+          ),
+          if (entry.details.isNotEmpty) SizedBox(height: s(6)),
+          for (final detail in entry.details)
+            Padding(
+              padding: EdgeInsets.only(bottom: s(4)),
+              child: Text(
+                detail,
+                style: TextStyle(
+                  fontFamily: 'Georgia',
+                  fontSize: s(13.2),
+                  color: ink,
+                  height: 1.4,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HotelSelectorControls extends StatelessWidget {
+  final double scale;
+  final Color color;
+  final int hotelCount;
+  final int hotelIndex;
+  final String hintText;
+  final ValueChanged<int> onSelectHotel;
+
+  const _HotelSelectorControls({
+    required this.scale,
+    required this.color,
+    required this.hotelCount,
+    required this.hotelIndex,
+    required this.hintText,
+    required this.onSelectHotel,
+  });
+
+  double s(double v) => v * scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = color.computeLuminance() < 0.46
+        ? Colors.white
+        : const Color(0xFF111111);
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 0; i < hotelCount; i++) ...[
+              GestureDetector(
+                onTap: () => onSelectHotel(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: s(i == hotelIndex ? 8 : 6),
+                  height: s(i == hotelIndex ? 8 : 6),
+                  decoration: BoxDecoration(
+                    color: i == hotelIndex
+                        ? color.withValues(alpha: 0.82)
+                        : color.withValues(alpha: 0.28),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              if (i < hotelCount - 1) SizedBox(width: s(8)),
+            ],
+          ],
+        ),
         SizedBox(height: s(8)),
-        for (final line in lines)
-          Padding(
-            padding: EdgeInsets.only(bottom: s(3)),
-            child: Text(
-              line,
-              style: TextStyle(
-                fontFamily: 'Georgia',
-                fontSize: s(13.5),
-                color: ink,
-                height: 1.35,
-              ),
-            ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: s(12), vertical: s(4)),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(s(999)),
           ),
-        SizedBox(height: s(12)),
-        InkWell(
-          onTap: () => _bookAndSave(
-            context,
-            planId,
-            hotel.id,
-            hotel.name,
-            l10n.planDetailHotelItemType,
-            bookingUrl: hotel.bookingUrl,
-            mapsUrl: hotel.mapsUrl,
-          ),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: s(16), vertical: s(8)),
-            decoration: BoxDecoration(
-              color: const Color(0xFF111111),
-              borderRadius: BorderRadius.circular(s(8)),
-            ),
-            child: Text(
-              l10n.planDetailBookHotelViaMaps,
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Georgia',
-                fontSize: s(13),
-              ),
+          child: Text(
+            hintText,
+            style: TextStyle(
+              fontFamily: 'Georgia',
+              fontSize: s(10.2),
+              color: foreground,
+              height: 1.1,
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DayRouteMapContent extends StatelessWidget {
+  final double scale;
+  final Color borderColor;
+  final Color paper;
+  final Color lightCell;
+  final Color accentColor;
+  final Color ink;
+  final DayRouteInfo route;
+
+  const _DayRouteMapContent({
+    required this.scale,
+    required this.borderColor,
+    required this.paper,
+    required this.lightCell,
+    required this.accentColor,
+    required this.ink,
+    required this.route,
+  });
+
+  double s(double v) => v * scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final routeUri = _routeDirectionsUri(route.stops);
+    final points = <latlng.LatLng>[
+      for (final stop in route.stops) latlng.LatLng(stop.lat, stop.lng),
+    ];
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(s(4), s(6), s(4), s(4)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: s(170),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(s(18)),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: paper,
+                  borderRadius: BorderRadius.circular(s(18)),
+                  border: Border.all(color: borderColor, width: s(1.2)),
+                ),
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: latlng.LatLng(
+                      route.centerLat,
+                      route.centerLng,
+                    ),
+                    initialZoom: 12.3,
+                    interactionOptions: const InteractionOptions(
+                      flags: InteractiveFlag.none,
+                    ),
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.fatripy.app',
+                    ),
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: points,
+                          color: accentColor,
+                          strokeWidth: s(3),
+                        ),
+                      ],
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        for (final stop in route.stops)
+                          Marker(
+                            point: latlng.LatLng(stop.lat, stop.lng),
+                            width: s(28),
+                            height: s(28),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: stop.isHotel ? accentColor : lightCell,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: borderColor,
+                                  width: s(1.1),
+                                ),
+                              ),
+                              child: Icon(
+                                stop.isHotel
+                                    ? Icons.hotel_rounded
+                                    : Icons.location_on_rounded,
+                                size: s(16),
+                                color: stop.isHotel ? Colors.white : ink,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: s(10)),
+          Text(
+            '${context.l10n.planDetailRouteStops}: ${route.stops.map((stop) => stop.title).join('  •  ')}.',
+            style: TextStyle(
+              fontFamily: 'Georgia',
+              fontSize: s(12.7),
+              color: ink,
+              height: 1.3,
+            ),
+          ),
+          if (routeUri != null) ...[
+            SizedBox(height: s(8)),
+            Center(
+              child: _PillBtn(
+                scale: scale,
+                color: accentColor,
+                text: context.l10n.planDetailOpenRoute,
+                onTap: () => _openExternalUrl(routeUri),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -635,6 +1336,50 @@ class _HotelInfoContent extends StatelessWidget {
 //  Day 1  : [Day label | left (gold)]  [Morning | right (light)]
 //  Day 2  : [Morning  | left (light)]  [Day label | right (gold)]
 // ═══════════════════════════════════════════════════════════════════════════
+class _TourGuideContent extends StatelessWidget {
+  final double scale;
+  final TourGuideInfo guide;
+
+  const _TourGuideContent({required this.scale, required this.guide});
+
+  double s(double v) => v * scale;
+
+  @override
+  Widget build(BuildContext context) {
+    final ink = const Color(0xFF111111);
+    final lines = <String>[
+      'Name: ${guide.name}.',
+      'ExperienceYears: ${guide.experienceYears}.',
+      'Languages:${guide.languages}.',
+      'Phone:${guide.phone}.',
+      'Rating:${guide.rating}.',
+      'Description:${guide.description}.',
+    ];
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(s(4), s(6), s(4), s(4)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final line in lines)
+            Padding(
+              padding: EdgeInsets.only(bottom: s(2)),
+              child: Text(
+                line,
+                style: TextStyle(
+                  fontFamily: 'Georgia',
+                  fontSize: s(13.8),
+                  color: ink,
+                  height: 1.28,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _DayBlock extends StatelessWidget {
   final double scale;
   final Color borderColor;
@@ -642,9 +1387,11 @@ class _DayBlock extends StatelessWidget {
   final Color lightCell;
   final Color dayCell;
   final Color ink;
+  final Color dayHeaderTextColor;
+  final Color accentColor;
+  final bool dayLabelOnRight;
   final DayDetail day;
   final String planId;
-  final bool dayLabelOnRight;
 
   const _DayBlock({
     required this.scale,
@@ -653,9 +1400,11 @@ class _DayBlock extends StatelessWidget {
     required this.lightCell,
     required this.dayCell,
     required this.ink,
+    required this.dayHeaderTextColor,
+    required this.accentColor,
+    required this.dayLabelOnRight,
     required this.day,
     required this.planId,
-    required this.dayLabelOnRight,
   });
 
   double s(double v) => v * scale;
@@ -671,102 +1420,26 @@ class _DayBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final resolvedDayLabel = _localizedDayLabel(context, day.label);
+
     return ClipRRect(
-      borderRadius: BorderRadius.circular(s(22)),
+      borderRadius: BorderRadius.circular(s(28)),
       child: Container(
         decoration: BoxDecoration(
+          color: paper,
           border: Border.all(color: borderColor, width: s(2)),
-          borderRadius: BorderRadius.circular(s(22)),
+          borderRadius: BorderRadius.circular(s(28)),
         ),
         child: LayoutBuilder(
-          builder: (context, c) {
-            final leftW = c.maxWidth * 0.28;
-            final rightW = c.maxWidth - leftW;
+          builder: (context, constraints) {
+            final sideWidth = constraints.maxWidth * 0.35;
 
-            Widget divH() => Container(height: s(2), color: borderColor);
-            Widget divV() => Container(width: s(2), color: borderColor);
+            Widget horizontalDivider() =>
+                Container(height: s(2), color: borderColor);
+            Widget verticalDivider() =>
+                Container(width: s(2), color: borderColor);
 
-            // Top header row
-            Widget headerRow() {
-              if (!dayLabelOnRight) {
-                // Day 1: Day label LEFT, Morning RIGHT
-                return Row(
-                  children: [
-                    Container(
-                      width: leftW,
-                      padding: EdgeInsets.symmetric(vertical: s(10)),
-                      color: dayCell,
-                      alignment: Alignment.center,
-                      child: Text(
-                        resolvedDayLabel,
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                          fontSize: s(18),
-                          color: ink,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    divV(),
-                    Container(
-                      width: rightW - s(2),
-                      padding: EdgeInsets.symmetric(vertical: s(10)),
-                      color: lightCell,
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${l10n.plansTableMorning}:',
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                          fontSize: s(18),
-                          color: ink,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                // Day 2: Morning LEFT, Day label RIGHT
-                return Row(
-                  children: [
-                    Container(
-                      width: leftW,
-                      padding: EdgeInsets.symmetric(vertical: s(16)),
-                      color: lightCell,
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${l10n.plansTableMorning}:',
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                          fontSize: s(18),
-                          color: ink,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    divV(),
-                    Container(
-                      width: rightW - s(2),
-                      padding: EdgeInsets.symmetric(vertical: s(10)),
-                      color: dayCell,
-                      alignment: Alignment.center,
-                      child: Text(
-                        resolvedDayLabel,
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                          fontSize: s(18),
-                          color: ink,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            }
-
-            // Full-width section title (Afternoon / Evening) across entire row
             Widget sectionTitle(String title) => Container(
+              width: double.infinity,
               color: lightCell,
               padding: EdgeInsets.symmetric(vertical: s(14)),
               alignment: Alignment.center,
@@ -776,121 +1449,140 @@ class _DayBlock extends StatelessWidget {
                   fontFamily: 'Georgia',
                   fontSize: s(20),
                   color: ink,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             );
 
-            // Activities block (Morning items are shown in the right column)
             Widget activitiesBlock(
               List<ActivityItem> items, {
               bool lastSection = false,
             }) {
               return Container(
-                color: lightCell,
+                color: paper,
                 padding: EdgeInsets.fromLTRB(
                   s(10),
-                  s(12),
                   s(10),
-                  lastSection ? s(10) : s(12),
+                  s(10),
+                  lastSection ? s(8) : s(10),
                 ),
-                child: Column(
-                  children: [
-                    for (int i = 0; i < items.length; i++) ...[
-                      _ActivityCard(
-                        scale: scale,
-                        ink: ink,
-                        borderColor: borderColor,
-                        item: items[i],
-                        planId: planId,
-                      ),
-                      if (i < items.length - 1)
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: s(10)),
-                          child: Container(
-                            height: s(1.5),
-                            color: borderColor.withValues(alpha: 0.5),
+                child: items.isEmpty
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(vertical: s(6)),
+                        child: Text(
+                          l10n.planDetailNoActivities,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Georgia',
+                            fontSize: s(12.8),
+                            color: ink,
+                            height: 1.25,
                           ),
                         ),
-                    ],
-                  ],
+                      )
+                    : Column(
+                        children: [
+                          for (int i = 0; i < items.length; i++) ...[
+                            _ActivityCard(
+                              scale: scale,
+                              ink: ink,
+                              accentColor: accentColor,
+                              item: items[i],
+                              planId: planId,
+                            ),
+                            if (i < items.length - 1)
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: s(8)),
+                                child: Container(
+                                  height: s(1.5),
+                                  color: borderColor,
+                                ),
+                              ),
+                          ],
+                        ],
+                      ),
+              );
+            }
+
+            Widget contentColumn() => Expanded(
+              child: Column(
+                children: [
+                  activitiesBlock(day.morning),
+                  horizontalDivider(),
+                  sectionTitle('${l10n.plansTableAfternoon}:'),
+                  horizontalDivider(),
+                  activitiesBlock(day.afternoon),
+                  horizontalDivider(),
+                  sectionTitle('${l10n.plansTableEvening}:'),
+                  horizontalDivider(),
+                  activitiesBlock(day.evening, lastSection: true),
+                ],
+              ),
+            );
+
+            Widget dayHeaderCell() => Container(
+              width: sideWidth,
+              padding: EdgeInsets.symmetric(vertical: s(11)),
+              color: dayCell,
+              alignment: Alignment.center,
+              child: Text(
+                resolvedDayLabel,
+                style: TextStyle(
+                  fontFamily: 'Georgia',
+                  fontSize: s(18),
+                  color: dayHeaderTextColor,
+                  fontWeight: FontWeight.w500,
                 ),
-              );
-            }
+              ),
+            );
 
-            // For Day 1 (dayLabelOnRight = false):
-            //   Header row: [Day | Morning]
-            //   Body: left column = empty, right column = activities + Afternoon + activities + Evening + activities
-            // For Day 2 (dayLabelOnRight = true):
-            //   Header row: [Morning | Day]
-            //   Body: left column = activities + Afternoon + activities + Evening + activities, right column = empty
-            //   But from images, it looks like activities are always in the wider column
+            Widget morningHeaderCell() => Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: s(11)),
+                color: lightCell,
+                alignment: Alignment.center,
+                child: Text(
+                  '${l10n.plansTableMorning}:',
+                  style: TextStyle(
+                    fontFamily: 'Georgia',
+                    fontSize: s(18),
+                    color: ink,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            );
 
-            if (!dayLabelOnRight) {
-              // Day 1 layout: morning activities shown in the wider (right) column
-              // Below header: left col=empty, right col=morning activities
-              // Then full-width Afternoon, then full-width Evening sections
-              return Column(
-                children: [
-                  headerRow(),
-                  divH(),
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Left column – empty (day color background)
-                        Container(width: leftW, color: paper),
-                        divV(),
-                        // Right column – morning activities
-                        SizedBox(
-                          width: rightW - s(2),
-                          child: activitiesBlock(day.morning),
-                        ),
-                      ],
-                    ),
+            Widget sideColumn() => Container(width: sideWidth, color: paper);
+
+            final headerChildren = dayLabelOnRight
+                ? <Widget>[
+                    morningHeaderCell(),
+                    verticalDivider(),
+                    dayHeaderCell(),
+                  ]
+                : <Widget>[
+                    dayHeaderCell(),
+                    verticalDivider(),
+                    morningHeaderCell(),
+                  ];
+
+            final bodyChildren = dayLabelOnRight
+                ? <Widget>[contentColumn(), verticalDivider(), sideColumn()]
+                : <Widget>[sideColumn(), verticalDivider(), contentColumn()];
+
+            return Column(
+              children: [
+                Row(children: headerChildren),
+                horizontalDivider(),
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: bodyChildren,
                   ),
-                  divH(),
-                  sectionTitle('${l10n.plansTableAfternoon}:'),
-                  divH(),
-                  activitiesBlock(day.afternoon),
-                  divH(),
-                  sectionTitle('${l10n.plansTableEvening}:'),
-                  divH(),
-                  activitiesBlock(day.evening, lastSection: true),
-                ],
-              );
-            } else {
-              // Day 2 layout: morning activities shown in the wider (left) column
-              return Column(
-                children: [
-                  headerRow(),
-                  divH(),
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Left column – empty (narrow)
-                        Container(width: leftW, color: paper),
-                        divV(),
-                        // Right column – morning activities (wider)
-                        SizedBox(
-                          width: rightW - s(2),
-                          child: activitiesBlock(day.morning),
-                        ),
-                      ],
-                    ),
-                  ),
-                  divH(),
-                  sectionTitle('${l10n.plansTableAfternoon}:'),
-                  divH(),
-                  activitiesBlock(day.afternoon),
-                  divH(),
-                  sectionTitle('${l10n.plansTableEvening}:'),
-                  divH(),
-                  activitiesBlock(day.evening, lastSection: true),
-                ],
-              );
-            }
+                ),
+              ],
+            );
           },
         ),
       ),
@@ -898,20 +1590,17 @@ class _DayBlock extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  Activity Card  — shows emoji-prefixed info lines + pill buttons
-// ═══════════════════════════════════════════════════════════════════════════
 class _ActivityCard extends StatelessWidget {
   final double scale;
   final Color ink;
-  final Color borderColor;
+  final Color accentColor;
   final ActivityItem item;
   final String planId;
 
   const _ActivityCard({
     required this.scale,
     required this.ink,
-    required this.borderColor,
+    required this.accentColor,
     required this.item,
     required this.planId,
   });
@@ -923,99 +1612,89 @@ class _ActivityCard extends StatelessWidget {
     final l10n = context.l10n;
     return Column(
       children: [
-        // Title with store emoji
         Text(
           '${item.title}.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Georgia',
-            fontSize: s(14),
+            fontSize: s(12.8),
             color: ink,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
+            height: 1.15,
           ),
         ),
-        SizedBox(height: s(4)),
+        SizedBox(height: s(3)),
 
-        // Open / Close
         if ((item.open?.isNotEmpty ?? false) ||
             (item.close?.isNotEmpty ?? false))
-          _EmojiLine(
+          _IconLine(
             scale: scale,
             ink: ink,
+            icon: Icons.access_time_outlined,
+            centered: true,
             text:
                 '${l10n.adminLabelOpenHours}: ${item.open ?? '-'} | ${l10n.adminLabelCloseHours}: ${item.close ?? '-'}.',
           ),
 
-        // Price
         if (item.price?.isNotEmpty ?? false)
-          _EmojiLine(
+          _IconLine(
             scale: scale,
             ink: ink,
+            icon: Icons.payments_outlined,
+            centered: true,
             text: '${l10n.planDetailPriceLabel}: ${item.price}.',
           ),
 
-        // Location
         if (item.location.isNotEmpty)
-          _EmojiLine(
+          _IconLine(
             scale: scale,
             ink: ink,
+            icon: Icons.map_outlined,
+            centered: true,
             text: '${l10n.planDetailLocationLabel}: ${item.location}.',
           ),
 
-        // Rating
         if (item.rating?.isNotEmpty ?? false)
-          _EmojiLine(
+          _IconLine(
             scale: scale,
             ink: ink,
+            icon: Icons.star_border_rounded,
+            centered: true,
             text: '${l10n.planDetailRatingLabel}: ${item.rating}.',
           ),
 
-        // Time fallback
         if ((item.open == null && item.close == null) &&
             (item.time?.isNotEmpty ?? false))
-          _EmojiLine(scale: scale, ink: ink, text: '${item.time}.'),
-
-        SizedBox(height: s(8)),
-        InkWell(
-          onTap: () => _openMaps(item.mapsUrl, item.title),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: s(16), vertical: s(6)),
-            decoration: BoxDecoration(
-              border: Border.all(color: ink),
-              borderRadius: BorderRadius.circular(s(8)),
-            ),
-            child: Text(
-              l10n.planDetailNavigateToPlace,
-              style: TextStyle(
-                color: ink,
-                fontFamily: 'Georgia',
-                fontSize: s(12),
-              ),
-            ),
-          ),
-        ),
-        // Distance fallback
-        if (item.distance?.isNotEmpty ?? false)
-          _EmojiLine(
+          _IconLine(
             scale: scale,
             ink: ink,
+            icon: Icons.access_time_outlined,
+            centered: true,
+            text: '${item.time}.',
+          ),
+        if (item.distance?.isNotEmpty ?? false)
+          _IconLine(
+            scale: scale,
+            ink: ink,
+            icon: Icons.near_me_outlined,
+            centered: true,
             text: '${l10n.planDetailDistance}: ${item.distance}.',
           ),
 
-        SizedBox(height: s(8)),
-        // Buttons
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: s(8),
-          runSpacing: s(6),
+        SizedBox(height: s(7)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _PillBtn(
               scale: scale,
+              color: accentColor,
               text: '${l10n.actionOpenInMaps}.',
               onTap: () => _openMaps(item.mapsUrl, item.title),
             ),
+            SizedBox(width: s(10)),
             _PillBtn(
               scale: scale,
+              color: accentColor,
               text: '${l10n.actionBookNow}.',
               onTap: () => _bookAndSave(
                 context,
@@ -1034,28 +1713,47 @@ class _ActivityCard extends StatelessWidget {
   }
 }
 
-class _EmojiLine extends StatelessWidget {
+class _IconLine extends StatelessWidget {
   final double scale;
   final Color ink;
+  final IconData icon;
+  final bool centered;
   final String text;
-  const _EmojiLine({
+
+  const _IconLine({
     required this.scale,
     required this.ink,
+    required this.icon,
+    this.centered = false,
     required this.text,
   });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: scale * 2),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontFamily: 'Georgia',
-          fontSize: scale * 13,
-          color: ink,
-          height: 1.3,
+      padding: EdgeInsets.only(bottom: scale * 2.2),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(right: scale * 4),
+                child: Icon(icon, size: scale * 11.5, color: ink),
+              ),
+            ),
+            TextSpan(
+              text: text,
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                fontSize: scale * 11.6,
+                color: ink,
+                height: 1.25,
+              ),
+            ),
+          ],
         ),
+        textAlign: centered ? TextAlign.center : TextAlign.start,
       ),
     );
   }
@@ -1063,9 +1761,15 @@ class _EmojiLine extends StatelessWidget {
 
 class _PillBtn extends StatelessWidget {
   final double scale;
+  final Color color;
   final String text;
   final VoidCallback? onTap;
-  const _PillBtn({required this.scale, required this.text, this.onTap});
+  const _PillBtn({
+    required this.scale,
+    required this.color,
+    required this.text,
+    this.onTap,
+  });
   double s(double v) => v * scale;
 
   @override
@@ -1073,18 +1777,20 @@ class _PillBtn extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: s(14), vertical: s(8)),
+        padding: EdgeInsets.symmetric(horizontal: s(12), vertical: s(4.5)),
         decoration: BoxDecoration(
-          color: const Color(0xFFF7DFAE),
+          color: color,
           borderRadius: BorderRadius.circular(s(999)),
         ),
         child: Text(
           text,
           style: TextStyle(
             fontFamily: 'Georgia',
-            fontSize: s(13),
-            color: const Color(0xFF111111),
-            fontWeight: FontWeight.w600,
+            fontSize: s(10.6),
+            color: color.computeLuminance() < 0.46
+                ? Colors.white
+                : const Color(0xFF111111),
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -1100,6 +1806,7 @@ class _AttractionCard extends StatelessWidget {
   final Color borderColor;
   final Color lightCell;
   final Color ink;
+  final Color buttonColor;
   final ActivityItem item;
   final String planId;
 
@@ -1108,6 +1815,7 @@ class _AttractionCard extends StatelessWidget {
     required this.borderColor,
     required this.lightCell,
     required this.ink,
+    required this.buttonColor,
     required this.item,
     required this.planId,
   });
@@ -1117,117 +1825,97 @@ class _AttractionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Container(
-      padding: EdgeInsets.fromLTRB(s(12), s(10), s(12), s(12)),
-      decoration: BoxDecoration(
-        color: lightCell,
-        borderRadius: BorderRadius.circular(s(12)),
-        border: Border.all(color: borderColor, width: s(1.6)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          Text(
-            '${item.title}.',
-            style: TextStyle(
-              fontFamily: 'Georgia',
-              fontSize: s(14),
-              color: ink,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: s(4)),
-
-          if ((item.open?.isNotEmpty ?? false) ||
-              (item.close?.isNotEmpty ?? false))
-            _InfoLine(
-              scale: scale,
-              ink: ink,
-              text:
-                  '${l10n.adminLabelOpenHours}: ${item.open ?? '-'} | ${l10n.adminLabelCloseHours}: ${item.close ?? '-'}.',
-            ),
-
-          if (item.price?.isNotEmpty ?? false)
-            _InfoLine(
-              scale: scale,
-              ink: ink,
-              text: '${l10n.planDetailPriceLabel}: ${item.price}.',
-            ),
-
-          if (item.location.isNotEmpty)
-            _InfoLine(
-              scale: scale,
-              ink: ink,
-              text: '${l10n.planDetailLocationLabel}: ${item.location}.',
-            ),
-
-          if (item.rating?.isNotEmpty ?? false)
-            _InfoLine(
-              scale: scale,
-              ink: ink,
-              text: '${l10n.planDetailRatingLabel}: ${item.rating}.',
-            ),
-
-          if ((item.open == null && item.close == null) &&
-              (item.time?.isNotEmpty ?? false))
-            _InfoLine(scale: scale, ink: ink, text: '${item.time}.'),
-
-          if (item.distance?.isNotEmpty ?? false)
-            _InfoLine(
-              scale: scale,
-              ink: ink,
-              text: '${l10n.planDetailDistance}: ${item.distance}.',
-            ),
-
-          SizedBox(height: s(8)),
-          // Buttons — centered
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _PillBtn(
-                scale: scale,
-                text: '${l10n.actionOpenInMaps}.',
-                onTap: () => _openMaps(item.mapsUrl, item.title),
+    return ColoredBox(
+      color: lightCell,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(s(6), s(8), s(6), s(8)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${item.title}.',
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                fontSize: s(13.2),
+                color: ink,
+                fontWeight: FontWeight.w500,
+                height: 1.2,
               ),
-              SizedBox(width: s(12)),
-              _PillBtn(
+            ),
+            SizedBox(height: s(3)),
+            if ((item.open?.isNotEmpty ?? false) ||
+                (item.close?.isNotEmpty ?? false))
+              _IconLine(
                 scale: scale,
-                text: '${l10n.actionBookNow}.',
-                onTap: () => _bookAndSave(
-                  context,
-                  planId,
-                  item.id,
-                  item.title,
-                  l10n.planDetailActivityItemType,
-                  bookingUrl: item.bookingUrl,
-                  mapsUrl: item.mapsUrl,
+                ink: ink,
+                icon: Icons.access_time_outlined,
+                text:
+                    '${l10n.adminLabelOpenHours}: ${item.open ?? '-'} | ${l10n.adminLabelCloseHours}: ${item.close ?? '-'}.',
+              ),
+            if (item.price?.isNotEmpty ?? false)
+              _IconLine(
+                scale: scale,
+                ink: ink,
+                icon: Icons.payments_outlined,
+                text: '${l10n.planDetailPriceLabel}: ${item.price}.',
+              ),
+            if (item.location.isNotEmpty)
+              _IconLine(
+                scale: scale,
+                ink: ink,
+                icon: Icons.map_outlined,
+                text: '${l10n.planDetailLocationLabel}: ${item.location}.',
+              ),
+            if (item.rating?.isNotEmpty ?? false)
+              _IconLine(
+                scale: scale,
+                ink: ink,
+                icon: Icons.star_border_rounded,
+                text: '${l10n.planDetailRatingLabel}: ${item.rating}.',
+              ),
+            if ((item.open == null && item.close == null) &&
+                (item.time?.isNotEmpty ?? false))
+              _IconLine(
+                scale: scale,
+                ink: ink,
+                icon: Icons.access_time_outlined,
+                text: '${item.time}.',
+              ),
+            if (item.distance?.isNotEmpty ?? false)
+              _IconLine(
+                scale: scale,
+                ink: ink,
+                icon: Icons.near_me_outlined,
+                text: '${l10n.planDetailDistance}: ${item.distance}.',
+              ),
+            SizedBox(height: s(7)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _PillBtn(
+                  scale: scale,
+                  color: buttonColor,
+                  text: '${l10n.actionOpenInMaps}.',
+                  onTap: () => _openMaps(item.mapsUrl, item.title),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoLine extends StatelessWidget {
-  final double scale;
-  final Color ink;
-  final String text;
-  const _InfoLine({required this.scale, required this.ink, required this.text});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: scale * 2.5),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: 'Georgia',
-          fontSize: scale * 13.5,
-          color: ink,
-          height: 1.35,
+                SizedBox(width: s(12)),
+                _PillBtn(
+                  scale: scale,
+                  color: buttonColor,
+                  text: '${l10n.actionBookNow}.',
+                  onTap: () => _bookAndSave(
+                    context,
+                    planId,
+                    item.id,
+                    item.title,
+                    l10n.planDetailActivityItemType,
+                    bookingUrl: item.bookingUrl,
+                    mapsUrl: item.mapsUrl,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
