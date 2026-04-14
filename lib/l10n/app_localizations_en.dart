@@ -444,6 +444,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get compareEventsLabel => 'Events';
 
   @override
+  String get compareHotelsSectionTitle => 'Hotels in this plan';
+
+  @override
+  String get comparePlanHighlightTitle => 'What makes this plan special?';
+
+  @override
+  String get comparePlacesSectionTitle => 'Places you may visit';
+
+  @override
+  String get comparePlacesFallback =>
+      'A place summary will appear when plan details are available.';
+
+  @override
+  String get compareNearbySummary =>
+      'This plan includes nearby options the user may visit, and the final details depend on the selected hotel.';
+
+  @override
+  String get compareDistantSummary =>
+      'This plan also includes farther options the user may visit, and the final details depend on the selected hotel.';
+
+  @override
+  String get compareHotelActivitiesNote =>
+      'Each hotel inside this plan comes with different activities and details.';
+
+  @override
+  String get compareEventsDeferredNote =>
+      'Detailed events appear after choosing a hotel.';
+
+  @override
+  String get compareFamilyHighlight =>
+      'This plan focuses on a relaxed pace and family-friendly options.';
+
+  @override
+  String get compareCulturalHighlight =>
+      'This plan focuses more on cultural experiences and heritage landmarks.';
+
+  @override
+  String get compareAdventureHighlight =>
+      'This plan focuses on more active experiences and energetic activities.';
+
+  @override
   String get selectPlanCta => 'Select plan';
 
   @override

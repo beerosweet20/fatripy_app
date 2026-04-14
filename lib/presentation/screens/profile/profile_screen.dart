@@ -37,11 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _notificationsEnabled = true;
 
   void _handleBack() {
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go('/home');
-    }
+    Navigator.of(context).maybePop();
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -88,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final showBack = context.canPop();
+    final showBack = Navigator.of(context).canPop();
     final scale = AppScale.of(context);
     double s(double value) => value * scale;
     double sc(double value, double min, double max) =>
@@ -141,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   children: [
                     InkWell(
-                      onTap: () => context.push('/edit-profile'),
+                      onTap: () => context.push('/account/edit-profile'),
                       borderRadius: BorderRadius.circular(s(80)),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -224,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: _navy,
                         size: s(_chevronSize),
                       ),
-                      onTap: () => context.push('/edit-profile'),
+                      onTap: () => context.push('/account/edit-profile'),
                     ),
                     SizedBox(height: s(10)),
                     _AccountPillTile(
@@ -246,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: _navy,
                         size: s(_chevronSize),
                       ),
-                      onTap: () => context.push('/dependents'),
+                      onTap: () => context.push('/account/dependents'),
                     ),
                     SizedBox(height: s(10)),
                     _AccountPillTile(
@@ -257,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: _navy,
                         size: s(_chevronSize),
                       ),
-                      onTap: () => context.push('/settings'),
+                      onTap: () => context.push('/account/settings'),
                     ),
                     SizedBox(height: s(10)),
                     _AccountPillTile(
@@ -268,7 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: _navy,
                         size: s(_chevronSize),
                       ),
-                      onTap: () => context.push('/bookings'),
+                      onTap: () => context.push('/account/bookings'),
                     ),
                     FutureBuilder<bool>(
                       future: AuthService().isAdmin(),

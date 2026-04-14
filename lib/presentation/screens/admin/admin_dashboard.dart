@@ -65,7 +65,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Text(l10n.adminNoAccess, textAlign: TextAlign.center),
                     const SizedBox(height: 12),
                     ElevatedButton(
-                      onPressed: () => context.go('/profile'),
+                      onPressed: () => context.go('/account'),
                       child: Text(l10n.adminBackToProfile),
                     ),
                   ],

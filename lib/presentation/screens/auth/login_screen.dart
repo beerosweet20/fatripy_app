@@ -11,7 +11,7 @@ import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-  static const routeName = '/login';
+  static const routeName = '/account';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -122,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final showBack = Navigator.of(context).canPop();
     return Scaffold(
       backgroundColor: _bg,
       resizeToAvoidBottomInset: true,
@@ -143,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
               constraints.maxHeight,
               contentHeight + yNudge,
             );
+            final topInset = MediaQuery.paddingOf(context).top;
 
             return SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -156,6 +158,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Stack(
                       children: [
                         Positioned.fill(child: Container(color: _bg)),
+                        if (showBack)
+                          PositionedDirectional(
+                            start: s(8),
+                            top: topInset + s(8),
+                            child: IconButton(
+                              onPressed: () => Navigator.of(context).maybePop(),
+                              icon: const BackButtonIcon(),
+                              color: _navy,
+                            ),
+                          ),
                         Positioned.fill(
                           child: Transform.translate(
                             offset: Offset(0, yNudge),
@@ -306,7 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: contentWidth,
                                   child: GestureDetector(
                                     onTap: () =>
-                                        context.go(RegisterScreen.routeName),
+                                        context.push(RegisterScreen.routeName),
                                     child: RichText(
                                       textAlign: TextAlign.center,
                                       text: TextSpan(

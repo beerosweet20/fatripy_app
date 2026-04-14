@@ -444,6 +444,47 @@ class AppLocalizationsAr extends AppLocalizations {
   String get compareEventsLabel => 'الفعاليات';
 
   @override
+  String get compareHotelsSectionTitle => 'فنادق هذه الخطة';
+
+  @override
+  String get comparePlanHighlightTitle => 'ما الذي يميز هذه الخطة؟';
+
+  @override
+  String get comparePlacesSectionTitle => 'أماكن يمكن زيارتها';
+
+  @override
+  String get comparePlacesFallback =>
+      'سيظهر موجز الأماكن عند توفر تفاصيل الخطة.';
+
+  @override
+  String get compareNearbySummary =>
+      'تتضمن هذه الخطة خيارات قريبة يمكن للمستخدم زيارتها، وتظهر التفاصيل النهائية حسب الفندق المختار.';
+
+  @override
+  String get compareDistantSummary =>
+      'تتضمن هذه الخطة أيضًا خيارات أبعد يمكن للمستخدم زيارتها، وتظهر التفاصيل النهائية حسب الفندق المختار.';
+
+  @override
+  String get compareHotelActivitiesNote =>
+      'لكل فندق داخل هذه الخطة أنشطة وتفاصيل مختلفة.';
+
+  @override
+  String get compareEventsDeferredNote =>
+      'الفعاليات التفصيلية تظهر بعد اختيار الفندق.';
+
+  @override
+  String get compareFamilyHighlight =>
+      'تتميّز هذه الخطة بأجواء مريحة وخيارات مناسبة للعائلة.';
+
+  @override
+  String get compareCulturalHighlight =>
+      'تتميّز هذه الخطة بتجارب ثقافية ومعالم تراثية أكثر.';
+
+  @override
+  String get compareAdventureHighlight =>
+      'تتميّز هذه الخطة بأنشطة أكثر حيوية وتجارب مليئة بالحركة.';
+
+  @override
   String get selectPlanCta => 'اختيار الخطة';
 
   @override

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/supported_cities.dart';
@@ -54,7 +53,7 @@ class BlogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final showBack = context.canPop();
+    final showBack = Navigator.of(context).canPop();
 
     return Scaffold(
       backgroundColor: _bg,
@@ -111,7 +110,7 @@ class BlogScreen extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           iconSize: s(24),
                           onPressed: () {
-                            if (context.canPop()) context.pop();
+                            Navigator.of(context).maybePop();
                           },
                           icon: const BackButtonIcon(),
                         ),

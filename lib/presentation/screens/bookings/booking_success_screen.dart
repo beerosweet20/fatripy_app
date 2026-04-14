@@ -8,7 +8,7 @@ class BookingSuccessScreen extends StatelessWidget {
 
   const BookingSuccessScreen({super.key, required this.itemType});
 
-  static const String routeName = '/booking-success';
+  static const String routeName = '/plans/booking-success';
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,9 @@ class BookingSuccessScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: bgColor,
+      appBar: AppBar(title: Text(l10n.bookingSuccessTitle)),
       body: SafeArea(
+        top: false,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: s(24)),
           child: Column(
@@ -86,7 +88,7 @@ class BookingSuccessScreen extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   // Navigate to bookings tab
-                  context.go('/bookings');
+                  context.go('/account/bookings');
                 },
                 child: RichText(
                   textAlign: TextAlign.center,
@@ -118,7 +120,7 @@ class BookingSuccessScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     // Pop back to plan detail
-                    if (context.canPop()) {
+                    if (Navigator.of(context).canPop()) {
                       context.pop();
                     } else {
                       context.go('/plans');

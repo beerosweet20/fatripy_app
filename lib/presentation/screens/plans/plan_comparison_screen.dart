@@ -43,17 +43,108 @@ class _PlanComparisonScreenState extends State<PlanComparisonScreen> {
     return null;
   }
 
-  List<Map<String, dynamic>> _asMapList(dynamic value) {
-    if (value is! List) {
-      return const [];
-    }
-    return value.map(_asMap).whereType<Map<String, dynamic>>().toList();
-  }
-
   double? _asDouble(dynamic value) {
     if (value is num) return value.toDouble();
     if (value is String) return double.tryParse(value.trim());
     return null;
+  }
+
+  String _kindLabel(BuildContext context, String kind) {
+    switch (kind.toLowerCase().trim()) {
+      case 'adventure':
+        return context.l10n.plansAdventureTitle;
+      case 'cultural':
+        return context.l10n.plansCulturalTitle;
+      default:
+        return context.l10n.plansFamilyTitle;
+    }
+  }
+
+  List<String> _planHighlightsFor(
+    BuildContext context,
+    PlanDetailData data,
+    String kind,
+  ) {
+    final highlights = data.planReasons
+        .map((reason) => reason.replaceAll(RegExp(r'\s+'), ' ').trim())
+        .where((reason) => reason.isNotEmpty)
+        .take(2)
+        .toList();
+    if (highlights.isNotEmpty) {
+      return highlights;
+    }
+
+    switch (kind.toLowerCase().trim()) {
+      case 'adventure':
+        return <String>[context.l10n.compareAdventureHighlight];
+      case 'cultural':
+        return <String>[context.l10n.compareCulturalHighlight];
+      default:
+        return <String>[context.l10n.compareFamilyHighlight];
+    }
+  }
+
+  List<String> _hotelNamesFor(PlanDetailData data) {
+    final names = <String>[];
+    final seen = <String>{};
+    for (final option in data.resolvedHotelOptions) {
+      final name = option.accommodation.name.trim();
+      if (name.isEmpty) continue;
+      final key = name.toLowerCase();
+      if (seen.add(key)) {
+        names.add(name);
+      }
+    }
+    return names;
+  }
+
+  List<String> _placesToVisitFor(PlanDetailData data) {
+    final places = <String>[];
+    final seen = <String>{};
+
+    void addPlace(String value) {
+      final cleaned = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (cleaned.isEmpty) return;
+      final key = cleaned.toLowerCase();
+      if (seen.add(key)) {
+        places.add(cleaned);
+      }
+    }
+
+    for (final option in data.resolvedHotelOptions) {
+      for (final day in option.days) {
+        for (final item in day.morning) {
+          addPlace(item.title);
+        }
+        for (final item in day.afternoon) {
+          addPlace(item.title);
+        }
+        for (final item in day.evening) {
+          addPlace(item.title);
+        }
+      }
+    }
+
+    if (places.isEmpty) {
+      for (final option in data.resolvedHotelOptions) {
+        for (final item in option.nearby) {
+          addPlace(item.title);
+        }
+        for (final item in option.distant) {
+          addPlace(item.title);
+        }
+      }
+    }
+
+    return places.take(4).toList();
+  }
+
+  bool _hasNearbyOptions(PlanDetailData data) {
+    return data.resolvedHotelOptions.any((option) => option.nearby.isNotEmpty);
+  }
+
+  bool _hasDistantOptions(PlanDetailData data) {
+    return data.resolvedHotelOptions.any((option) => option.distant.isNotEmpty);
   }
 
   Color _colorForKind(String kind) {
@@ -155,16 +246,18 @@ class _PlanComparisonScreenState extends State<PlanComparisonScreen> {
               final kind = '${rawPlan['kind'] ?? 'family'}';
               final title =
                   '${rawPlan['title'] ?? context.l10n.plansGeneratedPlanTitle}';
-              final hotel =
-                  _asMap(rawPlan['accommodation']) ??
-                  _asMap(rawPlan['hotel']) ??
-                  const <String, dynamic>{};
-              final hotelCount = _asMapList(rawPlan['hotelOptions']).length;
-              final nearbyCount = _asMapList(rawPlan['nearby']).length;
-              final distantCount = _asMapList(rawPlan['distant']).length;
-              final eventCount = _asMapList(rawPlan['events']).length;
               final totalCost = _asDouble(rawPlan['totalCost']);
               final accent = _colorForKind(kind);
+              final detailData = _toDetailData(context, trip, rawPlan);
+              final planHighlights = _planHighlightsFor(
+                context,
+                detailData,
+                kind,
+              );
+              final hotelNames = _hotelNamesFor(detailData);
+              final placeNames = _placesToVisitFor(detailData);
+              final hasNearby = _hasNearbyOptions(detailData);
+              final hasDistant = _hasDistantOptions(detailData);
 
               return Container(
                 decoration: BoxDecoration(
@@ -183,39 +276,82 @@ class _PlanComparisonScreenState extends State<PlanComparisonScreen> {
                             ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 8),
-                      _MetricRow(
-                        label: context.l10n.compareKindLabel,
-                        value: kind,
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _InfoChip(
+                            text: _kindLabel(context, kind),
+                            color: accent,
+                          ),
+                          if (totalCost != null)
+                            _InfoChip(
+                              text:
+                                  '${context.l10n.compareTotalCostLabel}: ${totalCost.toStringAsFixed(0)} SAR',
+                              color: accent,
+                            ),
+                        ],
                       ),
-                      _MetricRow(
-                        label: context.l10n.compareHotelLabel,
-                        value:
-                            '${hotel['name'] ?? context.l10n.hotelNameUnknown}',
+                      const SizedBox(height: 12),
+                      _HighlightCard(
+                        accent: accent,
+                        title: context.l10n.comparePlanHighlightTitle,
+                        items: planHighlights,
                       ),
-                      if (hotelCount > 0)
-                        _MetricRow(
-                          label: context.l10n.hotelsTitle,
-                          value: '$hotelCount',
-                        ),
-                      _MetricRow(
-                        label: context.l10n.compareTotalCostLabel,
-                        value: totalCost == null
-                            ? '-'
-                            : '${totalCost.toStringAsFixed(0)} SAR',
+                      const SizedBox(height: 12),
+                      _PlanSectionTitle(
+                        title: context.l10n.compareHotelsSectionTitle,
+                        accent: accent,
                       ),
-                      _MetricRow(
-                        label: context.l10n.compareNearbyLabel,
-                        value: '$nearbyCount',
+                      const SizedBox(height: 6),
+                      _BulletList(
+                        items: hotelNames.isEmpty
+                            ? <String>[context.l10n.hotelNameUnknown]
+                            : hotelNames,
                       ),
-                      _MetricRow(
-                        label: context.l10n.compareDistantLabel,
-                        value: '$distantCount',
+                      const SizedBox(height: 12),
+                      _PlanSectionTitle(
+                        title: context.l10n.comparePlacesSectionTitle,
+                        accent: accent,
                       ),
-                      _MetricRow(
-                        label: context.l10n.compareEventsLabel,
-                        value: '$eventCount',
+                      const SizedBox(height: 6),
+                      if (placeNames.isEmpty)
+                        _SummaryNote(text: context.l10n.comparePlacesFallback)
+                      else
+                        _BulletList(items: placeNames),
+                      const SizedBox(height: 12),
+                      _PlanSectionTitle(
+                        title: context.l10n.plansLabelNearbyAttractions,
+                        accent: accent,
+                      ),
+                      const SizedBox(height: 6),
+                      _SummaryNote(
+                        text: hasNearby
+                            ? context.l10n.compareNearbySummary
+                            : context.l10n.planDetailNoActivities,
+                      ),
+                      const SizedBox(height: 12),
+                      _PlanSectionTitle(
+                        title: context.l10n.plansLabelDistantAttractions,
+                        accent: accent,
+                      ),
+                      const SizedBox(height: 6),
+                      _SummaryNote(
+                        text: hasDistant
+                            ? context.l10n.compareDistantSummary
+                            : context.l10n.planDetailNoActivities,
                       ),
                       const SizedBox(height: 10),
+                      _SummaryNote(
+                        text: context.l10n.compareHotelActivitiesNote,
+                        emphasize: true,
+                      ),
+                      const SizedBox(height: 8),
+                      _SummaryNote(
+                        text: context.l10n.compareEventsDeferredNote,
+                        emphasize: true,
+                      ),
+                      const SizedBox(height: 12),
                       Align(
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
@@ -263,22 +399,126 @@ class _PlanComparisonScreenState extends State<PlanComparisonScreen> {
   }
 }
 
-class _MetricRow extends StatelessWidget {
-  final String label;
-  final String value;
+class _HighlightCard extends StatelessWidget {
+  final Color accent;
+  final String title;
+  final List<String> items;
 
-  const _MetricRow({required this.label, required this.value});
+  const _HighlightCard({
+    required this.accent,
+    required this.title,
+    required this.items,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withValues(alpha: 0.28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w600)),
-          Expanded(child: Text(value)),
+          Text(
+            title,
+            style: TextStyle(color: accent, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          _BulletList(items: items),
         ],
       ),
     );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  final String text;
+  final Color color;
+
+  const _InfoChip({required this.text, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: color, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+class _PlanSectionTitle extends StatelessWidget {
+  final String title;
+  final Color accent;
+
+  const _PlanSectionTitle({required this.title, required this.accent});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: accent,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}
+
+class _BulletList extends StatelessWidget {
+  final List<String> items;
+
+  const _BulletList({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: items
+          .map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 5),
+                    child: Icon(Icons.circle, size: 7),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(item)),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class _SummaryNote extends StatelessWidget {
+  final String text;
+  final bool emphasize;
+
+  const _SummaryNote({required this.text, this.emphasize = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      height: 1.45,
+      color: emphasize ? null : Colors.black87,
+      fontWeight: emphasize ? FontWeight.w600 : FontWeight.w400,
+    );
+
+    return Text(text, style: style);
   }
 }

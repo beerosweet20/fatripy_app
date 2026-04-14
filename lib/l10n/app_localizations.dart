@@ -920,6 +920,72 @@ abstract class AppLocalizations {
   /// **'Events'**
   String get compareEventsLabel;
 
+  /// No description provided for @compareHotelsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels in this plan'**
+  String get compareHotelsSectionTitle;
+
+  /// No description provided for @comparePlanHighlightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What makes this plan special?'**
+  String get comparePlanHighlightTitle;
+
+  /// No description provided for @comparePlacesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Places you may visit'**
+  String get comparePlacesSectionTitle;
+
+  /// No description provided for @comparePlacesFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'A place summary will appear when plan details are available.'**
+  String get comparePlacesFallback;
+
+  /// No description provided for @compareNearbySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan includes nearby options the user may visit, and the final details depend on the selected hotel.'**
+  String get compareNearbySummary;
+
+  /// No description provided for @compareDistantSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan also includes farther options the user may visit, and the final details depend on the selected hotel.'**
+  String get compareDistantSummary;
+
+  /// No description provided for @compareHotelActivitiesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Each hotel inside this plan comes with different activities and details.'**
+  String get compareHotelActivitiesNote;
+
+  /// No description provided for @compareEventsDeferredNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed events appear after choosing a hotel.'**
+  String get compareEventsDeferredNote;
+
+  /// No description provided for @compareFamilyHighlight.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan focuses on a relaxed pace and family-friendly options.'**
+  String get compareFamilyHighlight;
+
+  /// No description provided for @compareCulturalHighlight.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan focuses more on cultural experiences and heritage landmarks.'**
+  String get compareCulturalHighlight;
+
+  /// No description provided for @compareAdventureHighlight.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan focuses on more active experiences and energetic activities.'**
+  String get compareAdventureHighlight;
+
   /// No description provided for @selectPlanCta.
   ///
   /// In en, this message translates to:

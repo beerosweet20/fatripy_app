@@ -64,7 +64,20 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
         duration: '3 days and 2 nights.',
         hotel: 'Bab Samhan Diriyah Hotel.',
       ),
-      note: 'This Plan Come With Tour guide.',
+      note: 'Prioritizes museums, heritage districts, and local culture.',
+      hotelChoices: const [
+        'Bab Samhan Diriyah Hotel.',
+        'Fairmont Riyadh.',
+        'Narcissus Riyadh Hotel & Spa.',
+      ],
+      possiblePlaces: const [
+        'Al Masmak Fortress',
+        'King Abdulaziz Historical Center',
+        'Souk Al Zal',
+        'Al-Turaif',
+      ],
+      hasNearbyOptions: true,
+      hasDistantOptions: true,
       schedule: const [
         _DaySchedule(
           dayLabel: 'Day 1:',
@@ -119,6 +132,20 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
         duration: '3 days and 2 nights.',
         hotel: 'Hyatt Regency Riyadh Olaya.',
       ),
+      note: 'Prioritizes active attractions and outdoor experiences.',
+      hotelChoices: const [
+        'Hyatt Regency Riyadh Olaya.',
+        'Hilton Riyadh Hotel.',
+        'Radisson Blu Riyadh.',
+      ],
+      possiblePlaces: const [
+        'Red Sand Dunes',
+        'Arena VR',
+        'Riyadh Adventure',
+        'Wadi Hanifa',
+      ],
+      hasNearbyOptions: true,
+      hasDistantOptions: true,
       schedule: const [
         _DaySchedule(
           dayLabel: 'Day 1:',
@@ -173,6 +200,20 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
         duration: '3 days and 2 nights.',
         hotel: 'Novotel Riyadh Al Anoud.',
       ),
+      note: 'Balanced pacing for families with a more relaxed rhythm.',
+      hotelChoices: const [
+        'Novotel Riyadh Al Anoud.',
+        'Movenpick Hotel Riyadh.',
+        'Braira Qurtubah Hotel.',
+      ],
+      possiblePlaces: const [
+        'Hello Park Riyadh',
+        'Museum of Illusions',
+        'Winter Wonderland',
+        'King Abdullah Park',
+      ],
+      hasNearbyOptions: true,
+      hasDistantOptions: true,
       schedule: const [
         _DaySchedule(
           dayLabel: 'Day 1:',
@@ -235,6 +276,101 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
     return null;
   }
 
+  String _defaultHighlightForKind(BuildContext context, _PlanKind kind) {
+    final l10n = context.l10n;
+    switch (kind) {
+      case _PlanKind.cultural:
+        return l10n.compareCulturalHighlight;
+      case _PlanKind.adventure:
+        return l10n.compareAdventureHighlight;
+      case _PlanKind.family:
+        return l10n.compareFamilyHighlight;
+    }
+  }
+
+  String _primaryPlanNote(
+    BuildContext context,
+    PlanDetailData detailData,
+    _PlanKind kind,
+  ) {
+    for (final reason in detailData.planReasons) {
+      final cleaned = reason.replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (cleaned.isNotEmpty) {
+        return cleaned;
+      }
+    }
+    return _defaultHighlightForKind(context, kind);
+  }
+
+  List<String> _hotelChoices(PlanDetailData detailData) {
+    final hotels = <String>[];
+    final seen = <String>{};
+
+    for (final option in detailData.resolvedHotelOptions) {
+      final name = option.accommodation.name.trim();
+      if (name.isEmpty) continue;
+      final key = name.toLowerCase();
+      if (seen.add(key)) {
+        hotels.add(name);
+      }
+    }
+
+    return hotels;
+  }
+
+  List<String> _possiblePlaces(PlanDetailData detailData) {
+    final places = <String>[];
+    final seen = <String>{};
+
+    void addPlace(String text) {
+      final cleaned = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (cleaned.isEmpty) return;
+      final key = cleaned.toLowerCase();
+      if (seen.add(key)) {
+        places.add(cleaned);
+      }
+    }
+
+    for (final option in detailData.resolvedHotelOptions) {
+      for (final day in option.days) {
+        for (final item in day.morning) {
+          addPlace(item.title);
+        }
+        for (final item in day.afternoon) {
+          addPlace(item.title);
+        }
+        for (final item in day.evening) {
+          addPlace(item.title);
+        }
+      }
+    }
+
+    if (places.isEmpty) {
+      for (final option in detailData.resolvedHotelOptions) {
+        for (final item in option.nearby) {
+          addPlace(item.title);
+        }
+        for (final item in option.distant) {
+          addPlace(item.title);
+        }
+      }
+    }
+
+    return places.take(5).toList();
+  }
+
+  bool _hasNearbyOptions(PlanDetailData detailData) {
+    return detailData.resolvedHotelOptions.any(
+      (option) => option.nearby.isNotEmpty,
+    );
+  }
+
+  bool _hasDistantOptions(PlanDetailData detailData) {
+    return detailData.resolvedHotelOptions.any(
+      (option) => option.distant.isNotEmpty,
+    );
+  }
+
   static const TourGuideInfo _fallbackTourGuide = TourGuideInfo(
     name: 'Mohammed Atef',
     experienceYears: '5',
@@ -293,6 +429,11 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
           duration: visual.info.duration,
           hotel: visual.info.hotel,
         ),
+        note: _defaultHighlightForKind(context, visual.kind),
+        hotelChoices: visual.hotelChoices,
+        possiblePlaces: visual.possiblePlaces,
+        hasNearbyOptions: visual.hasNearbyOptions,
+        hasDistantOptions: visual.hasDistantOptions,
         schedule: [
           for (int dayIndex = 0; dayIndex < visual.schedule.length; dayIndex++)
             _DaySchedule(
@@ -311,7 +452,6 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
         event: visual.event,
         totalBudget: visual.totalBudget,
         buttonColor: visual.buttonColor,
-        note: visual.note,
       );
     });
   }
@@ -358,6 +498,14 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
         btnColor = _pink;
       }
 
+      final detailData = PlanDetailBuilder.buildDetailData(
+        context,
+        trip: sourceTrip,
+        rawPlan: p,
+        resolvedTitle: '${p['title'] ?? l10n.plansGeneratedPlanTitle}'
+            .replaceAll('.', '')
+            .trim(),
+      );
       final accommodationMap =
           _asMap(p['accommodation']) ?? _asMap(p['hotel']) ?? const {};
       final hName = accommodationMap['name'] ?? 'Unknown Hotel';
@@ -446,6 +594,11 @@ class _PlansScreenState extends State<PlansScreen> with WidgetsBindingObserver {
             duration: '${sourceTrip.days} days',
             hotel: hName,
           ),
+          note: _primaryPlanNote(context, detailData, kind),
+          hotelChoices: _hotelChoices(detailData),
+          possiblePlaces: _possiblePlaces(detailData),
+          hasNearbyOptions: _hasNearbyOptions(detailData),
+          hasDistantOptions: _hasDistantOptions(detailData),
           schedule: schedules,
           nearby: nearbyList,
           distant: distantList,
@@ -906,7 +1059,7 @@ class _PlanDetailCard extends StatelessWidget {
                 children: [
                   if (plan.note != null) ...[
                     _InfoLine(
-                      icon: Icons.person_outline,
+                      icon: Icons.auto_awesome_outlined,
                       text: plan.note!,
                       color: plan.accent,
                       isRtl: isRtl,
@@ -935,41 +1088,63 @@ class _PlanDetailCard extends StatelessWidget {
                     isRtl: isRtl,
                     scale: scale,
                   ),
-                  _InfoLine(
-                    icon: Icons.home_outlined,
-                    text: '${l10n.plansLabelHotel} : ${plan.info.hotel}',
+                  SizedBox(height: s(14)),
+                  _SummarySectionList(
+                    icon: Icons.hotel_outlined,
+                    title: '${l10n.compareHotelsSectionTitle}:',
                     color: plan.accent,
+                    items: plan.hotelChoices.isEmpty
+                        ? <String>[l10n.hotelNameUnknown]
+                        : plan.hotelChoices,
                     isRtl: isRtl,
                     scale: scale,
                   ),
-                  SizedBox(height: s(14)),
-                  _PlanTable(plan: plan, isRtl: isRtl, scale: scale),
-                  SizedBox(height: s(14)),
-                  _SectionList(
+                  _SummarySectionList(
+                    icon: Icons.place_outlined,
+                    title: '${l10n.comparePlacesSectionTitle}:',
+                    color: plan.accent,
+                    items: plan.possiblePlaces.isEmpty
+                        ? <String>[l10n.comparePlacesFallback]
+                        : plan.possiblePlaces,
+                    isRtl: isRtl,
+                    scale: scale,
+                  ),
+                  _SummarySectionList(
                     icon: Icons.directions_walk,
                     title: '${l10n.plansLabelNearbyAttractions}:',
                     color: plan.accent,
-                    items: plan.nearby,
+                    items: <String>[
+                      plan.hasNearbyOptions
+                          ? l10n.compareNearbySummary
+                          : l10n.planDetailNoActivities,
+                    ],
                     isRtl: isRtl,
                     scale: scale,
                   ),
-                  _SectionList(
+                  _SummarySectionList(
                     icon: Icons.map_outlined,
                     title: '${l10n.plansLabelDistantAttractions}:',
                     color: plan.accent,
-                    items: plan.distant,
+                    items: <String>[
+                      plan.hasDistantOptions
+                          ? l10n.compareDistantSummary
+                          : l10n.planDetailNoActivities,
+                    ],
                     isRtl: isRtl,
                     scale: scale,
                   ),
-                  _SectionList(
+                  _SummarySectionList(
                     icon: Icons.lightbulb_outline,
                     title: '${l10n.plansLabelEvents}:',
                     color: plan.accent,
-                    items: plan.event,
+                    items: <String>[
+                      l10n.compareHotelActivitiesNote,
+                      l10n.compareEventsDeferredNote,
+                    ],
                     isRtl: isRtl,
                     scale: scale,
                   ),
-                  _SectionList(
+                  _SummarySectionList(
                     icon: Icons.account_balance_wallet_outlined,
                     title: '${l10n.plansLabelTotalBudget}:',
                     color: plan.accent,
@@ -1084,13 +1259,19 @@ class _InfoLine extends StatelessWidget {
   }
 }
 
-class _PlanTable extends StatelessWidget {
-  final _PlanVisual plan;
+class _SummarySectionList extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Color color;
+  final List<String> items;
   final bool isRtl;
   final double scale;
 
-  const _PlanTable({
-    required this.plan,
+  const _SummarySectionList({
+    required this.icon,
+    required this.title,
+    required this.color,
+    required this.items,
     required this.isRtl,
     required this.scale,
   });
@@ -1099,77 +1280,54 @@ class _PlanTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(s(18)),
-      child: Container(
-        color: plan.tableBg,
-        child: Table(
-          border: TableBorder.symmetric(
-            inside: BorderSide(
-              color: Colors.white.withValues(alpha: 0.7),
-              width: s(1),
+    return Padding(
+      padding: EdgeInsets.only(bottom: s(12)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+        children: [
+          Icon(icon, size: s(18), color: color),
+          SizedBox(width: s(10)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: isRtl
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                  style: TextStyle(
+                    fontSize: s(16.5),
+                    fontFamily: 'serif',
+                    color: _PlansScreenState._text,
+                    height: 1.2,
+                  ),
+                ),
+                for (final item in items)
+                  Padding(
+                    padding: EdgeInsets.only(top: s(4)),
+                    child: Text(
+                      '- $item',
+                      textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                      style: TextStyle(
+                        fontSize: s(15),
+                        fontFamily: 'serif',
+                        color: _PlansScreenState._text,
+                        height: 1.25,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-          columnWidths: const {
-            0: FlexColumnWidth(1),
-            1: FlexColumnWidth(2),
-            2: FlexColumnWidth(2),
-            3: FlexColumnWidth(2),
-          },
-          children: [
-            _tableHeader(context),
-            for (final row in plan.schedule) _tableRow(row),
-          ],
-        ),
-      ),
-    );
-  }
-
-  TableRow _tableHeader(BuildContext context) {
-    final l10n = context.l10n;
-    final headers = isRtl
-        ? [
-            l10n.plansTableEvening,
-            l10n.plansTableAfternoon,
-            l10n.plansTableMorning,
-            l10n.plansTableDays,
-          ]
-        : [
-            l10n.plansTableDays,
-            l10n.plansTableMorning,
-            l10n.plansTableAfternoon,
-            l10n.plansTableEvening,
-          ];
-    return TableRow(
-      decoration: BoxDecoration(color: plan.tableBg),
-      children: [for (final h in headers) _cell(h, isHeader: true)],
-    );
-  }
-
-  TableRow _tableRow(_DaySchedule row) {
-    final cells = isRtl
-        ? [row.evening, row.afternoon, row.morning, row.dayLabel]
-        : [row.dayLabel, row.morning, row.afternoon, row.evening];
-    return TableRow(children: [for (final v in cells) _cell(v)]);
-  }
-
-  Widget _cell(String text, {bool isHeader = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: s(6), horizontal: s(5)),
-      child: Text(
-        text.isEmpty ? ' ' : text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: s(isHeader ? 13 : 11.5),
-          fontFamily: 'serif',
-          color: plan.tableText,
-          height: 1.2,
-        ),
+        ],
       ),
     );
   }
 }
 
+// ignore: unused_element
 class _SectionList extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -1277,6 +1435,10 @@ class _PlanVisual {
   final Color tableBg;
   final Color tableText;
   final _PlanInfo info;
+  final List<String> hotelChoices;
+  final List<String> possiblePlaces;
+  final bool hasNearbyOptions;
+  final bool hasDistantOptions;
   final List<_DaySchedule> schedule;
   final List<String> nearby;
   final List<String> distant;
@@ -1294,6 +1456,10 @@ class _PlanVisual {
     required this.tableBg,
     required this.tableText,
     required this.info,
+    required this.hotelChoices,
+    required this.possiblePlaces,
+    required this.hasNearbyOptions,
+    required this.hasDistantOptions,
     required this.schedule,
     required this.nearby,
     required this.distant,

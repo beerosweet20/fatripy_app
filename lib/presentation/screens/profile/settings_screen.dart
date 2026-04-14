@@ -26,19 +26,19 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           _SettingsTile(
             label: l10n.settingsEditProfile,
-            onTap: () => context.push('/edit-profile'),
+            onTap: () => context.push('/account/edit-profile'),
             trailing: Icon(Icons.chevron_right, size: scale * 26),
           ),
           SizedBox(height: scale * 16),
           _SettingsTile(
             label: l10n.settingsUserGuide,
-            onTap: () => context.push('/help'),
+            onTap: () => context.push('/account/help'),
             trailing: Icon(Icons.chevron_right, size: scale * 26),
           ),
           SizedBox(height: scale * 16),
           _SettingsTile(
             label: l10n.settingsPrivacyPolicy,
-            onTap: () => context.push('/privacy-policy'),
+            onTap: () => context.push('/account/privacy-policy'),
             trailing: Icon(Icons.chevron_right, size: scale * 26),
           ),
           SizedBox(height: scale * 16),

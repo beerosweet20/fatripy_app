@@ -95,10 +95,11 @@ Future<PickedMapLocation?> showMapLocationPicker(
   required String selectFirstError,
   PickedMapLocation? initialLocation,
 }) {
-  return Navigator.of(context, rootNavigator: true).push<PickedMapLocation>(
-    MaterialPageRoute<PickedMapLocation>(
-      fullscreenDialog: true,
-      builder: (_) => _MapLocationPickerScreen(
+  return showDialog<PickedMapLocation>(
+    context: context,
+    useRootNavigator: true,
+    builder: (_) => Dialog.fullscreen(
+      child: _MapLocationPickerScreen(
         title: title,
         hint: hint,
         confirmLabel: confirmLabel,

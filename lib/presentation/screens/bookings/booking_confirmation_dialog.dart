@@ -54,15 +54,15 @@ class BookingConfirmationDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            _SummaryRow(label: l10n.bookingsReceiptReference, value: bookingReference),
+            _SummaryRow(
+              label: l10n.bookingsReceiptReference,
+              value: bookingReference,
+            ),
             _SummaryRow(label: l10n.bookingsReceiptType, value: itemType),
             _SummaryRow(label: l10n.bookingsReceiptItem, value: itemTitle),
             _SummaryRow(label: l10n.bookingsReceiptDate, value: dateText),
             const SizedBox(height: 16),
-            Text(
-              l10n.bookingConfirmedBody,
-              textAlign: TextAlign.center,
-            ),
+            Text(l10n.bookingConfirmedBody, textAlign: TextAlign.center),
             const SizedBox(height: 14),
             Row(
               children: [
@@ -79,7 +79,7 @@ class BookingConfirmationDialog extends StatelessWidget {
                   child: FilledButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      context.go('/bookings');
+                      context.go('/account/bookings');
                     },
                     child: Text(l10n.bookingViewBookings),
                   ),

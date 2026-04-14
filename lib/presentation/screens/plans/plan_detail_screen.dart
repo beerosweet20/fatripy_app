@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +10,12 @@ import '../../../data/repositories/booking_repository.dart';
 import '../../../domain/entities/booking.dart';
 import '../../localization/app_localizations_ext.dart';
 import 'plan_share_preview_screen.dart';
+
+final MemoryImage _transparentTileImage = MemoryImage(
+  base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+n6u8AAAAASUVORK5CYII=',
+  ),
+);
 
 class PlanDetailData {
   final String title;
@@ -316,10 +324,7 @@ Uri? _routeDirectionsUri(List<RouteStopInfo> stops) {
   final origin = point(stops.first);
   final destination = point(stops.last);
   final waypoints = stops.length > 2
-      ? stops
-            .sublist(1, stops.length - 1)
-            .map(point)
-            .join('|')
+      ? stops.sublist(1, stops.length - 1).map(point).join('|')
       : '';
 
   final params = <String, String>{
@@ -487,7 +492,7 @@ class PlanDetailScreen extends StatelessWidget {
           builder: (context, setPlanState) {
             final activeOption = hotelOptions[selectedHotelIndex];
             return Column(
-                children: [
+              children: [
                 // ─── Header ───────────────────────────────────────────────────
                 Padding(
                   padding: EdgeInsets.fromLTRB(s(18), s(10), s(18), s(12)),
@@ -634,7 +639,8 @@ class PlanDetailScreen extends StatelessWidget {
                                 color: sectionPill,
                                 hotelCount: hotelOptions.length,
                                 hotelIndex: selectedHotelIndex,
-                                hintText: context.l10n.planDetailSelectHotelHint,
+                                hintText:
+                                    context.l10n.planDetailSelectHotelHint,
                                 onSelectHotel: (index) => setPlanState(() {
                                   selectedHotelIndex = index;
                                 }),
@@ -859,7 +865,11 @@ class PlanDetailScreen extends StatelessWidget {
                                   ),
                                 )
                               else
-                                for (int i = 0; i < eventEntries.length; i++) ...[
+                                for (
+                                  int i = 0;
+                                  i < eventEntries.length;
+                                  i++
+                                ) ...[
                                   _EventEntryCard(
                                     scale: scale,
                                     ink: ink,
@@ -885,7 +895,7 @@ class PlanDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                ],
+              ],
             );
           },
         ),
@@ -1262,6 +1272,12 @@ class _DayRouteMapContent extends StatelessWidget {
                       urlTemplate:
                           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.fatripy.app',
+                      tileProvider: NetworkTileProvider(
+                        silenceExceptions: true,
+                        attemptDecodeOfHttpErrorResponses: false,
+                      ),
+                      errorImage: _transparentTileImage,
+                      errorTileCallback: (_, _, _) {},
                     ),
                     PolylineLayer(
                       polylines: [

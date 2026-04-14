@@ -32,9 +32,9 @@ class _DependentsScreenState extends State<DependentsScreen> {
   int _children = 2;
   int _infant = 0;
 
-  List<int> _adultAges = List.filled(2, 0);
-  List<int> _childAges = List.filled(2, 0);
-  List<int> _infantAges = List.filled(0, 0);
+  List<int> _adultAges = [0, 0];
+  List<int> _childAges = [0, 0];
+  List<int> _infantAges = [];
 
   String _budget = '21000SAR';
   String _city = AppCities.values.first;
@@ -496,6 +496,7 @@ class _DependentsScreenState extends State<DependentsScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final scale = AppScale.of(context);
+    final showBack = Navigator.of(context).canPop();
     double s(double value) => value * scale;
 
     return Scaffold(
@@ -509,15 +510,31 @@ class _DependentsScreenState extends State<DependentsScreen> {
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: s(16)),
-                alignment: Alignment.center,
                 decoration: const BoxDecoration(color: _shape),
-                child: Text(
-                  l10n.dependentsTitle,
-                  style: TextStyle(
-                    fontSize: s(22),
-                    fontFamily: 'serif',
-                    color: _text,
-                  ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (showBack)
+                      PositionedDirectional(
+                        start: s(6),
+                        child: IconButton(
+                          onPressed: () => Navigator.of(context).maybePop(),
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: _text,
+                            size: s(24),
+                          ),
+                        ),
+                      ),
+                    Text(
+                      l10n.dependentsTitle,
+                      style: TextStyle(
+                        fontSize: s(22),
+                        fontFamily: 'serif',
+                        color: _text,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(

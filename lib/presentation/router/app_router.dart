@@ -7,12 +7,12 @@ import '../state/auth_providers.dart';
 import 'go_router_refresh_stream.dart';
 import '../../data/firebase/auth_service.dart';
 import '../screens/app_shell.dart';
-import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/blog/blog_screen.dart';
 import '../screens/plans/plans_screen.dart';
 import '../screens/plans/plan_comparison_screen.dart';
+import '../screens/plans/plan_detail_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
 import '../screens/bookings/booking_success_screen.dart';
 import '../screens/profile/account_entry_screen.dart';
@@ -52,30 +52,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return '/home';
       }
 
+      final matchedLocation = state.matchedLocation;
       final user = auth.currentUser;
       final loggedIn = user != null;
-      final isAuthRoute =
-          state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
       final isAdminRoute =
-          state.matchedLocation == '/admin' ||
-          state.matchedLocation.startsWith('/admin/');
+          matchedLocation == '/admin' || matchedLocation.startsWith('/admin/');
+      final isRegisterRoute = matchedLocation == '/account/register';
+      final isProtectedAccountRoute =
+          matchedLocation.startsWith('/account/') &&
+          matchedLocation != '/account/register' &&
+          matchedLocation != '/account/login';
       final isUserOnlyRoute =
-          state.matchedLocation == '/home' ||
-          state.matchedLocation == '/blog' ||
-          state.matchedLocation == '/plans' ||
-          state.matchedLocation.startsWith('/plans/') ||
-          state.matchedLocation == '/bookings' ||
-          state.matchedLocation == '/profile' ||
-          state.matchedLocation.startsWith('/profile/') ||
-          state.matchedLocation == '/dependents' ||
-          state.matchedLocation == '/settings' ||
-          state.matchedLocation == '/edit-profile';
-      final isProfileRoute =
-          state.matchedLocation.startsWith('/profile') ||
-          state.matchedLocation == '/settings' ||
-          state.matchedLocation == '/dependents' ||
-          state.matchedLocation == '/edit-profile';
+          matchedLocation == '/home' ||
+          matchedLocation == '/blog' ||
+          matchedLocation == '/plans' ||
+          matchedLocation.startsWith('/plans/') ||
+          matchedLocation == '/account' ||
+          matchedLocation.startsWith('/account/') ||
+          matchedLocation == '/profile' ||
+          matchedLocation.startsWith('/profile/') ||
+          matchedLocation == '/bookings' ||
+          matchedLocation == '/booking-success' ||
+          matchedLocation == '/dependents' ||
+          matchedLocation == '/settings' ||
+          matchedLocation == '/edit-profile';
 
       bool? cachedAdmin;
       Future<bool> resolveIsAdmin() async {
@@ -84,27 +84,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return cachedAdmin!;
       }
 
-      if (loggedIn && isAuthRoute) {
-        final isAdmin = await resolveIsAdmin();
-        return isAdmin ? '/admin' : '/home';
+      if (matchedLocation == '/account/login') {
+        return '/account';
       }
 
-      if (loggedIn && state.matchedLocation == '/account') {
+      if (loggedIn && isRegisterRoute) {
         final isAdmin = await resolveIsAdmin();
-        return isAdmin ? '/admin' : null;
+        return isAdmin ? '/admin' : '/account';
       }
 
-      if (!loggedIn && isProfileRoute) {
+      if (!loggedIn && isProtectedAccountRoute) {
         return '/account';
       }
       if (!loggedIn && isAdminRoute) {
         return '/account';
       }
-
       if (loggedIn && isAdminRoute) {
         final isAdmin = await resolveIsAdmin();
         if (!isAdmin) {
-          return '/profile';
+          return '/account';
         }
       }
 
@@ -118,11 +116,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterScreen(),
-      ),
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashSequence(),
@@ -155,12 +148,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const PlansScreen(),
                 routes: [
                   GoRoute(
+                    path: 'detail',
+                    builder: (context, state) {
+                      final data = state.extra;
+                      if (data is! PlanDetailData) {
+                        return const _MissingRoutePayloadScreen(
+                          title: 'Plan details',
+                          message: 'Plan details are unavailable.',
+                        );
+                      }
+                      return PlanDetailScreen(data: data);
+                    },
+                  ),
+                  GoRoute(
                     path: 'compare',
                     builder: (context, state) {
                       final payload = state.extra is PlanComparisonPayload
                           ? state.extra as PlanComparisonPayload
                           : null;
                       return PlanComparisonScreen(payload: payload);
+                    },
+                  ),
+                  GoRoute(
+                    path: 'booking-success',
+                    builder: (context, state) {
+                      final type = state.uri.queryParameters['type'] ?? '';
+                      return BookingSuccessScreen(itemType: type);
                     },
                   ),
                 ],
@@ -172,28 +185,61 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/account',
                 builder: (context, state) => const AccountEntryScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'register',
+                    builder: (context, state) => const RegisterScreen(),
+                  ),
+                  GoRoute(
+                    path: 'edit-profile',
+                    builder: (context, state) => const EditProfileScreen(),
+                  ),
+                  GoRoute(
+                    path: 'dependents',
+                    builder: (context, state) => const DependentsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'settings',
+                    builder: (context, state) => const SettingsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'help',
+                    builder: (context, state) => const HelpScreen(),
+                  ),
+                  GoRoute(
+                    path: 'privacy-policy',
+                    builder: (context, state) => const PrivacyPolicyScreen(),
+                  ),
+                  GoRoute(
+                    path: 'bookings',
+                    builder: (context, state) => const BookingsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'debug-explorer',
+                    builder: (context, state) => const DebugExplorerScreen(),
+                  ),
+                  GoRoute(
+                    path: 'login',
+                    redirect: (context, state) => '/account',
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
       GoRoute(
-        path: '/profile',
-        builder: (context, state) => const AccountEntryScreen(),
-        routes: [
-          GoRoute(
-            path: 'debug-explorer',
-            builder: (context, state) => const DebugExplorerScreen(),
-          ),
-        ],
+        path: '/profile/debug-explorer',
+        redirect: (context, state) => '/account/debug-explorer',
       ),
+      GoRoute(path: '/profile', redirect: (context, state) => '/account'),
       GoRoute(
         path: '/dependents',
-        builder: (context, state) => const DependentsScreen(),
+        redirect: (context, state) => '/account/dependents',
       ),
       GoRoute(
         path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
+        redirect: (context, state) => '/account/settings',
       ),
       GoRoute(path: '/help', builder: (context, state) => const HelpScreen()),
       GoRoute(
@@ -202,17 +248,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/edit-profile',
-        builder: (context, state) => const EditProfileScreen(),
+        redirect: (context, state) => '/account/edit-profile',
       ),
       GoRoute(
         path: '/bookings',
-        builder: (context, state) => const BookingsScreen(),
+        redirect: (context, state) => '/account/bookings',
       ),
       GoRoute(
         path: '/booking-success',
-        builder: (context, state) {
-          final type = state.uri.queryParameters['type'] ?? '';
-          return BookingSuccessScreen(itemType: type);
+        redirect: (context, state) {
+          final query = state.uri.query;
+          return query.isEmpty
+              ? '/plans/booking-success'
+              : '/plans/booking-success?$query';
         },
       ),
       GoRoute(
@@ -249,3 +297,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+class _MissingRoutePayloadScreen extends StatelessWidget {
+  final String title;
+  final String message;
+
+  const _MissingRoutePayloadScreen({
+    required this.title,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(child: Text(message)),
+    );
+  }
+}

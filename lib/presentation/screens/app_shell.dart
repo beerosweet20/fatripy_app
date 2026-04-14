@@ -56,10 +56,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             fontWeight: FontWeight.w400,
           ),
           onTap: (index) {
-            widget.navigationShell.goBranch(
-              index,
-              initialLocation: index == widget.navigationShell.currentIndex,
-            );
+            widget.navigationShell.goBranch(index, initialLocation: true);
           },
           items: [
             BottomNavigationBarItem(
